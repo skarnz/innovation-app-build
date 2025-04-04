@@ -48,6 +48,7 @@ import ScalingOperations from "./pages/ScalingOperations";
 import Partnerships from "./pages/Partnerships";
 import Support from "./pages/Support";
 import ComingSoon from "./pages/ComingSoon";
+import ProjectSetup from "./pages/ProjectSetup";
 
 const queryClient = new QueryClient();
 
@@ -65,8 +66,12 @@ const App = () => (
             <Route path="/signup" element={<SignupPage />} />
             <Route path="/support" element={<DashboardLayout><ComingSoon featureName="Support" /></DashboardLayout>} />
             
+            {/* Project Setup Route (Phase 2) */}
+            <Route path="/project/setup" element={<DashboardLayout><ProjectSetup /></DashboardLayout>} />
+            
             {/* Dashboard Routes */}
             <Route path="/" element={<DashboardLayout />}>
+              <Route index element={<Dashboard />} />
               <Route path="dashboard" element={<Dashboard />} />
               
               {/* Main Phases in Order with Numbering */}

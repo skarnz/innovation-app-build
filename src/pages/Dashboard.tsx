@@ -1,10 +1,10 @@
-
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Plus, Search, ChevronRight, FileText, Layers, Activity } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { PageHeader } from '@/components/layout/PageHeader';
 
 const Dashboard = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -27,30 +27,30 @@ const Dashboard = () => {
   ];
   
   return (
-    <div className="min-h-screen bg-navy">
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-8 gap-4">
-          <h1 className="text-3xl md:text-4xl font-orbitron font-bold text-white">Dashboard</h1>
-          
-          <div className="flex gap-4 w-full md:w-auto">
-            <div className="relative flex-grow md:flex-grow-0 md:w-64">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/40" size={18} />
-              <Input 
-                className="pl-10 bg-navy-light border-white/20 text-white"
-                placeholder="Search projects..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-            </div>
-            
-            <Link to="/project/setup">
-              <Button className="bg-electric-blue hover:bg-electric-blue/90">
-                <Plus size={18} className="mr-2" /> New Project
-              </Button>
-            </Link>
+    <div className="space-y-8">
+      <PageHeader 
+        title="Dashboard"
+        actions={
+          <div className="flex gap-2">
+             <div className="relative flex-grow md:flex-grow-0 md:w-64">
+               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={18} />
+               <Input 
+                 className="pl-10"
+                 placeholder="Search projects..."
+                 value={searchQuery}
+                 onChange={(e) => setSearchQuery(e.target.value)}
+               />
+             </div>
+             <Link to="/project/setup">
+               <Button className="bg-electric-blue hover:bg-electric-blue/90">
+                 <Plus size={18} className="mr-2" /> New Project
+               </Button>
+             </Link>
           </div>
-        </div>
-        
+        }
+      />
+
+      <div className="px-8">
         <div className="mb-8">
           <h2 className="text-2xl font-orbitron font-semibold text-white mb-4">Getting Started</h2>
           

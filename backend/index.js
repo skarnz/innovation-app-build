@@ -5,14 +5,16 @@ const cors = require('cors'); // Import cors
 require('dotenv').config(); // Ensure env vars are loaded early
 
 const app = express();
-const PORT = process.env.PORT || 3000; // Use environment variable or default to 3000
+const PORT = process.env.PORT || 3001; // Use environment variable (updated default)
 
 // CORS Configuration
-const corsOptions = {
-  origin: 'http://localhost:5174', // Update to allow current frontend port
+if (!process.env.FRONTEND_URL) {
+  console.warn('WARN: FRONTEND_URL not set in .env, CORS might not work correctly.');
+}
+app.use(cors({
+  origin: process.env.FRONTEND_URL || 'http://localhost:5173', // Allow frontend origin
   credentials: true, // Allow cookies/session info to be sent
-};
-app.use(cors(corsOptions));
+}));
 
 // Middleware
 app.use(express.json());
@@ -62,25 +64,54 @@ passport.deserializeUser(async (id, done) => {
 });
 // ---------------------------------------------------------------------------------------------
 
+// Health Check Route
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'OK' });
+});
+
 // Basic test route
 app.get('/', (req, res) => {
   res.send('Hello from the Backend!');
 });
 
-// API routes
-const fileRoutes = require('./routes/files');
-app.use('/api/files', fileRoutes);
+// Mount Routers
 
-// Authentication Routes
+// Authentication Routes (Separate - typically doesn't go under /api)
 const authRoutes = require('./routes/auth');
 app.use('/auth', authRoutes);
 
+// --- API Router Setup ---
+const apiRouter = express.Router();
+
+// TODO: Add authentication middleware to protect API routes, e.g.:
+// const ensureAuthenticated = (req, res, next) => { ... };
+// apiRouter.use(ensureAuthenticated);
+
+// Mount specific API route modules onto the main API router
+const fileRoutes = require('./routes/files');
+apiRouter.use('/files', fileRoutes); // Now at /api/files
+
 // AI API Proxy Route
 const aiRoutes = require('./routes/ai');
-app.use('/api/ai', aiRoutes);
+apiRouter.use('/ai', aiRoutes); // Now at /api/ai
 
-// Placeholder for other API routes
-// app.use('/api/ai', require('./routes/ai'));
+// Mount Project routes
+const projectRoutes = require('./routes/projectRoutes'); // Corrected filename
+apiRouter.use('/projects', projectRoutes);
+
+// Mount Validation routes (To be created)
+const validationRoutes = require('./routes/validationRoutes'); // Corrected filename
+apiRouter.use('/validation', validationRoutes);
+
+// Mount the main API router at /api
+app.use('/api', apiRouter);
+// ------------------------
+
+// Basic Error Handling Middleware (Place after all routes)
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ message: 'Internal Server Error', error: err.message });
+});
 
 // Start the server
 app.listen(PORT, () => {

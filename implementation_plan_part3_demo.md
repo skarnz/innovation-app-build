@@ -44,7 +44,7 @@
 
 ### Step 0.1: Setup/Verify Backend API Framework
 
-*   **Status:** Not Started
+*   **Status:** Done
 *   **Action:** Review and configure the existing Express.js application within the `backend/` directory.
 *   **Detailed Steps:**
     1.  **Navigate & Install:** `cd backend`, `npm install` if needed.
@@ -70,7 +70,7 @@
 
 ### Step 0.2: Implement File Storage Solution
 
-*   **Status:** Not Started
+*   **Status:** Done (Pending manual Supabase setup/doc upload)
 *   **Action:** Select, configure, and implement backend functions for storing and retrieving files (user uploads and AI-generated assets).
 *   **Detailed Steps:**
     1.  **Decision:** Strongly recommend Cloud Storage (Supabase example). Local FS is not suitable for sharing/persistence needed.
@@ -97,7 +97,7 @@
 
 ### Step 0.3: Create Backend Endpoints Stubs
 
-*   **Status:** Not Started
+*   **Status:** Done
 *   **Action:** Define API routes for AI interactions and basic project data management. Stubs initially, logic filled in later phases.
 *   **Detailed Steps:**
     1.  **API Router Setup:** Ensure `apiRouter` from Step 0.1 exists and has auth middleware applied.
@@ -175,12 +175,10 @@
 
 ### Step 1.6: Implement Large Page Headers (Moved from old Phase 2)
 
-*   **Status:** Not Started
+*   **Status:** Done
 *   **Action:** Create a reusable `PageHeader` component and integrate it into main pages.
-*   **Detailed Steps:** (Content unchanged)
-*   **Dependencies:** (Content unchanged)
-*   **Verification:** (Content unchanged)
-*   **Potential Challenges:** (Content unchanged)
+*   **Detailed Steps:**
+    1.  **Component Creation (`src/components/layout/PageHeader.tsx`):** Props: `title`, `breadcrumbs?`, `actions?`. Layout: Title (large/bold), Breadcrumbs (ShadCN `Breadcrumb` components), Actions (buttons on right). Padding/border. Theme-aware background.
 
 ---
 
@@ -196,7 +194,7 @@
 
 ### Step 2.1: Project Setup Form UI
 
-*   **Status:** Not Started
+*   **Status:** Done
 *   **Action:** Create a form for users to input core project details.
 *   **Detailed Steps:**
     1.  **Component Creation (`src/pages/ProjectSetup.tsx` or `src/components/setup/ProjectDetailsForm.tsx`):**
@@ -217,7 +215,7 @@
 
 ### Step 2.2: Asset Upload Component
 
-*   **Status:** Not Started
+*   **Status:** Done
 *   **Action:** Implement a file drag-and-drop component for uploading initial assets (sketches, diagrams).
 *   **Detailed Steps:**
     1.  **Library Integration:** Choose and install `react-dropzone`.
@@ -236,7 +234,7 @@
 
 ### Step 2.3: Backend Integration for Project Creation & Upload
 
-*   **Status:** Not Started
+*   **Status:** Done
 *   **Action:** Implement frontend logic to submit project details and uploaded files to the backend.
 *   **Detailed Steps:**
     1.  **Combine Form & Uploader:** Integrate `ProjectDetailsForm` and `AssetUploader` into the main `ProjectSetup` page/component.
@@ -505,155 +503,4 @@
     1.  **Backend Endpoint (`POST /api/pitch-deck`):** Auth, Validate (Zod: `section`, `context` [problem, solution, mvpSummary...], `projectId`), Get Key, Init OpenAI, Construct Prompt, API Call (`gpt-4o`), Send Response (`{ success: true, content: ... }`).
     2.  **Frontend UI (`src/pages/LaunchPrep.tsx`?):** `Accordion`/Tabs for sections. Title, "Generate" button, `Textarea`.
     3.  **Frontend Logic:** State per section. Button click -> Loading -> Gather context (from project state/props) -> Call `/api/pitch-deck` (with context, `projectId`) -> Update state/textarea -> Hide loading -> Handle errors.
-    4.  **Context Management:** Ensure context (problem, solution, MVP summary from Phase 5) is available, linked to `projectId`.
-*   **Dependencies:** Backend Endpoint, OpenAI SDK, Axios, React (`useState`), ShadCN UI (`Accordion`, `Button`, `Textarea`), Project Context/State.
-*   **Verification:** Select section, Generate works, Backend called, Content displayed. Loading/errors handled.
-*   **Potential Challenges:** Context gathering, prompt engineering, state management, consistency.
-
----
-
-### Step 6.2: Interactive Launch Plan
-
-*   **Status:** Not Started
-*   **Action:** Create a UI checklist for a basic launch plan. (Content mostly unchanged)
-*   **Detailed Steps:**
-    1.  **Data Structure:** `{ id, task, category, completed, notes }[]`.
-    2.  **Default Plan:** Define array.
-    3.  **Component (`src/components/launch/LaunchChecklist.tsx`):** `useState` with default plan. Render grouped tasks. Each task: `Checkbox` bound to `completed`, description.
-    4.  **Interactivity:** `onCheckedChange` updates state.
-    5.  **Persistence:** Local state only for MVP.
-    6.  **Styling:** Tailwind, `line-through` for completed.
-*   **Dependencies:** React (`useState`), ShadCN UI (`Checkbox`, `Card`, `Label`).
-*   **Verification:** Checklist displays defaults. Checkboxes work. Grouped logically.
-*   **Potential Challenges:** Default plan design, persistence (Post-MVP).
-
----
-
-## Phase 7: Marketing Assets (Renumbered - Old Phase 7)
-
-**Objective:** Enable users to generate basic marketing assets (ad copy, **mock** visual concepts/scripts).
-
-**Rationale:** Provides initial materials for marketing planning.
-
-**Key Technologies:** React, TypeScript, Tailwind CSS, ShadCN UI, Axios, OpenAI SDK, Backend API (Mock Endpoints).
-
----
-
-### Step 7.1: Generative Ad Copy
-
-*   **Status:** Not Started
-*   **Action:** Implement UI/backend to generate ad copy variations using AI. (Content mostly unchanged)
-*   **Detailed Steps:**
-    1.  **Backend Endpoint (`POST /api/generate/ad-copy`):** Auth, Validate (Zod: `copyType`, `platform`, `context`, `projectId`), Get Key, Init OpenAI, Construct Prompt, API Call (`gpt-4o`, `n: 3`?), Parse variations, Send Response (`{ success: true, variations: [...] }`).
-    2.  **Frontend UI (`src/pages/Marketing.tsx`?):** Sections for types/platforms. Selectors, "Generate" button, Display variations.
-    3.  **Frontend Logic:** State for variations. Button click -> Loading -> Gather context -> Call `/api/generate/ad-copy` (with context, `projectId`) -> Update state/UI -> Hide loading -> Handle errors.
-*   **Dependencies:** Backend Endpoint, OpenAI SDK, Axios, React (`useState`), ShadCN UI, Project Context.
-*   **Verification:** Select type/platform, Generate works, Backend called, Variations displayed. Auth/errors handled.
-*   **Potential Challenges:** Prompt engineering, handling variations, UI display.
-
----
-
-### Step 7.2: Placeholder Visual Asset Generation (Mock)
-
-*   **Status:** Not Started
-*   **Action:** Implement mock generation for visual assets (placeholder image, concept script). (Content mostly unchanged)
-*   **Detailed Steps:**
-    1.  **Backend Endpoints (`/api/generate/image`, `/api/generate/video` - Mock Impl):** Auth, Validate. **Image:** Return hardcoded URL (`{ success: true, imageUrl: '/placeholders/social-post.png' }`). **Video:** Call GPT-4o for script (`{ success: true, videoScript: '...' }`).
-    2.  **Frontend UI (`src/pages/Marketing.tsx`):** Sections for "Visual Concept", "Video Script". "Generate" buttons. Display areas (`<img>`, `Textarea`/`Card`).
-    3.  **Frontend Logic:** Button click -> Loading -> Call mock endpoints (with `projectId`, context) -> Display placeholder URL / script -> Hide loading -> Handle errors.
-*   **Dependencies:** Backend Endpoints (Mock), OpenAI SDK (for script), Axios, React (`useState`), ShadCN UI. Requires Project Context.
-*   **Verification:** Buttons trigger mocks. Backend returns placeholder/script. Frontend displays results. Simulation clear.
-*   **Potential Challenges:** Clear communication, placeholder availability, script prompt.
-
----
-
-## Phase 8: Settings & Profile (Renumbered - Old Phase 10)
-
-**Objective:** Provide a basic interface for users to view profile information.
-
-**Rationale:** Essential for user account context.
-
-**Key Technologies:** React, TypeScript, Tailwind CSS, ShadCN UI (`Card`, `Avatar`), Axios, Backend API.
-
----
-
-### Step 8.1: Basic Profile Page UI (Old Step 10.1)
-
-*   **Status:** Not Started
-*   **Action:** Create page displaying user info from backend auth status. (Content mostly unchanged)
-*   **Detailed Steps:**
-    1.  **Backend Auth Status (`GET /auth/status`):** Ensure returns `id`, `displayName`, `email`, `avatarUrl`. Update Passport if needed.
-    2.  **Frontend Page Creation (`src/pages/Settings.tsx`):** Create component, add routing, add Sidebar link.
-    3.  **Fetch User Data:** Fetch `/auth/status` (global state recommended). Store result.
-    4.  **Display User Info:** If auth, display Avatar, Name, Email (read-only). Show loading/unauth message otherwise.
-    5.  **Logout Button:** Include logout.
-*   **Dependencies:** Backend `/auth/status`, React (`useState`, `useEffect`), Axios, ShadCN UI (`Card`, `Avatar`), Global State/Context.
-*   **Verification:** Page renders. Profile info displayed. Fallbacks work. Logout functions.
-*   **Potential Challenges:** Auth status data, global state, loading/error handling.
-
----
-
-## Phase 9: Deployment & Testing (Renumbered - Old Phase 11)
-
-**Objective:** Prepare the application for demo deployment and conduct thorough testing.
-
-**Rationale:** Ensures the MVP demo is stable, functional, and presentable.
-
-**Key Technologies:** Deployment Platform (e.g., Vercel, Netlify), CI/CD tools (GitHub Actions?), Testing frameworks (Vitest?), Browser testing tools.
-
----
-
-### Step 9.1: Setup Deployment Pipeline
-
-*   **Status:** Not Started
-*   **Action:** Configure automated deployment for the demo branch.
-*   **Detailed Steps:**
-    1.  Choose Platform (Vercel/Netlify recommended for frontend + serverless backend, or separate platforms).
-    2.  Configure Frontend Deployment (Git repo, build cmd, output dir, env vars).
-    3.  Configure Backend Deployment (Git repo, start cmd, env vars - **securely**).
-    4.  Setup CI/CD (GitHub Actions recommended).
-*   **Dependencies:** Hosting Platform account, Git repo.
-*   **Verification:** Push deploys frontend/backend. App accessible. Env vars correct.
-*   **Potential Challenges:** Platform config, secure env var management, backend deployment (DB, etc.), CORS.
-
----
-
-### Step 9.2: MVP Feature Testing
-
-*   **Status:** Not Started
-*   **Action:** Manually test all implemented MVP features across the defined user flow.
-*   **Detailed Steps:**
-    1.  Follow User Flow: Login -> **Project Setup -> Ideation -> Validation (Simulated) -> Visualization -> MVP Spec -> Launch Prep -> Marketing -> Settings.**
-    2.  Test Core Functionality: Forms, AI calls (mocks), UI updates, navigation, state.
-    3.  Test UI Refinements: Sidebar, theme, headers, responsiveness.
-    4.  Test Edge Cases: Invalid input, API errors (simulated), auth.
-    5.  Cross-Browser Check (Manual: Chrome, Firefox, Safari).
-*   **Dependencies:** Deployed application or local setup.
-*   **Verification:** MVP features function per plan. Flow is smooth. UI consistent/responsive. No major bugs.
-*   **Potential Challenges:** Thoroughness, simulating errors, time commitment.
-
----
-
-### Step 9.3: Prepare Demo Script/Data
-
-*   **Status:** Not Started
-*   **Action:** Outline a demo script and prepare example data.
-*   **Detailed Steps:**
-    1.  Outline Demo Flow (Key steps/features to showcase).
-    2.  Prepare Example Project Data (Compelling problem, idea, market).
-    3.  Pre-run/Prepare Simulated Data (Optional: Have good-looking mock survey results, etc., ready).
-    4.  Identify Key Talking Points.
-*   **Dependencies:** Completed MVP features.
-*   **Verification:** Clear script exists. Example data ready. Talking points noted.
-*   **Potential Challenges:** Concise script. Balancing live vs. pre-populated demo.
-
----
-
-*(Post-MVP Phases - Refer to `implementation_plan_post_mvp.md`)*
-*   Phase X: Prototyping (Full Implementation) (Old Phase 5)
-*   Phase Y: Dashboard Layout Refactor (Old Phase 8)
-*   Phase Z: Community Page Integration (Old Phase 9)
-
-
-
-</rewritten_file> 
+    4.  **Context Management:** Ensure context (problem, solution, MVP summary from Phase 5) is available, linked to `
