@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
   ChevronDown, 
@@ -39,203 +39,243 @@ import {
   GitBranch,
   Database,
   Lock,
-  Unlock
+  Unlock,
+  Settings,
+  LifeBuoy
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { ThemeToggle } from '@/components/ThemeToggle';
+import { sidebarNavItems, NavItem } from '@/config/sidebarNav';
+import React from 'react';
+import { Badge } from "@/components/ui/badge";
 
-type NavLinkProps = {
-  icon: React.ReactNode;
-  label: string;
-  to: string;
-  active?: boolean;
-  number?: number;
+// Combined NavLink / IconLink logic
+const CombinedNavLink = ({ item, isOpen }: { item: NavItem, isOpen: boolean }) => {
+  const location = useLocation();
+  // Check activity based on direct path or prefix
+  const isActive = location.pathname === item.to || 
+                   (item.pathPrefix && location.pathname.startsWith(item.pathPrefix));
+  const IconComponent = item.icon;
+
+  // Render link with full content if open
+  if (isOpen) {
+    return (
+      <Link
+        to={item.to}
+        className={cn(
+          "flex items-center gap-3 py-2 px-4 w-full text-sm font-medium transition-colors rounded-md",
+          isActive ? "text-white bg-navy-dark" : "text-white/60 hover:text-white/80"
+        )}
+      >
+        <IconComponent size={18} className={cn("flex-shrink-0", isActive ? "text-electric-blue" : "")} />
+        <span className="flex-grow truncate">{item.label}</span>
+        {/* Display phase number if available */}
+        {item.number !== undefined && (
+          <span className="flex items-center justify-center text-xs font-mono text-white/50">
+            {item.number}
+          </span>
+        )}
+        {/* Display badge if available */}
+        {item.badge && (
+           <Badge variant="outline" className="ml-auto text-xs bg-accent-blue/20 border-accent-blue/50 text-accent-blue px-1.5 py-0.5">
+              {item.badge}
+            </Badge>
+        )}
+      </Link>
+    );
+  }
+
+  // Render icon-only with tooltip if closed
+  return (
+    <TooltipProvider delayDuration={100}>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Link
+            to={item.to}
+            className={cn(
+              "flex items-center justify-center h-10 w-10 rounded-md transition-colors", // Centered icon
+              isActive
+                ? "bg-navy-dark text-electric-blue" 
+                : "text-white/60 hover:text-white hover:bg-navy-dark"
+            )}
+          >
+            <IconComponent size={20} />
+            <span className="sr-only">{item.label}</span>
+          </Link>
+        </TooltipTrigger>
+        <TooltipContent side="right" className="bg-navy-darkest text-white border-navy-medium">
+          {item.label}
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  );
 };
 
-const NavLink = ({ icon, label, to, active, number }: NavLinkProps) => (
-  <Link 
-    to={to}
-    className={cn(
-      "flex items-center gap-3 py-3 px-4 w-full text-sm font-medium transition-colors",
-      active ? "text-white" : "text-white/60 hover:text-white/80"
-    )}
-  >
-    <span className="flex-shrink-0">{icon}</span>
-    <span className="flex-grow">{label}</span>
-    {number !== undefined && (
-      <span className="flex items-center justify-center w-5 h-5 text-xs bg-navy-light rounded-full">
-        {number}
-      </span>
-    )}
-  </Link>
-);
+// Combined Category Toggle logic
+const CombinedCategoryToggle = ({ item, isOpen }: { item: NavItem, isOpen: boolean }) => {
+    const location = useLocation();
+    const isActive = location.pathname.startsWith(item.pathPrefix || item.to);
+    // Keep expanded state based on activity, manage based on isOpen changes
+    const [isExpanded, setIsExpanded] = useState(isActive);
+    const IconComponent = item.icon;
 
+    useEffect(() => {
+        // Ensure it reflects current path on navigation
+        const currentlyActive = location.pathname.startsWith(item.pathPrefix || item.to);
+        if (currentlyActive) {
+            setIsExpanded(true);
+        }
+        // Optionally collapse inactive categories when sidebar closes?
+        // else if (!isOpen) { setIsExpanded(false); }
+    }, [location.pathname, item.pathPrefix, item.to, isOpen]);
+
+    // Render icon-only if closed
+    if (!isOpen) {
+        return (
+            <TooltipProvider delayDuration={100}>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  {/* Use a div or Link depending on whether the category itself is a link */}
+                  <Link 
+                     to={item.to} // Link to the category's main page
+                     className={cn(
+                        "flex items-center justify-center h-10 w-10 rounded-md transition-colors",
+                        isActive
+                          ? "bg-navy-dark text-electric-blue" 
+                          : "text-white/60 hover:text-white hover:bg-navy-dark"
+                      )}>
+                     <IconComponent size={20} />
+                     <span className="sr-only">{item.label}</span>
+                  </Link>
+                </TooltipTrigger>
+                <TooltipContent side="right" className="bg-navy-darkest text-white border-navy-medium">
+                  {item.label}
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+        );
+    }
+    
+    // Render full toggle if open
+    return (
+        <div className="mb-1">
+            <button
+                onClick={() => setIsExpanded(!isExpanded)}
+                className={cn(
+                    "flex items-center justify-between w-full gap-3 py-2 px-4 text-sm font-medium transition-colors rounded-md",
+                    isActive ? "text-white bg-navy-dark" : "text-white/60 hover:text-white/80"
+                )}
+            >
+                <div className="flex items-center gap-3">
+                    <IconComponent size={18} className={cn(isActive ? "text-electric-blue" : "")} />
+                    <span className="flex-grow truncate text-left">{item.label}</span> {/* Ensure text aligns left */}
+                    {item.number !== undefined && (
+                        <span className="flex items-center justify-center text-xs font-mono text-white/50">
+                            {item.number}
+                        </span>
+                    )}
+                    {item.badge && (
+                        <Badge variant="outline" className="ml-1 text-xs bg-accent-blue/20 border-accent-blue/50 text-accent-blue px-1.5 py-0.5">
+                            {item.badge}
+                        </Badge>
+                    )}
+                </div>
+                {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+            </button>
+
+            {isExpanded && (
+                <div className="ml-4 mt-1 space-y-1 border-l border-navy-medium pl-4">
+                    {item.children?.map((child, index) => (
+                        // Use CombinedNavLink for children, passing isOpen
+                        <CombinedNavLink key={child.to || `sub-${index}`} item={child} isOpen={isOpen} />
+                    ))}
+                </div>
+            )}
+        </div>
+    );
+};
+
+// Main Sidebar Component
 interface SidebarProps {
   isOpen: boolean;
 }
 
-const CategoryToggle = ({ label, pathPrefix, icon, number = null, children }) => {
-  const location = useLocation();
-  const isActive = location.pathname.startsWith(pathPrefix);
-  const [isExpanded, setIsExpanded] = useState(isActive);
-
-  useEffect(() => {
-    setIsExpanded(location.pathname.startsWith(pathPrefix));
-  }, [location.pathname, pathPrefix]);
-
-  return (
-    <div className="mb-1">
-      <button
-        onClick={() => setIsExpanded(!isExpanded)}
-        className={cn(
-          "flex items-center justify-between w-full gap-3 py-3 px-4 text-sm font-medium transition-colors", 
-          isActive ? "text-white" : "text-white/60 hover:text-white/80"
-        )}
-      >
-        <div className="flex items-center gap-3">
-          {icon}
-          <span>{label}</span>
-          {number !== null && (
-             <span className="flex items-center justify-center w-5 h-5 text-xs bg-navy-light rounded-full">
-               {number}
-             </span>
-          )}
-        </div>
-        {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-      </button>
-      
-      {isExpanded && (
-        <div className="ml-8 border-l border-white/20 pl-3 py-1">
-          {children}
-        </div>
-      )}
-    </div>
-  );
-}
-
 export default function Sidebar({ isOpen }: SidebarProps) {
-  const location = useLocation();
-  const sidebarRef = useRef<HTMLDivElement>(null);
-  
+  let currentSection = '';
+
   return (
-    <div 
-      ref={sidebarRef}
+    <div
       className={cn(
-        "w-64 h-screen bg-navy-light flex flex-col border-r border-white/10 fixed top-0 left-0 z-40 transition-transform duration-300 ease-in-out",
-        isOpen ? "translate-x-0" : "-translate-x-full"
+        "fixed top-0 left-0 z-40 h-screen", // Keep fixed positioning
+        "bg-navy-light flex flex-col border-r border-navy-medium",
+        "transition-all duration-300 ease-in-out", // Transition width
+        isOpen ? "w-64" : "w-20" // Control width based on state
       )}
     >
-      <div className="p-4 border-b border-white/10 flex justify-between items-center">
-        <h2 className="text-lg font-orbitron text-white uppercase">MAIN</h2>
+      {/* Header - Conditionally render text or just icon */}
+      <div className={cn(
+          "p-4 h-[70px] border-b border-navy-medium flex items-center shrink-0", 
+          isOpen ? "justify-start" : "justify-center"
+        )}>
+         {isOpen ? (
+             <h2 className="text-lg font-orbitron text-white uppercase tracking-wider">BUILD</h2>
+         ) : (
+             <span title="Build Menu" className="text-accent-blue">
+                {/* Simple placeholder icon when closed */} 
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 6l-6 6l6 6"/></svg>
+             </span>
+         )}
       </div>
-      
-      <div className="flex-grow overflow-y-auto">
-        <div className="py-2">
-          <NavLink 
-            icon={<Home size={18} />} 
-            label="Dashboard" 
-            to="/dashboard" 
-            active={location.pathname === '/dashboard'}
-          />
-        </div>
-        
-        <CategoryToggle 
-           label="Project Management"
-           pathPrefix="/project"
-           icon={null}
-        >
-            <NavLink 
-                icon={<div className="w-5 h-5 flex items-center justify-center"><span className="text-white/70">📄</span></div>} 
-                label="Overview" 
-                to="/project/overview" 
-                active={location.pathname === '/project/overview'}
-              />
-              <NavLink 
-                icon={<FileText size={16} className="text-white/70" />} 
-                label="Files" 
-                to="/project/files" 
-                active={location.pathname === '/project/files'}
-              />
-        </CategoryToggle>
-        
-        <div className="p-4 border-t border-white/10">
-          <h2 className="text-lg font-orbitron text-white uppercase mb-2">PHASES</h2>
+
+      {/* Navigation Area - adapts based on isOpen */}
+      <nav className={cn("flex-grow overflow-y-auto overflow-x-hidden py-2", isOpen ? "px-2" : "px-2 flex flex-col items-center gap-1")}> 
+        {sidebarNavItems.map((item, index) => {
+          // Exclude items meant specifically for the bottom section here
+          if (item.section === 'OTHER') return null; 
           
-          <CategoryToggle 
-             label="Ideation"
-             pathPrefix="/project/ideate"
-             icon={<Lightbulb size={18} />} 
-             number={1}
-          >
-              <NavLink 
-                  icon={<Search size={16} />} 
-                  label="Idea Discovery" 
-                  to="/project/ideate" 
-                  active={location.pathname === '/project/ideate'}
-                />
-                <NavLink 
-                  icon={<Sparkles size={16} />} 
-                  label="Counter-Intuition" 
-                  to="/project/ideate/counter-intuition" 
-                  active={location.pathname === '/project/ideate/counter-intuition'}
-                />
-          </CategoryToggle>
+          const isNewSection = item.section && item.section !== currentSection && isOpen;
+          if (item.section && item.section !== currentSection) {
+              currentSection = item.section;
+          }
 
-          <CategoryToggle 
-             label="Validation"
-             pathPrefix="/project/validate"
-             icon={<ShieldCheck size={18} />} 
-             number={2}
-          >
-               <NavLink label="Validation Setup" to="/project/validate" active={location.pathname === '/project/validate'} icon={<div className="w-4 h-4" />} />
-               <NavLink label="Score" to="/project/score" active={location.pathname === '/project/score'} icon={<div className="w-4 h-4" />}/>
-          </CategoryToggle>
+          return (
+            <React.Fragment key={item.to || item.label || `item-${index}`}>
+              {isNewSection && (
+                 <h2 className="text-xs font-semibold text-white/50 uppercase mt-4 mb-1 px-2">
+                   {item.section}
+                 </h2>
+              )}
+              {item.children ? (
+                 <CombinedCategoryToggle item={item} isOpen={isOpen}/>
+              ) : !item.section ? (
+                 <CombinedNavLink item={item} isOpen={isOpen} />
+              ) : null}
+            </React.Fragment>
+          );
+        })}
+      </nav>
 
-          <CategoryToggle 
-             label="MVP Spec"
-             pathPrefix="/project/mvp"
-             icon={<Package size={18} />} 
-             number={4}
-          >
-               <NavLink label="Core Features" to="/project/mvp" active={location.pathname === '/project/mvp'} icon={<div className="w-4 h-4" />} />
-          </CategoryToggle>
-
-          <CategoryToggle 
-             label="Prototyping"
-             pathPrefix="/project/prototype"
-             icon={<Target size={18} />} 
-             number={5}
-          >
-               <NavLink label="UX Prototype" to="/project/prototype" active={location.pathname === '/project/prototype'} icon={<div className="w-4 h-4" />} />
-          </CategoryToggle>
-
-          <CategoryToggle 
-             label="Marketing"
-             pathPrefix="/project/marketing"
-             icon={<Megaphone size={18} />} 
-             number={7}
-          >
-               <NavLink label="Timeline" to="/project/marketing" active={location.pathname === '/project/marketing'} icon={<div className="w-4 h-4" />} />
-          </CategoryToggle>
-
+       {/* Bottom section - Explicitly render bottom links */} 
+       <div className={cn("mt-auto border-t border-navy-medium p-2 shrink-0", isOpen ? "px-4 space-y-1" : "flex flex-col items-center gap-1")}>
+           {/* Explicitly find and render Community, Settings, Support */} 
+           {sidebarNavItems.find(item => item.label === 'Community') && 
+             <CombinedNavLink item={sidebarNavItems.find(item => item.label === 'Community')!} isOpen={isOpen} />}
+           {sidebarNavItems.find(item => item.label === 'Settings') && 
+             <CombinedNavLink item={sidebarNavItems.find(item => item.label === 'Settings')!} isOpen={isOpen} />}
+          {sidebarNavItems.find(item => item.label === 'Support') && 
+             <CombinedNavLink item={sidebarNavItems.find(item => item.label === 'Support')!} isOpen={isOpen} />}
+           
+           {/* Keep Theme Toggle */} 
+           <div className={cn("mt-1 w-full flex", isOpen ? "justify-start pt-1" : "justify-center")}>
+              {/* Existing ThemeToggle rendering */} 
+              {isOpen ? (
+                 <ThemeToggle />
+              ) : (
+                 <ThemeToggle /> 
+              )}
+           </div>
         </div>
-
-         <div className="p-4 border-t border-white/10 mt-auto">
-            <h2 className="text-lg font-orbitron text-white uppercase mb-2">OTHER</h2>
-             <NavLink 
-                icon={<MessageCircle size={18} />} 
-                label="Chat with Founder" 
-                to="/chat" 
-                active={location.pathname === '/chat'}
-            />
-             <NavLink 
-                icon={<HelpCircle size={18} />} 
-                label="Support Documentation" 
-                to="/support" 
-                active={location.pathname === '/support'}
-            />
-         </div>
-
-      </div>
     </div>
   );
 }

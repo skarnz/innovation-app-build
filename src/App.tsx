@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -48,6 +47,7 @@ import Interviews from "./pages/Interviews";
 import ScalingOperations from "./pages/ScalingOperations";
 import Partnerships from "./pages/Partnerships";
 import Support from "./pages/Support";
+import ComingSoon from "./pages/ComingSoon";
 
 const queryClient = new QueryClient();
 
@@ -63,7 +63,7 @@ const App = () => (
             <Route path="/pricing" element={<Pricing />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />
-            <Route path="/support" element={<Support />} />
+            <Route path="/support" element={<DashboardLayout><ComingSoon featureName="Support" /></DashboardLayout>} />
             
             {/* Dashboard Routes */}
             <Route path="/" element={<DashboardLayout />}>
@@ -124,6 +124,15 @@ const App = () => (
               <Route path="project/files" element={<FileManagement />} />
               <Route path="project/overview" element={<Dashboard />} />
               <Route path="chat" element={<Dashboard />} />
+
+              {/* Add routes for new sidebar items using ComingSoon */}
+              <Route path="deep-research" element={<ComingSoon featureName="Deep Research" />} />
+              <Route path="community" element={<ComingSoon featureName="Community" />} />
+              {/* Settings could also be ComingSoon or redirect to profile if exists */}
+              <Route path="settings" element={<ComingSoon featureName="Settings" />} /> 
+
+              {/* Catch-all for other /project paths */}
+              <Route path="project/*" element={<ComingSoon featureName="This Project Feature" />} />
             </Route>
             
             {/* 404 Route */}
