@@ -176,7 +176,7 @@ export default function ValidationPage() {
   };
 
   const renderDeepResearch = () => (
-    <Card className="glass-card p-6 space-y-4">
+    <Card className="bg-card text-card-foreground p-6 space-y-4">
        <CardHeader className="p-0 mb-2">
          <CardTitle className="flex items-center gap-2"><Search size={18}/> AI Deep Research</CardTitle>
          <CardDescription>Ask specific questions or request research on topics related to your idea.</CardDescription>
@@ -186,26 +186,26 @@ export default function ValidationPage() {
            placeholder="Enter your research query... e.g., 'Analyze competitor pricing strategies in the SaaS market for AI tools.'"
            value={researchQuery}
            onChange={(e) => setResearchQuery(e.target.value)}
-           className="bg-navy-light border-white/20 min-h-[100px]"
+           className="bg-input border-border min-h-[100px]"
            disabled={isResearching}
          />
-         <Button onClick={handleResearch} disabled={isResearching} className="w-full bg-electric-blue hover:bg-electric-blue/90">
+         <Button onClick={handleResearch} disabled={isResearching} variant="default" className="w-full">
            {isResearching ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Search className="mr-2 h-4 w-4" />}
            {isResearching ? 'Researching...' : 'Start Research (AI)'}
          </Button>
-         <div className="border-t border-white/10 pt-4 mt-4">
-           <h4 className="font-medium mb-2 text-white/90">Research Results:</h4>
-            <div className="text-white/80 p-4 bg-navy-light/30 rounded min-h-[150px]">
+         <div className="border-t border-border pt-4 mt-4">
+           <h4 className="font-medium mb-2 text-foreground">Research Results:</h4>
+            <div className="text-muted-foreground p-4 bg-muted/30 rounded min-h-[150px]">
               {isResearching && (
                 <div className="flex justify-center items-center h-full">
-                   <Loader2 className="h-6 w-6 animate-spin text-electric-blue" />
+                   <Loader2 className="h-6 w-6 animate-spin text-primary" />
                 </div>
               )}
               {!isResearching && researchResult && (
                 <p className="whitespace-pre-wrap">{researchResult}</p>
               )}
               {!isResearching && !researchResult && (
-                <p className="text-center italic text-white/60">AI research results will appear here.</p>
+                <p className="text-center italic text-muted-foreground/60">AI research results will appear here.</p>
               )}
             </div>
          </div>
@@ -225,34 +225,37 @@ export default function ValidationPage() {
       </p>
 
       <Tabs defaultValue="data-partners" className="w-full" onValueChange={setActiveTab}>
-        {/* Styled Tab Triggers */}
-        <TabsList className="grid w-full grid-cols-4 bg-navy-light p-1 rounded-lg mb-8">
-          <TabsTrigger value="data-partners" className="data-[state=active]:bg-electric-purple data-[state=active]:text-white text-white/60 hover:text-white rounded-md">
+        {/* Use theme variables for TabsList */}
+        <TabsList className="grid w-full grid-cols-4 bg-muted p-1 rounded-lg mb-8">
+           {/* Use theme variables for TabsTrigger */}
+          <TabsTrigger value="data-partners" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-muted-foreground hover:text-foreground rounded-md">
             <Search size={16} className="mr-2"/> Data Partners
           </TabsTrigger>
-          <TabsTrigger value="surveys" className="data-[state=active]:bg-electric-purple data-[state=active]:text-white text-white/60 hover:text-white rounded-md">
+          <TabsTrigger value="surveys" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-muted-foreground hover:text-foreground rounded-md">
              <MessageCircle size={16} className="mr-2"/> Surveys
           </TabsTrigger>
-          <TabsTrigger value="results" className="data-[state=active]:bg-electric-purple data-[state=active]:text-white text-white/60 hover:text-white rounded-md">
+          <TabsTrigger value="results" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-muted-foreground hover:text-foreground rounded-md">
              <BarChart2 size={16} className="mr-2"/> Results
           </TabsTrigger>
-          <TabsTrigger value="research" className="data-[state=active]:bg-electric-purple data-[state=active]:text-white text-white/60 hover:text-white rounded-md">
+          <TabsTrigger value="research" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-muted-foreground hover:text-foreground rounded-md">
              <Sparkles size={16} className="mr-2"/> Deep Research
           </TabsTrigger>
         </TabsList>
 
         {/* --- Data Partners Tab --- */}
         <TabsContent value="data-partners">
-          <div className="glass-card p-6 md:p-8">
-            <h2 className="text-2xl font-orbitron font-bold text-white mb-6">Available Data Partners</h2>
-            <p className="text-white/70 mb-6">Explore potential partners for surveys and market data access. (Integration not implemented)</p>
+          {/* Use bg-card and text-card-foreground, remove .glass-card */}
+          <div className="bg-card text-card-foreground p-6 md:p-8 rounded-xl"> 
+            <h2 className="text-2xl font-orbitron font-bold text-foreground mb-6">Available Data Partners</h2> {/* Use text-foreground */}
+            <p className="text-muted-foreground mb-6">Explore potential partners for surveys and market data access. (Integration not implemented)</p> {/* Use text-muted-foreground */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {dataPartnersList.map((partner) => (
-                <div key={partner.id} className="glass-card p-4 flex items-center gap-4 border border-white/10 hover:border-electric-blue/50 transition-colors">
-                  <div className="text-3xl flex-shrink-0">{partner.icon}</div>
+                 /* Apply card styles, border, hover effects using theme variables */
+                <div key={partner.id} className="bg-card/50 p-4 flex items-center gap-4 border border-border hover:border-primary/50 transition-colors rounded-lg">
+                  <div className="text-3xl flex-shrink-0">{partner.icon}</div> {/* Icon color might need adjustment */}
                   <div>
-                    <h3 className="text-lg font-semibold text-white/90">{partner.name}</h3>
-                    <p className="text-sm text-white/60">{partner.description}</p>
+                    <h3 className="text-lg font-semibold text-foreground">{partner.name}</h3> {/* Use text-foreground */}
+                    <p className="text-sm text-muted-foreground">{partner.description}</p> {/* Use text-muted-foreground */}
                   </div>
                 </div>
               ))}
@@ -262,11 +265,13 @@ export default function ValidationPage() {
 
         {/* --- Surveys Tab --- */}
         <TabsContent value="surveys">
-          <div className="glass-card p-6 md:p-8 space-y-6">
+           {/* Use bg-card and text-card-foreground, remove .glass-card */}
+          <div className="bg-card text-card-foreground p-6 md:p-8 space-y-6 rounded-xl"> 
             <div className="flex justify-between items-center">
-              <h2 className="text-2xl font-orbitron font-bold text-white">Survey Manager</h2>
+              <h2 className="text-2xl font-orbitron font-bold text-foreground">Survey Manager</h2> {/* Use text-foreground */}
               <Button
-                className="bg-electric-purple hover:bg-electric-purple/90 flex items-center gap-2"
+                variant="secondary" // Use secondary variant for purple
+                className="flex items-center gap-2"
                 onClick={() => setShowNewSurveyForm(!showNewSurveyForm)}
               >
                 {showNewSurveyForm ? 'Cancel' : 'Create New Survey'}
@@ -276,7 +281,8 @@ export default function ValidationPage() {
 
             {/* New Survey Form (Conditional) */}
             {showNewSurveyForm && (
-              <Card className="glass-card p-4">
+               /* Use card variables */
+              <Card className="bg-muted/50 p-4"> 
                 <CardHeader><CardTitle>New Survey Details</CardTitle></CardHeader>
                 <CardContent className="space-y-3">
                   <Label htmlFor="surveyName">Survey Name</Label>
@@ -285,29 +291,28 @@ export default function ValidationPage() {
                     value={newSurveyName}
                     onChange={(e) => setNewSurveyName(e.target.value)}
                     placeholder="e.g., Early Adopter Feedback"
-                    className="bg-navy-light border-white/20"
+                    className="bg-input border-border" // Use input/border variables
                     disabled={isCreatingSurvey || isGeneratingQuestions}
                   />
                   <Label htmlFor="surveyDesc">Description (Optional)</Label>
                   <Textarea
                       id="surveyDesc"
                       placeholder="Purpose of this survey?"
-                      className="bg-navy-light border-white/20"
+                      className="bg-input border-border" // Use input/border variables
                       value={newSurveyDesc}
                       onChange={(e) => setNewSurveyDesc(e.target.value)}
                       disabled={isCreatingSurvey || isGeneratingQuestions}
                   />
                   <div className="flex justify-between items-center pt-2">
                     <Button
-                      variant="outline"
+                      variant="outline" // Use outline variant
                       onClick={handleGenerateQuestions}
-                      className="border-white/20 text-white"
-                      disabled={isGeneratingQuestions || isCreatingSurvey} // Disable while generating or creating
+                      disabled={isGeneratingQuestions || isCreatingSurvey}
                     >
                       {isGeneratingQuestions ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4"/>}
                       {isGeneratingQuestions ? 'Generating...' : 'Generate Questions (AI)'}
                     </Button>
-                    <Button onClick={handleCreateSurvey} disabled={isCreatingSurvey || isGeneratingQuestions} className="bg-electric-purple hover:bg-electric-purple/90">
+                    <Button onClick={handleCreateSurvey} disabled={isCreatingSurvey || isGeneratingQuestions} variant="secondary"> {/* Use secondary variant */}
                       {isCreatingSurvey ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                       {isCreatingSurvey ? 'Creating...' : 'Create Draft'}
                     </Button>
@@ -318,34 +323,37 @@ export default function ValidationPage() {
 
             {/* Existing Surveys List */}
             <div>
-              <h3 className="text-xl font-medium text-white mb-4">Your Surveys</h3>
+              <h3 className="text-xl font-medium text-foreground mb-4">Your Surveys</h3> {/* Use text-foreground */}
               {surveys.length === 0 ? (
-                <p className="text-white/60 text-center py-6">No surveys created yet.</p>
+                <p className="text-muted-foreground text-center py-6">No surveys created yet.</p> // Use muted-foreground
               ) : (
                 <div className="space-y-4">
                   {surveys.map((survey) => (
                     <Collapsible
                       key={survey.id}
-                      open={activeTab === survey.id}
-                      onOpenChange={() => setActiveTab(survey.id)}
+                      // open={activeTab === survey.id} // Keep internal state for collapsibles?
+                      // onOpenChange={() => setActiveTab(survey.id)} // Might conflict with main Tabs state
                     >
-                      <div className={`glass-card p-4 border ${activeTab === survey.id ? 'border-electric-purple/50' : 'border-white/10'}`}>
+                       {/* Apply card styles, border, maybe hover/active states */}
+                      <div className={`bg-card/50 p-4 border rounded-lg ${activeTab === survey.id ? 'border-secondary/50' : 'border-border'}`}> 
                         <CollapsibleTrigger asChild>
                            <div className="flex items-center gap-4 cursor-pointer">
-                              {/* Status Indicator */}
+                              {/* Status Indicator - Keep colors for now */}
                               <div className={`w-3 h-3 rounded-full flex-shrink-0 ${survey.status === 'Draft' ? 'bg-yellow-400' : survey.status === 'Sent' ? 'bg-blue-400' : 'bg-green-400'}`}></div>
                               <div className="flex-grow">
-                                <h4 className="text-white font-medium">{survey.name}</h4>
-                                <p className="text-sm text-white/60 capitalize">
+                                <h4 className="text-foreground font-medium">{survey.name}</h4> {/* Use foreground */}
+                                <p className="text-sm text-muted-foreground capitalize">
                                   {survey.status}
                                 </p>
                               </div>
-                              {activeTab === survey.id ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+                              {/* Icon color should follow text */}
+                              <ChevronDown size={20} className="collapsible-chevron" /> 
                            </div>
                         </CollapsibleTrigger>
                         <CollapsibleContent>
-                          <div className="pt-4 mt-4 border-t border-white/10 space-y-3 text-sm">
-                             <p><strong className="text-white/80">Status:</strong> {survey.status}</p>
+                           {/* Use border variable */}
+                          <div className="pt-4 mt-4 border-t border-border space-y-3 text-sm">
+                             <p><strong className="text-muted-foreground">Status:</strong> {survey.status}</p>
                           </div>
                         </CollapsibleContent>
                       </div>
@@ -359,10 +367,10 @@ export default function ValidationPage() {
 
         {/* --- Results Tab --- */}
         <TabsContent value="results">
-          <div className="glass-card p-6 md:p-8">
-            <h2 className="text-2xl font-orbitron font-bold text-white mb-6">Survey Results</h2>
-            {/* Placeholder - TODO: Implement Select dropdown and mock results display */} 
-            <p className="text-white/70 text-center py-10">Survey results display will be implemented here.</p>
+           {/* Use card variables */}
+          <div className="bg-card text-card-foreground p-6 md:p-8 rounded-xl">
+            <h2 className="text-2xl font-orbitron font-bold text-foreground mb-6">Survey Results</h2>
+            <p className="text-muted-foreground text-center py-10">Survey results display will be implemented here.</p>
           </div>
         </TabsContent>
 

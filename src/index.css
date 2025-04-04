@@ -1,92 +1,116 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&family=Orbitron:wght@400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Orbitron:wght@400..900&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* =============================================== */
+/* THEME VARIABLES                                 */
+/* =============================================== */
 @layer base {
   :root {
-    /* Light Mode Theme Configuration */
-    --background: 0 0% 100%; /* White */
-    --foreground: 224 71% 4%; /* Navy text */
-    --card: 0 0% 100%; /* White */
-    --card-foreground: 224 71% 4%; /* Navy */
-    --popover: 0 0% 100%; /* White */
-    --popover-foreground: 224 71% 4%; /* Navy */
-    --primary: 213 90% 45%; /* Electric Blue */
-    --primary-foreground: 0 0% 100%; /* White */
-    --secondary: 271 67% 63%; /* Electric Purple */
-    --secondary-foreground: 0 0% 100%; /* White */
-    --muted: 220 13% 91%; /* Light Gray */
-    --muted-foreground: 220 9% 46%; /* Medium Gray */
-    --accent: 220 13% 91%; /* Light Gray */
-    --accent-foreground: 224 71% 4%; /* Navy */
-    --destructive: 0 84% 60%; /* Default Red */
-    --destructive-foreground: 0 0% 100%; /* White */
-    --border: 220 13% 91%; /* Light Gray */
-    --input: 220 13% 91%; /* Light Gray */
-    --ring: 213 90% 45%; /* Electric Blue */
+    /* Light Mode Theme - Soft Cream/Grey Inspired */
+    --background: 40 33% 97%; /* Very light cream/beige */
+    --foreground: 240 6% 10%; /* Near black for high contrast */
+    
+    --card: 40 33% 92%; /* Slightly darker cream/beige for cards */
+    --card-foreground: 240 6% 10%; /* Near black text on cards */
+    
+    --popover: 40 33% 90%; /* Similar to card, slightly darker for popovers */
+    --popover-foreground: 240 6% 10%;
+
+    --primary: 213 90% 45%; /* Electric Blue - Keep for primary actions */
+    --primary-foreground: 0 0% 100%; /* White text on primary */
+    
+    --secondary: 271 67% 63%; /* Electric Purple - Keep for secondary actions */
+    --secondary-foreground: 0 0% 100%; /* White text on secondary */
+
+    --muted: 220 10% 85%; /* Soft grey for muted elements */
+    --muted-foreground: 240 5% 35%; /* Darker grey for muted text */
+
+    --accent: 220 10% 90%; /* Very light grey for accents like hover */
+    --accent-foreground: 240 6% 10%; /* Near black text on accents */
+
+    --destructive: 0 72% 51%; /* Softer Red */
+    --destructive-foreground: 0 0% 100%;
+    
+    --border: 220 10% 80%; /* Soft grey border */
+    --input: 220 10% 88%; /* Light grey input background */
+    --ring: 213 90% 55%; /* Slightly lighter blue for focus rings */
+
+    /* General */
     --radius: 0.5rem;
-
-    /* Define hex colors (can stay in :root for global access) */
-    --electric-blue-hex: #2F80ED;
-    --electric-purple-hex: #BB6BD9;
-    --navy-hex: #0B0E1E;
-    --navy-light-hex: #1A1F36;
-
-    /* Sidebar variables might need light mode equivalents if sidebar is used in light mode */
-    /* Placeholder light mode sidebar vars: */
-    --sidebar-background: 220 13% 96%; /* Light gray */
-    --sidebar-foreground: 224 71% 4%; /* Navy */
-    --sidebar-primary: 213 90% 45%; /* Electric Blue */
-    --sidebar-primary-foreground: 0 0% 100%; /* White */
-    --sidebar-accent: 220 13% 91%; /* Lighter gray */
-    --sidebar-accent-foreground: 224 71% 4%; /* Navy */
-    --sidebar-border: 220 13% 88%; /* Slightly darker gray */
-    --sidebar-ring: 213 90% 45%; /* Electric Blue */
+    
+    /* Glass Effect */
+    --glass-background: 40 33% 92% / 0.6; /* Card color with alpha */
+    
+    /* Sidebar - Light */
+    --sidebar-background: 220 12% 95%; /* Slightly different light grey for sidebar */
+    --sidebar-foreground: 240 6% 10%;
+    --sidebar-border: 220 10% 85%; 
+    --sidebar-accent: 220 10% 90%; /* Hover/Active background */
+    --sidebar-accent-foreground: 240 6% 10%;
+    --sidebar-primary: var(--primary); /* Use main primary */
+    --sidebar-primary-foreground: var(--primary-foreground);
+    --sidebar-ring: var(--ring);
   }
 
-  .dark {
-    /* Dark Mode Theme (8uild) - Moved existing variables here */
+  html.dark {
+    /* Dark Mode Theme - Based on existing styles */
     --background: 224 71% 4%; /* Navy */
     --foreground: 213 31% 91%; /* Light Gray/White Text */
-    --card: 224 34% 16%; /* Navy Light (Subtle contrast for cards) */
-    --card-foreground: 213 31% 91%; /* Light Gray/White Text */
+    
+    --card: 224 34% 16%; /* Navy Light */
+    --card-foreground: 213 31% 91%;
+    
     --popover: 224 71% 4%; /* Navy */
-    --popover-foreground: 213 31% 91%; /* Light Gray/White Text */
+    --popover-foreground: 213 31% 91%;
+
     --primary: 213 90% 45%; /* Electric Blue */
-    --primary-foreground: 0 0% 100%; /* White Text on Blue */
+    --primary-foreground: 0 0% 100%; 
+    
     --secondary: 271 67% 63%; /* Electric Purple */
-    --secondary-foreground: 0 0% 100%; /* White Text on Purple */
+    --secondary-foreground: 0 0% 100%;
+
     --muted: 224 34% 16%; /* Navy Light */
     --muted-foreground: 215 16% 57%; /* Lighter Gray/White Text */
-    --accent: 271 67% 63%; /* Electric Purple */
-    --accent-foreground: 0 0% 100%; /* White */
-    --destructive: 0 84.2% 60.2%; /* Default Red */
-    --destructive-foreground: 0 0% 100%; /* White */
-    --border: 215 28% 17%; /* Slightly lighter navy for borders */
-    --input: 215 28% 17%; /* Slightly lighter navy for inputs */
-    --ring: 213 90% 45%; /* Electric Blue for focus rings */
 
-    /* Dark mode sidebar vars (original values) */
-    --sidebar-background: 0 0% 98%; /* Looks like these were light mode originally? Re-eval */
-    /* Let's assume sidebar should be dark in dark mode */
-    --sidebar-background: 224 34% 16%; /* Navy Light */
-    --sidebar-foreground: 213 31% 91%; /* Light Text */
-    --sidebar-primary: 213 90% 45%; /* Electric Blue */
-    --sidebar-primary-foreground: 0 0% 100%; /* White */
-    --sidebar-accent: 215 28% 17%; /* Darker Navy */
-    --sidebar-accent-foreground: 213 31% 91%; /* Light Text */
-    --sidebar-border: 215 28% 17%; /* Darker Navy */
-    --sidebar-ring: 213 90% 45%; /* Electric Blue */
+    --accent: 224 34% 20%; /* Slightly lighter navy for accents/hovers */
+    --accent-foreground: 213 31% 91%;
+
+    --destructive: 0 63% 51%; /* Slightly less intense red */
+    --destructive-foreground: 0 0% 100%;
+    
+    --border: 215 28% 17%; /* Slightly lighter navy border */
+    --input: 215 28% 17%; 
+    --ring: 213 90% 45%; /* Electric Blue */
+
+    /* Glass Effect */
+    --glass-background: 224 34% 16% / 0.6; /* Card color with alpha */
+    
+    /* Sidebar - Dark */
+    --sidebar-background: 224 71% 4%; /* Dark Navy for sidebar */
+    --sidebar-foreground: 213 31% 91%;
+    --sidebar-border: 215 28% 17%;
+    --sidebar-accent: 224 34% 16%; /* Hover/Active background (Navy Light) */
+    --sidebar-accent-foreground: 0 0% 100%; /* White text on hover/active */
+    --sidebar-primary: var(--primary);
+    --sidebar-primary-foreground: var(--primary-foreground);
+    --sidebar-ring: var(--ring);
   }
+}
 
+/* =============================================== */
+/* BASE STYLES                                     */
+/* =============================================== */
+@layer base {
   body {
     @apply bg-background text-foreground font-inter antialiased;
     overflow-x: hidden;
   }
 
   canvas {
+    /* Assuming this is for a background effect */
     position: fixed;
     top: 0;
     left: 0;
@@ -96,41 +120,56 @@
   }
 }
 
+/* =============================================== */
+/* COMPONENT STYLES (To be refactored/removed)    */
+/* =============================================== */
 @layer components {
+  /* REMOVE/REFACTOR THIS: Use Tailwind utility bg-gradient-to-r from-primary via-secondary to-primary */
   .text-gradient {
     @apply bg-text-gradient text-transparent bg-clip-text bg-[length:200%_auto] animate-text-shimmer;
   }
 
+  /* REMOVE/REFACTOR THIS: Apply bg-[hsl(var(--glass-background))] backdrop-blur-md border border-border rounded-xl directly */
   .glass-card {
-    @apply bg-white/10 backdrop-blur-md border border-white/20 rounded-xl;
+    /* Example old styles: @apply bg-white/10 backdrop-blur-md border border-white/20 rounded-xl; */
+    /* Will be replaced by utilities */
   }
 
+  /* Keep this utility if needed, or integrate into specific hover states */
   .hover-glow {
-    @apply transition-all duration-300 hover:shadow-[0_0_15px_rgba(47,128,237,0.5)];
+    @apply transition-all duration-300 hover:shadow-[0_0_15px_theme(colors.primary/50%)]; /* Use theme color */
   }
 
+  /* REMOVE/REFACTOR THIS: Use standard Button component variants */
   .btn-primary {
-    @apply px-8 py-3 bg-electric-blue text-white rounded-full font-medium hover:bg-electric-blue/90 hover-glow transition-all duration-300 flex items-center gap-2 justify-center;
+     /* Will be replaced by Button component with variants */
   }
 
+  /* Keep this utility for links */
   .underline-animation {
-    @apply relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 after:bg-electric-blue hover:after:w-full after:transition-all after:duration-300;
+    @apply relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 after:bg-primary hover:after:w-full after:transition-all after:duration-300; /* Use theme color */
   }
   
-  /* Dashboard specific components */
+  /* REMOVE/REFACTOR THESE: Style sidebar items directly using Tailwind classes */
   .sidebar-nav-item {
-    @apply flex items-center gap-3 py-2 px-4 rounded-md text-white/70 hover:text-white hover:bg-white/5 transition-colors;
+    /* @apply flex items-center gap-3 py-2 px-4 rounded-md text-white/70 hover:text-white hover:bg-white/5 transition-colors; */
+    /* Will be replaced by utilities */
   }
   
   .sidebar-nav-item.active {
-    @apply text-white bg-electric-blue/10;
+    /* @apply text-white bg-electric-blue/10; */
+    /* Will be replaced by utilities */
   }
   
   .phase-number {
-    @apply w-5 h-5 rounded-full bg-navy-light text-white/70 flex items-center justify-center text-xs;
-  }
+    /* @apply w-5 h-5 rounded-full bg-navy-light text-white/70 flex items-center justify-center text-xs; */
+     /* Will be replaced by utilities */
+ }
 }
 
+/* =============================================== */
+/* UTILITIES                                       */
+/* =============================================== */
 @layer utilities {
   .font-orbitron {
     font-family: 'Orbitron', sans-serif;

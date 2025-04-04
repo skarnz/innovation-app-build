@@ -1,8 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { cn } from '@/lib/utils';
 
 interface BuildLogoProps {
   small?: boolean;
+  className?: string;
 }
 
 interface LetterProps {
@@ -49,7 +51,7 @@ const Letter = ({ letter, word, index, mouseDistance, maxDistance }: LetterProps
   );
 };
 
-const BuildLogo: React.FC<BuildLogoProps> = ({ small = false }) => {
+const BuildLogo: React.FC<BuildLogoProps> = ({ small = false, className }) => {
   const isMobile = useIsMobile();
   const containerRef = useRef<HTMLDivElement>(null);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
@@ -124,7 +126,7 @@ const BuildLogo: React.FC<BuildLogoProps> = ({ small = false }) => {
   return (
     <div 
       ref={containerRef} 
-      className={`${textSizeClass} flex justify-center items-center select-none transition-all duration-300`}
+      className={cn(textSizeClass, "flex justify-center items-center select-none transition-all duration-300", className)}
     >
       {letters.map((item, index) => (
         <Letter
