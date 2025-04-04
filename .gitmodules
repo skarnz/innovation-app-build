@@ -1,0 +1,3 @@
+[submodule "external/8uild"]
+	path = external/8uild
+	url = https://github.com/skarnz/8uild.git
