@@ -10,7 +10,7 @@ import {
   SheetFooter,
   SheetClose
 } from "@/components/ui/sheet";
-import { Textarea } from '@/components/ui/textarea'; // Corrected path
+import { Textarea } from '@/components/ui/textarea';
 import { Loader2, SearchCode } from 'lucide-react';
 
 interface AgentScraperProps {
@@ -58,7 +58,6 @@ const AgentScraper: React.FC<AgentScraperProps> = ({ projectId, ideaContext, dis
     }
   };
 
-  // Reset state when sheet is closed
   const handleOpenChange = (open: boolean) => {
     setIsOpen(open);
     if (!open) {

@@ -127,13 +127,38 @@ router.post('/scrape-trends', async (req, res, next) => {
     }
 });
 
+// --- Zod Schema for Image Generation (Simple Prompt) ---
+const GenerateImageSchema = z.object({
+  prompt: z.string().min(10, "Prompt must be at least 10 characters"),
+  projectId: z.string().optional(), // Optional: associate with project
+});
 
 // POST /api/generate/image
-// (Keeping simple mock for MVP)
-router.post('/generate/image', (req, res) => {
-    console.log('Hit /api/generate/image stub', req.body);
-    // TODO: Add Zod validation
-    res.json({ success: true, message: '/api/generate/image stub hit', imageUrl: '/placeholders/concept-image.png' });
+router.post('/generate/image', async (req, res) => {
+  console.log("Received /api/generate/image request:", req.body);
+  try {
+    // 1. Validate Input (using Zod schema)
+    const validatedData = GenerateImageSchema.parse(req.body);
+    console.log("Validated image prompt:", validatedData.prompt);
+
+    // 2. Simulate Delay (optional)
+    await new Promise(resolve => setTimeout(resolve, 1500)); 
+
+    // 3. Return Hardcoded Placeholder Image URL (Mock Response)
+    // TODO: In a real implementation, call an image generation API (DALL-E, Stable Diffusion, etc.)
+    // and potentially upload the result to Supabase Storage.
+    const mockImageUrl = '/placeholders/concept-image.png'; // Ensure this image exists in your /public directory
+
+    console.log("Returning mock image URL:", mockImageUrl);
+    res.json({ success: true, imageUrl: mockImageUrl });
+
+  } catch (error: any) {
+    console.error("Error in /api/generate/image:", error);
+    if (error instanceof z.ZodError) {
+      return res.status(400).json({ success: false, message: "Invalid input data", errors: error.errors });
+    }
+    res.status(500).json({ success: false, message: error.message || "Failed to generate mock image" });
+  }
 });
 
 // POST /api/generate/video
@@ -170,36 +195,153 @@ router.post('/generate/video', async (req, res, next) => {
     }
 });
 
-// POST /api/mvp-chat
+// --- Zod Schema for MVP Chat ---
 const MvpChatSchema = z.object({
-    message: z.string().min(1),
-    history: z.array(z.object({ role: z.enum(['user', 'assistant']), content: z.string() })),
-    projectId: z.string().uuid().optional(),
-    ideaContext: z.string().optional(),
+  message: z.string().min(1, "Message cannot be empty"),
+  history: z.array(z.object({ // Expecting an array of message objects
+      role: z.enum(['user', 'assistant']),
+      content: z.string(),
+  })).optional(),
+  projectId: z.string().optional(),
+  ideaContext: z.string().optional(), // Pass validated idea summary
 });
-router.post('/mvp-chat', async (req, res, next) => {
-    // ... Add full implementation later using getInternalDoc and OpenAI ...
-    console.log('Hit /api/mvp-chat stub', req.body);
-    // TODO: Add Zod validation using MvpChatSchema
-    res.json({ success: true, message: '/api/mvp-chat stub hit', reply: 'Mock AI chat reply based on history...' });
+
+// POST /api/mvp-chat
+router.post('/mvp-chat', async (req, res) => {
+  console.log("Received /api/mvp-chat request:", req.body);
+  try {
+    // 1. Validate Input
+    const validatedData = MvpChatSchema.parse(req.body);
+    const userMessage = validatedData.message;
+    const history = validatedData.history || [];
+    const ideaContext = validatedData.ideaContext || "No idea context provided.";
+
+    // 2. Construct Messages for OpenAI
+    const systemPrompt = `You are an AI assistant helping a user draft an MVP (Minimum Viable Product) specification. 
+Your goal is to guide them through defining key aspects like core features, target users, and success metrics based on their idea.
+Be concise and ask clarifying questions. 
+The user's validated idea context is: ${ideaContext}
+Start by asking about the single most important core feature.`;
+
+    const messages: { role: 'system' | 'user' | 'assistant'; content: string }[] = [
+        { role: 'system', content: systemPrompt },
+        // Add existing history
+        ...history.map(h => ({ role: h.role, content: h.content })),
+        // Add the new user message
+        { role: 'user', content: userMessage },
+    ];
+
+    // 3. Call OpenAI API
+    console.log("Sending messages to OpenAI:", messages);
+    const completion = await openai.chat.completions.create({
+        model: "gpt-4o", // Or your preferred model
+        messages: messages as any, // Cast needed due to OpenAI library typing
+        max_tokens: 300, // Adjust as needed
+        temperature: 0.7,
+    });
+
+    const assistantReply = completion.choices[0]?.message?.content;
+    console.log("OpenAI Response:", assistantReply);
+
+    if (!assistantReply) {
+        throw new Error("Assistant did not provide a reply.");
+    }
+
+    // 4. Send Response
+    res.json({ success: true, reply: assistantReply });
+
+  } catch (error: any) {
+    console.error("Error in /api/mvp-chat:", error);
+    if (error instanceof z.ZodError) {
+      return res.status(400).json({ success: false, message: "Invalid input data", errors: error.errors });
+    }
+    res.status(500).json({ success: false, message: error.message || "Failed to process chat message" });
+  }
+});
+
+// --- Zod Schema for Pitch Deck Content ---
+const PitchDeckSchema = z.object({
+  section: z.enum(["Problem", "Solution", "Market", "Product", "Team", "Financials", "Ask"]), // Example sections
+  context: z.object({
+      problemStatement: z.string().optional(),
+      solutionIdea: z.string().optional(),
+      targetMarket: z.string().optional(), // Summary of demographics, needs
+      mvpSummary: z.string().optional(), // Key features from Step 5.2
+      // Add other relevant context fields as needed
+  }),
+  projectId: z.string().optional(),
 });
 
 // POST /api/pitch-deck
-const PitchDeckSchema = z.object({
-    section: z.string().min(1),
-    context: z.object({ // Define expected context fields
-        problemStatement: z.string().optional(),
-        solutionIdea: z.string().optional(),
-        mvpSpecSummary: z.string().optional(),
-        targetAudience: z.string().optional(),
-    }).optional(),
-    projectId: z.string().uuid().optional(),
-});
-router.post('/pitch-deck', async (req, res, next) => {
-    // ... Add full implementation later ...
-    console.log('Hit /api/pitch-deck stub', req.body);
-    // TODO: Add Zod validation using PitchDeckSchema
-    res.json({ success: true, message: '/api/pitch-deck stub hit', content: 'Mock pitch deck content for section...' });
+router.post('/pitch-deck', async (req, res) => {
+  console.log("Received /api/pitch-deck request:", req.body);
+  try {
+    // 1. Validate Input
+    const validatedData = PitchDeckSchema.parse(req.body);
+    const { section, context, projectId } = validatedData;
+
+    // 2. Construct Prompt for OpenAI based on section
+    // TODO: Refine prompts for better quality content
+    let systemPrompt = `You are an AI assistant helping generate content for a pitch deck.
+Generate concise and compelling text (2-4 sentences) for the specified section based on the provided context. Focus on clarity and impact.`;
+
+    let userPrompt = `Generate content for the '${section}' section of a pitch deck.
+Context:
+- Problem: ${context.problemStatement || 'Not provided'}
+- Solution: ${context.solutionIdea || 'Not provided'}
+- Target Market: ${context.targetMarket || 'Not provided'}
+- MVP Summary: ${context.mvpSummary || 'Not provided'}
+
+Section Content:`;
+
+    // Optional: Customize prompt based on section
+    if (section === "Problem") {
+        userPrompt = `Clearly articulate the core problem being solved, referencing the context provided.
+Context:
+- Problem: ${context.problemStatement || 'Not provided'}
+- Target Market Needs: ${context.targetMarket || 'Not specified'}
+
+Problem Section Content:`;
+    } else if (section === "Solution") {
+        userPrompt = `Describe the proposed solution and how it addresses the problem, referencing the context provided.
+Context:
+- Solution Idea: ${context.solutionIdea || 'Not provided'}
+- MVP Summary: ${context.mvpSummary || 'Not provided'}
+
+Solution Section Content:`;
+    }
+    // ... add more customizations for other sections ...
+
+    const messages = [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: userPrompt }
+    ];
+
+    // 3. Call OpenAI API
+    console.log(`Generating pitch deck content for section: ${section}`);
+    const completion = await openai.chat.completions.create({
+        model: "gpt-4o",
+        messages: messages as any,
+        max_tokens: 150, // Shorter response for deck content
+        temperature: 0.6,
+    });
+
+    const generatedContent = completion.choices[0]?.message?.content?.trim();
+
+    if (!generatedContent) {
+        throw new Error("Assistant did not provide content.");
+    }
+
+    // 4. Send Response
+    res.json({ success: true, content: generatedContent });
+
+  } catch (error: any) {
+    console.error("Error in /api/pitch-deck:", error);
+    if (error instanceof z.ZodError) {
+      return res.status(400).json({ success: false, message: "Invalid input data", errors: error.errors });
+    }
+    res.status(500).json({ success: false, message: error.message || "Failed to generate pitch deck content" });
+  }
 });
 
 // POST /api/generate/ad-copy

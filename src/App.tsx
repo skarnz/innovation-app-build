@@ -47,9 +47,13 @@ import Interviews from "./pages/Interviews";
 import ScalingOperations from "./pages/ScalingOperations";
 import Partnerships from "./pages/Partnerships";
 import Support from "./pages/Support";
-import ComingSoon from "./pages/ComingSoon";
-import ProjectSetup from "./pages/ProjectSetup";
-import IdeationPage from "./pages/IdeationPage";
+import ComingSoon from "@/pages/ComingSoon";
+import ProjectSetup from "@/pages/ProjectSetup";
+import Ideation from "@/pages/Ideation";
+import ValidationPage from "@/pages/Validation";
+import VisualizePage from "@/pages/Visualize";
+import PlanPage from "@/pages/Plan";
+import LaunchPrepPage from "@/pages/LaunchPrep";
 
 const queryClient = new QueryClient();
 
@@ -76,17 +80,20 @@ const App = () => (
               <Route path="dashboard" element={<Dashboard />} />
               
               {/* Main Phases in Order with Numbering */}
-              <Route path="project/:projectId/ideation" element={<IdeationPage />} />
+              <Route path="project/:projectId/ideation" element={<Ideation />} />
+              <Route path="project/:projectId/validation" element={<ValidationPage />} />
+              <Route path="project/:projectId/visualize" element={<VisualizePage />} />
+              <Route path="project/:projectId/plan" element={<PlanPage />} />
+              <Route path="project/:projectId/launch-prep" element={<LaunchPrepPage />} />
               <Route path="project/ideate/counter-intuition" element={<CounterIntuition />} />
               
-              <Route path="project/validate" element={<ProjectValidation />} /> {/* Phase 2 */}
               <Route path="project/score" element={<ProjectScore />} />
               <Route path="project/forecasting" element={<Forecasting />} />
               <Route path="project/target" element={<TargetMarket />} />
               <Route path="project/interview" element={<Interviews />} />
               
               {/* Business Model & Value Chain Hub - Now as section 3 */}
-              <Route path="project/business-canvas" element={<BusinessCanvas />} /> {/* Phase 3 */}
+              <Route path="project/business-canvas" element={<BusinessCanvas />} />
               <Route path="project/value-chain" element={<ValueChain />} />
               <Route path="project/competition" element={<CompetitionAnalysis />} />
               <Route path="project/market" element={<MarketAnalysis />} />

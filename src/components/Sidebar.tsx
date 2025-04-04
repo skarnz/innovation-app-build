@@ -41,7 +41,8 @@ import {
   Lock,
   Unlock,
   Settings,
-  LifeBuoy
+  LifeBuoy,
+  Palette
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -51,18 +52,27 @@ import React from 'react';
 import { Badge } from "@/components/ui/badge";
 
 // Combined NavLink / IconLink logic
-const CombinedNavLink = ({ item, isOpen }: { item: NavItem, isOpen: boolean }) => {
+const CombinedNavLink = ({ item, isOpen, projectId }: { item: NavItem, isOpen: boolean, projectId?: string }) => {
   const location = useLocation();
+  
+  // Construct the dynamic path using :projectId placeholder
+  const path = projectId && item.to.includes(':projectId') 
+                ? item.to.replace(':projectId', projectId) 
+                : item.to; 
+  const prefix = projectId && item.pathPrefix?.includes(':projectId')
+                ? item.pathPrefix.replace(':projectId', projectId)
+                : item.pathPrefix; // Prefix might not need ID replacement if it's just /project/
+
   // Check activity based on direct path or prefix
-  const isActive = location.pathname === item.to || 
-                   (item.pathPrefix && location.pathname.startsWith(item.pathPrefix));
+  const isActive = (location.pathname === path || 
+                   (prefix && location.pathname.startsWith(prefix)));
   const IconComponent = item.icon;
 
   // Render link with full content if open
   if (isOpen) {
     return (
       <Link
-        to={item.to}
+        to={path}
         className={cn(
           "flex items-center gap-3 py-2 px-4 w-full text-sm font-medium transition-colors rounded-md",
           isActive ? "text-white bg-navy-dark" : "text-white/60 hover:text-white/80"
@@ -92,12 +102,10 @@ const CombinedNavLink = ({ item, isOpen }: { item: NavItem, isOpen: boolean }) =
       <Tooltip>
         <TooltipTrigger asChild>
           <Link
-            to={item.to}
+            to={path}
             className={cn(
               "flex items-center justify-center h-10 w-10 rounded-md transition-colors", // Centered icon
-              isActive
-                ? "bg-navy-dark text-electric-blue" 
-                : "text-white/60 hover:text-white hover:bg-navy-dark"
+              isActive ? "bg-navy-dark text-electric-blue" : "text-white/60 hover:text-white hover:bg-navy-dark"
             )}
           >
             <IconComponent size={20} />
@@ -113,22 +121,31 @@ const CombinedNavLink = ({ item, isOpen }: { item: NavItem, isOpen: boolean }) =
 };
 
 // Combined Category Toggle logic
-const CombinedCategoryToggle = ({ item, isOpen }: { item: NavItem, isOpen: boolean }) => {
+const CombinedCategoryToggle = ({ item, isOpen, projectId }: { item: NavItem, isOpen: boolean, projectId?: string }) => {
     const location = useLocation();
-    const isActive = location.pathname.startsWith(item.pathPrefix || item.to);
+
+    // Construct dynamic paths/prefixes using :projectId placeholder
+    const path = projectId && item.to.includes(':projectId') 
+                 ? item.to.replace(':projectId', projectId) 
+                 : item.to;
+    const prefix = projectId && item.pathPrefix?.includes(':projectId')
+                 ? item.pathPrefix.replace(':projectId', projectId)
+                 : item.pathPrefix;
+
+    const isActive = location.pathname.startsWith(prefix || path);
     // Keep expanded state based on activity, manage based on isOpen changes
     const [isExpanded, setIsExpanded] = useState(isActive);
     const IconComponent = item.icon;
 
     useEffect(() => {
         // Ensure it reflects current path on navigation
-        const currentlyActive = location.pathname.startsWith(item.pathPrefix || item.to);
+        const currentlyActive = location.pathname.startsWith(prefix || path);
         if (currentlyActive) {
             setIsExpanded(true);
         }
         // Optionally collapse inactive categories when sidebar closes?
         // else if (!isOpen) { setIsExpanded(false); }
-    }, [location.pathname, item.pathPrefix, item.to, isOpen]);
+    }, [location.pathname, prefix, path, isOpen]);
 
     // Render icon-only if closed
     if (!isOpen) {
@@ -136,14 +153,11 @@ const CombinedCategoryToggle = ({ item, isOpen }: { item: NavItem, isOpen: boole
             <TooltipProvider delayDuration={100}>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  {/* Use a div or Link depending on whether the category itself is a link */}
                   <Link 
-                     to={item.to} // Link to the category's main page
+                     to={path}
                      className={cn(
                         "flex items-center justify-center h-10 w-10 rounded-md transition-colors",
-                        isActive
-                          ? "bg-navy-dark text-electric-blue" 
-                          : "text-white/60 hover:text-white hover:bg-navy-dark"
+                        isActive ? "bg-navy-dark text-electric-blue" : "text-white/60 hover:text-white hover:bg-navy-dark"
                       )}>
                      <IconComponent size={20} />
                      <span className="sr-only">{item.label}</span>
@@ -188,7 +202,7 @@ const CombinedCategoryToggle = ({ item, isOpen }: { item: NavItem, isOpen: boole
                 <div className="ml-4 mt-1 space-y-1 border-l border-navy-medium pl-4">
                     {item.children?.map((child, index) => (
                         // Use CombinedNavLink for children, passing isOpen
-                        <CombinedNavLink key={child.to || `sub-${index}`} item={child} isOpen={isOpen} />
+                        <CombinedNavLink key={child.to || `sub-${index}`} item={child} isOpen={isOpen} projectId={projectId} />
                     ))}
                 </div>
             )}
@@ -196,13 +210,49 @@ const CombinedCategoryToggle = ({ item, isOpen }: { item: NavItem, isOpen: boole
     );
 };
 
+// --- Helper for Appearance/Theme Toggle Item ---
+const AppearanceToggleItem = ({ isOpen }: { isOpen: boolean }) => {
+    if (isOpen) {
+        return (
+            <div className={cn(
+                "flex items-center justify-between gap-3 py-2 px-4 w-full text-sm font-medium text-white/60", // Mimic NavLink style, adjust as needed
+            )}>
+                <div className="flex items-center gap-3">
+                    <Palette size={18} className="flex-shrink-0" />
+                    <span className="flex-grow truncate">Appearance</span>
+                </div>
+                <ThemeToggle /> {/* Place the toggle itself at the end */} 
+            </div>
+        );
+    }
+
+    // Render icon-only with tooltip if closed
+    return (
+        <TooltipProvider delayDuration={100}>
+            <Tooltip>
+                <TooltipTrigger asChild>
+                    {/* ThemeToggle likely renders a button, use it directly */}
+                     <div className="flex items-center justify-center h-10 w-10">
+                        <ThemeToggle />
+                     </div>
+                </TooltipTrigger>
+                <TooltipContent side="right" className="bg-navy-darkest text-white border-navy-medium">
+                    Toggle Theme
+                </TooltipContent>
+            </Tooltip>
+        </TooltipProvider>
+    );
+}
+// --- End Helper ---
+
 // Main Sidebar Component
 interface SidebarProps {
   isOpen: boolean;
+  projectId?: string;
 }
 
-export default function Sidebar({ isOpen }: SidebarProps) {
-  let currentSection = '';
+export default function Sidebar({ isOpen, projectId }: SidebarProps) {
+  let currentSection: string | null = null;
 
   return (
     <div
@@ -231,9 +281,8 @@ export default function Sidebar({ isOpen }: SidebarProps) {
       {/* Navigation Area - adapts based on isOpen */}
       <nav className={cn("flex-grow overflow-y-auto overflow-x-hidden py-2", isOpen ? "px-2" : "px-2 flex flex-col items-center gap-1")}> 
         {sidebarNavItems.map((item, index) => {
-          // Exclude items meant specifically for the bottom section here
-          if (item.section === 'OTHER') return null; 
-          
+          if (item.section === 'OTHER') return null;
+
           const isNewSection = item.section && item.section !== currentSection && isOpen;
           if (item.section && item.section !== currentSection) {
               currentSection = item.section;
@@ -247,9 +296,9 @@ export default function Sidebar({ isOpen }: SidebarProps) {
                  </h2>
               )}
               {item.children ? (
-                 <CombinedCategoryToggle item={item} isOpen={isOpen}/>
+                 <CombinedCategoryToggle item={item} isOpen={isOpen} projectId={projectId} />
               ) : !item.section ? (
-                 <CombinedNavLink item={item} isOpen={isOpen} />
+                 <CombinedNavLink item={item} isOpen={isOpen} projectId={projectId} />
               ) : null}
             </React.Fragment>
           );
@@ -257,24 +306,17 @@ export default function Sidebar({ isOpen }: SidebarProps) {
       </nav>
 
        {/* Bottom section - Explicitly render bottom links */} 
-       <div className={cn("mt-auto border-t border-navy-medium p-2 shrink-0", isOpen ? "px-4 space-y-1" : "flex flex-col items-center gap-1")}>
+       <div className={cn("mt-auto border-t border-navy-medium p-2 shrink-0", isOpen ? "px-2 space-y-1" : "flex flex-col items-center gap-1")}> {/* Adjusted padding for open state */} 
+           {/* Appearance/Theme Toggle FIRST */} 
+           <AppearanceToggleItem isOpen={isOpen} />
+
            {/* Explicitly find and render Community, Settings, Support */} 
            {sidebarNavItems.find(item => item.label === 'Community') && 
-             <CombinedNavLink item={sidebarNavItems.find(item => item.label === 'Community')!} isOpen={isOpen} />}
+             <CombinedNavLink item={sidebarNavItems.find(item => item.label === 'Community')!} isOpen={isOpen} projectId={projectId} />}
            {sidebarNavItems.find(item => item.label === 'Settings') && 
-             <CombinedNavLink item={sidebarNavItems.find(item => item.label === 'Settings')!} isOpen={isOpen} />}
+             <CombinedNavLink item={sidebarNavItems.find(item => item.label === 'Settings')!} isOpen={isOpen} projectId={projectId} />}
           {sidebarNavItems.find(item => item.label === 'Support') && 
-             <CombinedNavLink item={sidebarNavItems.find(item => item.label === 'Support')!} isOpen={isOpen} />}
-           
-           {/* Keep Theme Toggle */} 
-           <div className={cn("mt-1 w-full flex", isOpen ? "justify-start pt-1" : "justify-center")}>
-              {/* Existing ThemeToggle rendering */} 
-              {isOpen ? (
-                 <ThemeToggle />
-              ) : (
-                 <ThemeToggle /> 
-              )}
-           </div>
+             <CombinedNavLink item={sidebarNavItems.find(item => item.label === 'Support')!} isOpen={isOpen} projectId={projectId} />}
         </div>
     </div>
   );

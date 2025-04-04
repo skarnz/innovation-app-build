@@ -14,7 +14,7 @@ interface BreadcrumbItemData {
   path: string;
 }
 
-intexport interface PageHeaderProps {
+export interface PageHeaderProps {
   title: string;
   breadcrumbs?: BreadcrumbItemData[];
   actions?: React.ReactNode;

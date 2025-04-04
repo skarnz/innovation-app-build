@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils';
 import { getAuthStatus } from '@/lib/api';
 import AiAgent from '@/components/AiAgent';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { useParams } from 'react-router-dom';
 
 // Define a type for the user object if available, otherwise use any/unknown
 interface User {
@@ -22,6 +23,7 @@ const DashboardLayout = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [user, setUser] = useState<User | null>(null);
   const [isLoadingAuth, setIsLoadingAuth] = useState<boolean>(true);
+  const { projectId } = useParams(); // Get projectId from the route
 
   // Fetch auth status on component mount
   useEffect(() => {
@@ -56,7 +58,7 @@ const DashboardLayout = () => {
   return (
     <div className="flex min-h-screen bg-navy-darkest"> {/* Ensure main background */} 
       {/* Render the single Sidebar */}
-      <Sidebar isOpen={isSidebarOpen} />
+      <Sidebar isOpen={isSidebarOpen} projectId={projectId} />
       
       {/* Apply dynamic margin based on isOpen state */}
       <div className={cn(

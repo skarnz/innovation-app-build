@@ -44,53 +44,53 @@ import {
     {
       label: 'Ideation',
       icon: Lightbulb,
-      to: '/project/ideate',
-      pathPrefix: '/project/ideate',
+      to: '/project/:projectId/ideation',
+      pathPrefix: '/project/:projectId/ideation',
       number: 1,
       children: [
-        { label: 'Idea Discovery', icon: Search, to: '/project/ideate' },
+        { label: 'Idea Discovery', icon: Search, to: '/project/:projectId/ideation' },
         { label: 'Counter-Intuition', icon: Sparkles, to: '/project/ideate/counter-intuition' },
       ]
     },
     {
         label: 'Validation',
         icon: ShieldCheck,
-        to: '/project/validate',
-        pathPrefix: '/project/validate',
+        to: '/project/:projectId/validation',
+        pathPrefix: '/project/:projectId/validation',
         number: 2,
         children: [
-             { label: 'Validation Setup', icon: Activity, to: '/project/validate'}, // Assign real icons
+             { label: 'Validation Setup', icon: Activity, to: '/project/:projectId/validation'},
              { label: 'Score', icon: TrendingUp, to: '/project/score' },
         ]
       },
       {
         label: 'MVP Spec',
         icon: Package,
-        to: '/project/mvp',
-        pathPrefix: '/project/mvp',
+        to: '/project/:projectId/plan',
+        pathPrefix: '/project/:projectId/plan',
         number: 4,
         children: [
-             { label: 'Core Features', icon: PenTool, to: '/project/mvp' },
+             { label: 'Core Features', icon: PenTool, to: '/project/:projectId/plan' },
         ]
       },
       {
         label: 'Prototyping',
         icon: Target,
-        to: '/project/prototype',
-        pathPrefix: '/project/prototype',
+        to: '/project/:projectId/visualize',
+        pathPrefix: '/project/:projectId/visualize',
         number: 5,
         children: [
-             { label: 'UX Prototype', icon: Box, to: '/project/prototype' },
+             { label: 'UX Prototype', icon: Box, to: '/project/:projectId/visualize' },
         ]
       },
       {
         label: 'Marketing',
         icon: Megaphone,
-        to: '/project/marketing',
-        pathPrefix: '/project/marketing',
+        to: '/project/:projectId/launch-prep',
+        pathPrefix: '/project/:projectId/launch-prep',
         number: 7,
         children: [
-             { label: 'Timeline', icon: Clock, to: '/project/marketing' },
+             { label: 'Timeline', icon: Clock, to: '/project/:projectId/launch-prep' },
         ]
       },
   

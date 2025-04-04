@@ -294,6 +294,7 @@
 ### Step 3.3: Simulated AI Agent Scraper
 
 *   **Status:** Done
+*   **Details:** Created `AgentScraper.tsx` component and integrated into `Ideation.tsx`.
 *   **Action:** Create a UI component (`src/components/ideation/AgentScraper.tsx`) for triggering simulated web trend analysis.
 *   **Detailed Steps:**
     1.  **UI Component:**
@@ -312,8 +313,8 @@
 
 ### Step 3.4: Counter-Intuition Prompts
 
-*   **Status:** Incomplete
-*   **Rationale for Incomplete:** Persistent failures in creating the `src/components/ideation/CounterIntuitionCard.tsx` file via automated edits. A placeholder component has been integrated into `src/pages/Ideation.tsx` instead.
+*   **Status:** Done
+*   **Details:** Created `CounterIntuitionCard.tsx` component and integrated into `Ideation.tsx`.
 *   **Action:** Display provocative prompts to encourage non-traditional thinking after initial ideation.
 *   **Detailed Steps:**
     1.  **Define Prompts:** Static list (e.g., "Reverse assumptions?", "Opposite audience?", "Zero budget?").
@@ -340,7 +341,8 @@
 
 ### Step 4.1: Target Market Definition
 
-*   **Status:** Not Started
+*   **Status:** Done
+*   **Details:** Created `TargetMarketForm.tsx` component and integrated into `ValidationPage.tsx`.
 *   **Action:** Create a UI form for users to define their target market segments for the current project.
 *   **Detailed Steps:**
     1.  **UI Component (`src/components/validation/TargetMarketForm.tsx`):**
@@ -359,7 +361,8 @@
 
 ### Step 4.2: Simulated Survey Setup & Results
 
-*   **Status:** Not Started
+*   **Status:** Done
+*   **Details:** Created `SurveyWizard.tsx` and `SurveyResultsDisplay.tsx` components and integrated them into `ValidationPage.tsx`. Uses frontend mock data simulation.
 *   **Action:** Implement a wizard-like UI for setting up a survey and displaying **simulated** results.
 *   **Detailed Steps:**
     1.  **Survey Setup UI (`src/components/validation/SurveyWizard.tsx`):**
@@ -389,7 +392,8 @@
 
 ### Step 4.3: Simulated Qualitative Feedback Placeholder
 
-*   **Status:** Not Started
+*   **Status:** Done
+*   **Details:** Implemented as a static text placeholder card within `ValidationPage.tsx`.
 *   **Action:** Provide a placeholder area representing synthesized qualitative feedback.
 *   **Detailed Steps:**
     1.  **UI Component (`src/components/validation/QualitativeSummary.tsx`):**
@@ -403,7 +407,8 @@
 
 ### Step 4.4: Aggregated Score (Simulated)
 
-*   **Status:** Not Started
+*   **Status:** Done
+*   **Details:** Implemented as a placeholder card within `ValidationPage.tsx` displaying a mock score.
 *   **Action:** Display a simulated "Product-Market Fit Score" based on the mock validation data.
 *   **Detailed Steps:**
     1.  **UI Component (`src/components/validation/ValidationScore.tsx`):**
@@ -419,7 +424,8 @@
 
 ### Step 4.5: Simulated Market Forecasting ("Future Triplet")
 
-*   **Status:** Not Started
+*   **Status:** Done
+*   **Details:** Implemented as a placeholder card within `ValidationPage.tsx` with input for signals and a button to generate mock forecast text.
 *   **Action:** Implement UI for inputting market signals and displaying **simulated** forecasts.
 *   **Detailed Steps:**
     1.  **Backend Endpoint (`POST /api/validation/forecast` - Mock):**
@@ -453,7 +459,8 @@
 
 ### Step 5.1: AI Concept Imagery (Mock) (Old Step 4.1)
 
-*   **Status:** Not Started
+*   **Status:** Done
+*   **Details:** Implemented mock backend endpoint `/api/generate/image` and frontend page `Visualize.tsx` to display a placeholder image based on a prompt.
 *   **Action:** Implement UI/backend for generating **mock** concept images based on the validated idea.
 *   **Detailed Steps:**
     1.  **Backend Endpoint (`POST /api/generate/image` - Mock Impl):** Auth, Validate (prompt, `projectId`). **Return hardcoded placeholder URL:** `{ success: true, imageUrl: '/placeholders/concept-image.png' }`. (No real API call or storage needed for mock).
@@ -467,7 +474,8 @@
 
 ### Step 5.2: Simplified MVP Specification (AI Chat) (Old Step 4.2)
 
-*   **Status:** Not Started
+*   **Status:** Done
+*   **Details:** Created `MvpChatInterface.tsx` component and integrated into `PlanPage.tsx`. Backend uses basic system prompt (no doc fetching for MVP).
 *   **Action:** Implement AI chat interface for collaboratively drafting an MVP specification, guided by internal documents. (Content mostly unchanged)
 *   **Detailed Steps:**
     1.  **Backend Endpoint (`POST /api/mvp-chat`):** Auth, Validate (Zod: `message`, `history`, `projectId`, `ideaContext`), Get Key, Init OpenAI Client, **Fetch Guiding Docs (`getInternalDoc`)**, Construct Prompt (System: Assistant using template/guide, User: History + Message), API Call (`gpt-4o`), Send Response (`{ success: true, reply: ... }`).
@@ -492,10 +500,19 @@
 
 ### Step 6.1: AI Pitch Deck Content
 
-*   **Status:** Not Started
+*   **Status:** Done
+*   **Details:** Implemented backend endpoint `/api/pitch-deck` and frontend page `LaunchPrep.tsx` using an accordion to generate content for different deck sections.
 *   **Action:** Implement UI/backend to generate AI content for pitch deck sections based on project context. (Content mostly unchanged)
 *   **Detailed Steps:**
     1.  **Backend Endpoint (`POST /api/pitch-deck`):** Auth, Validate (Zod: `section`, `context` [problem, solution, mvpSummary...], `projectId`), Get Key, Init OpenAI, Construct Prompt, API Call (`gpt-4o`), Send Response (`{ success: true, content: ... }`).
     2.  **Frontend UI (`src/pages/LaunchPrep.tsx`?):** `Accordion`/Tabs for sections. Title, "Generate" button, `Textarea`.
     3.  **Frontend Logic:** State per section. Button click -> Loading -> Gather context (from project state/props) -> Call `/api/pitch-deck` (with context, `projectId`) -> Update state/textarea -> Hide loading -> Handle errors.
     4.  **Context Management:** Ensure context (problem, solution, MVP summary from Phase 5) is available, linked to `
+
+### Step 6.2: Launch Checklist
+
+*   **Status:** Done
+*   **Details:** Added a static checklist with interactive checkboxes to `LaunchPrep.tsx`.
+*   **Action:** Display a static, standard launch checklist.
+*   **Detailed Steps:**
+    1.  **Define Items:** Standard checklist (Legal, Pricing, Hosting, Domain, Analytics, Monitoring, Support, Marketing, Testing, Backup).

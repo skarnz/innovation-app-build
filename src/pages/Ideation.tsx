@@ -1,23 +1,19 @@
 import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { PageHeader } from '@/components/layout/PageHeader';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Loader2 } from 'lucide-react';
+import { Loader2, RefreshCw } from 'lucide-react';
 import AgentScraper from '@/components/ideation/AgentScraper';
-import { RefreshCw } from 'lucide-react';
+import CounterIntuitionCard from '@/components/ideation/CounterIntuitionCard';
 
 // Placeholder components (to be created)
 // const IdeationResults = ({ ideas }) => <div>Ideation Results Placeholder</div>;
 // const AgentScraper = ({ projectId, ideaContext }) => <Button>Analyze Trends Placeholder</Button>;
 // const CounterIntuitionCard = () => <div>Counter Intuition Placeholder</div>;
 
-// Placeholder for CounterIntuitionCard
-const CounterIntuitionCard = () => (
-    <Card className="glass-card">
-      <CardHeader className="flex flex-row items-center justify-between pb-2">
 const IdeationPage = () => {
   // TODO: Get projectId from URL params or context
   const { projectId } = useParams(); // Example: if route is /project/:projectId/ideation
@@ -127,14 +123,8 @@ const IdeationPage = () => {
                  </CardContent>
             </Card>
 
-             {/* Placeholder for Counter Intuition (Step 3.4) */}
-             {/* <CounterIntuitionCard /> */}
-             <Card className="glass-card bg-gradient-to-br from-purple-500/10 via-transparent to-blue-500/10">
-                 <CardHeader><CardTitle>Challenge Assumptions</CardTitle></CardHeader>
-                 <CardContent className="text-center text-muted-foreground italic">
-                     Counter Intuition Placeholder
-                 </CardContent>
-            </Card>
+             {/* Use the actual CounterIntuitionCard component */}
+             <CounterIntuitionCard />
         </div>
 
         {/* Right Column: Results */}
