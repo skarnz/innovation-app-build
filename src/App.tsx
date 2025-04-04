@@ -49,6 +49,7 @@ import Partnerships from "./pages/Partnerships";
 import Support from "./pages/Support";
 import ComingSoon from "./pages/ComingSoon";
 import ProjectSetup from "./pages/ProjectSetup";
+import IdeationPage from "./pages/IdeationPage";
 
 const queryClient = new QueryClient();
 
@@ -75,7 +76,7 @@ const App = () => (
               <Route path="dashboard" element={<Dashboard />} />
               
               {/* Main Phases in Order with Numbering */}
-              <Route path="project/ideate" element={<ProjectIdeation />} /> {/* Phase 1 */}
+              <Route path="project/:projectId/ideation" element={<IdeationPage />} />
               <Route path="project/ideate/counter-intuition" element={<CounterIntuition />} />
               
               <Route path="project/validate" element={<ProjectValidation />} /> {/* Phase 2 */}
@@ -136,8 +137,9 @@ const App = () => (
               {/* Settings could also be ComingSoon or redirect to profile if exists */}
               <Route path="settings" element={<ComingSoon featureName="Settings" />} /> 
 
-              {/* Catch-all for other /project paths */}
-              <Route path="project/*" element={<ComingSoon featureName="This Project Feature" />} />
+              {/* Catch-all for other /project paths - Needs adjustment potentially */}
+              {/* Might need specific project routes like /project/:projectId/ideation */}
+              {/* <Route path="project/*" element={<ComingSoon featureName="This Project Feature" />} /> */}
             </Route>
             
             {/* 404 Route */}

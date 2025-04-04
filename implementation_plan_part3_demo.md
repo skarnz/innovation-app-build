@@ -263,7 +263,7 @@
 
 ### Step 3.1: Structured Initial Input
 
-*   **Status:** Not Started
+*   **Status:** Done
 *   **Action:** Create UI for users to input problem statement and initial solution idea. (Entry point to Ideation phase for a *specific project*).
 *   **Detailed Steps:**
     1.  **Create Page/Component (`src/pages/Ideation.tsx` or `src/components/ideation/InitialInputForm.tsx`):** **Note:** This might be integrated directly into the Ideation page for the current project, potentially pre-filling from Phase 2. Fields: Problem Statement, Initial Solution Idea.
@@ -278,7 +278,7 @@
 
 ### Step 3.2: AI-Powered Ideation (GPT-4o)
 
-*   **Status:** Not Started
+*   **Status:** Done
 *   **Action:** Implement backend/frontend to call OpenAI for generating alternative ideas. (Content mostly unchanged)
 *   **Detailed Steps:**
     1.  **Backend Endpoint (`POST /api/ai/ideate`):** Auth, Validate Input (Zod), Get Key, Init OpenAI Client, Construct Prompt (System: Expert assistant, User: Problem/Idea -> 5 alternatives), API Call (`gpt-4o`), Parse Response (optional), Send Response (`{ success: true, ideas: resultText_or_parsedArray }`). Needs `projectId` for context/saving later.
@@ -291,34 +291,29 @@
 
 ---
 
-### Step 3.3: Simulated AI Agent Scraper (New)
+### Step 3.3: Simulated AI Agent Scraper
 
-*   **Status:** Not Started
-*   **Action:** Create a UI element (e.g., chat pop-up) to trigger simulated web trend analysis based on the user's idea.
+*   **Status:** Done
+*   **Action:** Create a UI component (`src/components/ideation/AgentScraper.tsx`) for triggering simulated web trend analysis.
 *   **Detailed Steps:**
-    1.  **Backend Endpoint (`POST /api/ai/scrape-trends` - Mock):**
-        *   Apply auth. Validate input (Zod, expecting `ideaContext: string`, `projectId`).
-        *   **Simulation Logic:** Return hardcoded mock data or use GPT-4o for mock generation.
-            *   *(Option A - GPT-4o Mock):* Call OpenAI: "Simulate insights from Reddit, Quora, Google Trends for product idea: {ideaContext}. Provide 3-5 bullet points on interest, questions, trends. Preface with 'Simulated Trend Analysis:'."
-            *   *(Option B - Hardcoded Mock):* Return plausible JSON: `{ success: true, analysis: "Simulated Trend Analysis:\n- High interest...\n- Reddit communities discuss...\n- Quora questions indicate..." }`.
-        *   Send response: `{ success: true, analysis: simulated_analysis_text }`. Handle errors.
-    2.  **Frontend UI (`src/components/ideation/AgentScraper.tsx`?):**
+    1.  **UI Component:**
         *   Button "Analyze Trends (Simulated)" near ideation results.
         *   On click, open ShadCN `Dialog` or `Sheet`.
         *   Display area within dialog/sheet.
-    3.  **Frontend Logic:**
+    2.  **Frontend Logic:**
         *   Button click -> Call `POST /api/ai/scrape-trends` with `ideaContext` and `projectId`.
         *   Show loading in dialog/sheet.
         *   On success, display `analysis` text. Handle errors.
 *   **Dependencies:** Backend Endpoint (Mock), OpenAI SDK (Option A), Axios, React (`useState`), ShadCN UI (`Button`, `Dialog` or `Sheet`). Requires Project Context.
 *   **Verification:** Button appears. Clicking opens dialog/sheet. Backend called. Simulated trend text displayed. Loading/errors handled. Indicates simulation.
-*   **Potential Challenges:** Believable pop-up UI. Good GPT prompts (Option A). Relevant mock data (Option B). Communicating simulation.
+*   **Potential Challenges:** UI design for sheet. Backend simulation logic. Error handling.
 
 ---
 
-### Step 3.4: Counter-Intuition Prompts (New)
+### Step 3.4: Counter-Intuition Prompts
 
-*   **Status:** Not Started
+*   **Status:** Incomplete
+*   **Rationale for Incomplete:** Persistent failures in creating the `src/components/ideation/CounterIntuitionCard.tsx` file via automated edits. A placeholder component has been integrated into `src/pages/Ideation.tsx` instead.
 *   **Action:** Display provocative prompts to encourage non-traditional thinking after initial ideation.
 *   **Detailed Steps:**
     1.  **Define Prompts:** Static list (e.g., "Reverse assumptions?", "Opposite audience?", "Zero budget?").
