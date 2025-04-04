@@ -1,12 +1,34 @@
 # Implementation Plan Part 3: MVP Demo Readiness
 
-**Document Version:** 1.0
-**Date:** 2024-04-04
-**Target Branch:** `feature/ui-enhancements`
+**Document Version:** 1.1
+**Date:** 2024-04-04 (Updated 2024-05-16)
+**Target Branch:** `feature/mvp-demo-build`
 
-**Overall Goal:** Prepare the application for pilot user demos by implementing core AI-driven workflows (Ideation, Visualization, Planning, Launch Prep, Marketing Assets) alongside essential UI refinements (Sidebar, Headers, Theme Toggle) and the necessary backend infrastructure.
+**Overall Goal:** Prepare the application for pilot user demos by implementing core AI-driven workflows (**Ideation, Project Setup, Validation, Visualization, MVP Spec**, Launch Prep, Marketing Assets) alongside essential UI refinements (Sidebar, Headers, Theme Toggle) and the necessary backend infrastructure.
 
-**Note on Scope:** This document details Phases 0 and 1 of the MVP Demo implementation. Subsequent phases (MVP Workflow implementation, Post-MVP features) will be detailed later or in separate documents. Features explicitly marked as "(Post-MVP)" are out of scope for this initial demo build.
+**Note on Scope:** This document details the MVP Demo implementation. **Validation features rely on simulated data for the demo.** Features explicitly marked as "(Post-MVP)" are out of scope for this initial demo build and detailed in `implementation_plan_post_mvp.md`.
+
+**MVP UI Requirements (Covered by parent branch `feature/ui-enhancements` baseline & Phase 1)**
+*   Miniaturized Sidebar (Step 1.1)
+*   Light/Dark Mode Toggle (Step 1.5)
+*   Large Page Headers (Step 1.6)
+
+**MVP Functional Requirements (To be implemented on this branch - Requires Backend)**
+*   Project Details Input & Asset Upload (Phase 2)
+*   Structured Initial Input (Step 3.1)
+*   AI Ideation (GPT-4o) (Step 3.2)
+*   Simulated AI Agent Scraper (Step 3.3)
+*   Counter-Intuition Prompts (Step 3.4)
+*   Target Market Definition (Step 4.1)
+*   Simulated Survey Setup & Results (Step 4.2)
+*   Simulated Score & Forecasting (Steps 4.4, 4.5)
+*   AI Concept Imagery (Image Gen API - Mock) (Step 5.1)
+*   Simplified MVP Specification (GPT-4o + Hardcoded Docs) (Step 5.2)
+*   AI Pitch Deck Content (GPT-4o) (Step 6.1)
+*   Interactive Launch Plan (Step 6.2)
+*   Generative Ad Copy & Mock Visuals (Steps 7.1, 7.2)
+*   Basic Profile Display (Phase 8)
+
 
 ---
 
@@ -16,7 +38,7 @@
 
 **Rationale:** A robust backend is crucial for securely managing API keys, handling potentially long-running AI tasks, processing data, storing user assets, and providing a stable interface for the frontend. Centralizing this logic improves security, maintainability, and scalability.
 
-**Key Technologies:** Node.js, Express.js (existing `backend/` structure), `dotenv`, `@gradio/client`, OpenAI SDK, potentially cloud storage SDKs (e.g., `@supabase/storage-js`, `aws-sdk`), `pg` (if using Supabase DB for metadata).
+**Key Technologies:** Node.js, Express.js (existing `backend/` structure), `dotenv`, `@gradio/client`, OpenAI SDK, potentially cloud storage SDKs (e.g., `@supabase/storage-js`, `aws-sdk`), `pg` (if using Supabase DB for metadata), `zod`, `multer`.
 
 ---
 
@@ -25,180 +47,613 @@
 *   **Status:** Not Started
 *   **Action:** Review and configure the existing Express.js application within the `backend/` directory.
 *   **Detailed Steps:**
-    1.  **Navigate to Backend Directory:** Ensure terminal context is `cd backend`.
-    2.  **Verify Dependencies:** Check `backend/package.json`. Ensure core dependencies like `express`, `cors`, `dotenv`, `pg` (if needed), `express-session`, `passport` (for auth) are present and versions are reasonable. Run `npm install` within `backend/` if necessary.
+    1.  **Navigate & Install:** `cd backend`, `npm install` if needed.
+    2.  **Verify Dependencies:** Check `backend/package.json` for `express`, `cors`, `dotenv`, `pg` (if needed), `express-session`, `passport`, `zod`, `@supabase/supabase-js` (if using Supabase), `openai`, `@gradio/client`, `multer`.
     3.  **Environment Variables (`backend/.env`):**
-        *   Verify/create `backend/.env` based on `backend/.env.example` (if it exists, otherwise create).
-        *   Ensure essential variables are present: `PORT` (for backend server, distinct from frontend), `DATABASE_URL` (if using DB), `SESSION_SECRET`, auth provider keys (`GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET`, etc.), and placeholders for *new* AI keys (`OPENAI_API_KEY`, `HUGGINGFACE_TOKEN`, `IMAGE_API_KEY`, `VIDEO_API_KEY`, `GRADIO_HF_SPACE_URL` - for Hunyuan3D).
-        *   Add `FRONTEND_URL` (e.g., `http://localhost:5173` or `http://localhost:8080`) for CORS configuration.
-    4.  **Core Server File (`backend/index.js` or similar):**
-        *   Review the main server entry point.
-        *   Confirm basic Express app setup (`const app = express();`).
-        *   Confirm `dotenv` is configured early (`require('dotenv').config();`).
-        *   Confirm essential middleware is used:
-            *   `express.json()` for parsing JSON request bodies.
-            *   `express.urlencoded({ extended: true })` for parsing URL-encoded bodies.
-            *   `cors` middleware configured with `origin: process.env.FRONTEND_URL` and `credentials: true` to allow requests from the frontend.
-            *   Session middleware (`express-session`) configured with secret, `resave: false`, `saveUninitialized: false`, and potentially a store (like `connect-pg-simple` if using Postgres for sessions).
-            *   Passport middleware (`passport.initialize()`, `passport.session()`) initialized *after* session middleware.
+        *   Verify/create based on `.env.example`.
+        *   Ensure: `PORT`, `DATABASE_URL` (if needed), `SESSION_SECRET`, `GITHUB_CLIENT_ID/SECRET`, `OPENAI_API_KEY`, `HUGGINGFACE_TOKEN`, `IMAGE_API_KEY` (placeholder ok), `VIDEO_API_KEY` (placeholder ok), `GRADIO_HF_SPACE_URL`, `FRONTEND_URL`, `SUPABASE_URL`, `SUPABASE_SERVICE_KEY` (if using Supabase).
+    4.  **Core Server File (`backend/index.js`):**
+        *   Review entry point. Confirm `express()`, `dotenv.config()`.
+        *   Confirm Middleware: `express.json()`, `express.urlencoded()`, `cors({ origin: process.env.FRONTEND_URL, credentials: true })`, `express-session`, `passport.initialize()`, `passport.session()`.
     5.  **Basic Routing Structure:**
-        *   Verify a root route (`/`) or health check route (`/health`) exists for basic server testing.
-        *   Verify existing auth routes (`/auth/github`, `/auth/status`, `/auth/logout`) are mounted.
-        *   Create a main API router (e.g., `const apiRouter = express.Router();`) and mount it at `/api` (`app.use('/api', apiRouter);`). Future MVP endpoints will be added to this `apiRouter`.
-    6.  **Error Handling:** Implement basic Express error handling middleware (a final `app.use((err, req, res, next) => ...)` handler) to catch unhandled errors and send a generic 500 response.
-    7.  **Server Start Logic:** Ensure `app.listen(process.env.PORT, () => ...)` is present to start the server.
-    8.  **Test Basic Startup:** Run `npm start` (or the defined start script) within the `backend/` directory. Verify the server starts without crashing and logs the listening port. Test the health check route if available.
-*   **Dependencies:** Node.js, npm, existing `backend/` code structure.
-*   **Verification:** Backend server starts successfully, `.env` variables are loaded, basic routes (health check, existing auth) are reachable via tools like `curl` or Postman. CORS configured correctly.
-*   **Potential Challenges:** Dependency conflicts, incorrect `.env` setup, middleware order issues, CORS misconfiguration.
+        *   Verify `/health` or `/` route.
+        *   Verify `/auth/*` routes.
+        *   Ensure main API router mounted: `const apiRouter = express.Router(); app.use('/api', apiRouter);`. **Apply auth middleware to `apiRouter` globally or per-route group.**
+    6.  **Error Handling:** Basic `app.use((err, req, res, next) => ...)` handler.
+    7.  **Server Start Logic:** `app.listen(...)`.
+    8.  **Test Basic Startup:** `npm start` in `backend/`. Test `/health`.
+*   **Dependencies:** Node.js, npm, existing `backend/` structure, `.env` file.
+*   **Verification:** Backend server starts, `.env` loaded, basic/auth routes reachable, CORS works, API routes are protected.
+*   **Potential Challenges:** Dependency conflicts, `.env` setup, middleware order, CORS, auth middleware application.
 
 ---
 
 ### Step 0.2: Implement File Storage Solution
 
 *   **Status:** Not Started
-*   **Action:** Select, configure, and implement backend functions for storing and retrieving files.
+*   **Action:** Select, configure, and implement backend functions for storing and retrieving files (user uploads and AI-generated assets).
 *   **Detailed Steps:**
-    1.  **Decision: Local vs. Cloud:**
-        *   **Local Filesystem:**
-            *   *Pros:* Simplest setup for local development, no extra costs.
-            *   *Cons:* Not scalable, not suitable for production/sharing, potential persistence issues (e.g., if server restarts in a container).
-            *   *Implementation:* Use Node.js `fs` module (`fs.promises` preferably). Create an `assets/` or `uploads/` directory within `backend/` (ensure it's in `.gitignore`). Write functions like `saveFile(buffer, filename)` and `getFileStream(filename)`. Need a mechanism to serve these files (e.g., `express.static` middleware or a dedicated `/api/files/:filename` route). Need to manage unique filenames to avoid collisions.
-        *   **Cloud Storage (Recommended - Supabase Storage Example):**
-            *   *Pros:* Scalable, persistent, globally accessible URLs, often integrates well with database/auth (like Supabase). Free tiers usually sufficient for MVP.
-            *   *Cons:* Requires cloud account setup, SDK integration, managing access control/permissions.
-            *   *Implementation (Supabase):*
-                1.  **Supabase Project Setup:** Ensure a Supabase project exists. Enable Storage via the Supabase dashboard. Create a bucket (e.g., `user-assets`). Configure bucket policies (e.g., public read access if needed for generated images/models, or private with signed URLs).
-                2.  **Backend SDK:** Install `@supabase/supabase-js` in the `backend/` directory (`npm install @supabase/supabase-js`).
-                3.  **Initialize Client:** Create a Supabase client instance in the backend using the Project URL and Service Role Key (store these securely in `backend/.env`). *Never expose the Service Role Key to the frontend.*
-                4.  **Upload Function:** Create a backend utility function `uploadAsset(fileBuffer, fileName, contentType)` that uses `supabase.storage.from('user-assets').upload(fileName, fileBuffer, { contentType: contentType, upsert: true })`. Ensure unique filenames (e.g., using user ID + timestamp + original name hash). Handle potential errors.
-                5.  **Get URL Function:** Create a backend utility function `getAssetUrl(fileName)` that uses `supabase.storage.from('user-assets').getPublicUrl(fileName)` (if bucket is public) or `supabase.storage.from('user-assets').createSignedUrl(fileName, expiresInSeconds)` (if private).
-                6.  **Internal Docs:** Upload hardcoded MVP spec prompt documents manually to a separate (likely private) bucket (e.g., `internal-docs`). Create a backend function `getInternalDoc(docName)` to retrieve these using the service role client.
-    2.  **Backend API for Frontend Uploads (If Needed):** While many AI outputs are generated *by* the backend, if users need to upload *initial* assets (like sketches), create a dedicated backend endpoint (e.g., `POST /api/upload/asset`) that uses middleware like `multer` to handle `multipart/form-data` uploads, then calls the chosen storage solution's upload function. This endpoint should be protected (require authentication).
-    3.  **Configuration:** Store bucket names, storage keys/secrets in `backend/.env`.
-*   **Dependencies:** Node.js, `fs` (local) OR Cloud provider account + SDK (e.g., Supabase, `@supabase/supabase-js`), potentially `multer`.
-*   **Verification:** Files can be uploaded via backend functions/endpoints and stored correctly (locally or in cloud bucket). Accessible URLs/URIs can be generated. Internal docs can be retrieved by the backend.
-*   **Potential Challenges:** Cloud storage permissions/policy configuration, handling large file uploads, error handling during uploads/retrievals, securing service keys, choosing appropriate bucket privacy.
+    1.  **Decision:** Strongly recommend Cloud Storage (Supabase example). Local FS is not suitable for sharing/persistence needed.
+    2.  **Cloud Storage (Supabase Example):**
+        *   **Supabase Project Setup:** Ensure project exists, Storage enabled. Create buckets: `user-assets` (potentially public or private with signed URLs), `internal-docs` (private). Configure policies.
+        *   **Backend SDK:** Install/verify `@supabase/supabase-js`.
+        *   **Initialize Client:** Create backend Supabase client using `SUPABASE_URL` and `SUPABASE_SERVICE_KEY` from `.env`.
+        *   **Upload Function:** Create `uploadAsset(fileBuffer, fileName, contentType)` utility using `supabase.storage.from('user-assets').upload(...)`. Ensure unique filenames (e.g., `userId/projectId/timestamp-hash`). Handle errors.
+        *   **Get URL Function:** Create `getAssetUrl(fileName)` utility using `getPublicUrl` or `createSignedUrl`.
+        *   **Internal Docs:** Manually upload necessary docs (e.g., `mvp_spec_template.md`) to `internal-docs` bucket. Create `getInternalDoc(docName)` utility using the service client.
+    3.  **Backend API for Frontend Uploads (`POST /api/projects/:projectId/upload-asset`):**
+        *   Create this new endpoint within project routes, protected by auth.
+        *   Use `multer` middleware to handle `multipart/form-data` (limit file size/types).
+        *   Extract `projectId` from `req.params`.
+        *   Generate unique filename incorporating user ID and project ID.
+        *   Call `uploadAsset` utility with `req.file.buffer`, generated filename, and `req.file.mimetype`.
+        *   Return the asset URL or relevant metadata: `{ success: true, assetUrl: url, filename: generatedFilename }`. Handle upload errors.
+    4.  **Configuration:** Store bucket names, Supabase keys in `.env`.
+*   **Dependencies:** Cloud provider account (Supabase), `@supabase/supabase-js`, `multer`.
+*   **Verification:** Files uploaded via the new endpoint are stored correctly in the cloud bucket under the right path. Accessible URLs generated. Internal docs retrievable.
+*   **Potential Challenges:** Cloud storage permissions, large file uploads, `multer` configuration, securing service keys, unique filename generation, error handling during uploads.
 
 ---
 
-### Step 0.3: Create Backend Endpoints for AI Calls
+### Step 0.3: Create Backend Endpoints Stubs
 
 *   **Status:** Not Started
-*   **Action:** Define and implement the basic structure for backend API routes that will handle interactions with various AI services.
+*   **Action:** Define API routes for AI interactions and basic project data management. Stubs initially, logic filled in later phases.
 *   **Detailed Steps:**
-    1.  **API Router (`backend/routes/api.js` or similar):** Ensure the main `apiRouter` from Step 0.1 is set up.
-    2.  **Define Routes (Stub Implementation):** Create route handlers for each required AI interaction. Initially, these can just accept the request, log it, and return a placeholder success/error or mock data.
-        *   `POST /api/ai/ideate`: For GPT-4o ideation. Expects `problemStatement`, `solutionIdea` in body.
-        *   `POST /api/generate/image`: For image generation. Expects `prompt` in body.
-        *   `POST /api/generate/model`: For 3D model generation. Expects `prompt` in body. *Consider making this async/long-polling or use webhooks if generation is slow.*
-        *   `POST /api/generate/video`: For video generation. Expects `prompt` or `script` in body. *Likely async.*
-        *   `POST /api/mvp-chat`: For the guided MVP spec chat. Expects `message`, `history` (chat context) in body. Needs to fetch hardcoded docs from storage (Step 0.2).
-        *   `POST /api/pitch-deck`: For generating pitch deck content. Expects relevant context (problem, solution, idea, mvp summary) in body.
-    3.  **Authentication Middleware:** Apply authentication middleware (e.g., checking `req.isAuthenticated()` provided by Passport) to protect these endpoints. Only logged-in users should be able to trigger AI generations tied to their work.
-    4.  **Input Validation:** Use a library like `zod` (install if needed: `npm install zod`) to define schemas for the expected request bodies for each endpoint and validate incoming requests. Return 400 Bad Request errors if validation fails.
-    5.  **API Key Handling:** Within each (stubbed) route handler, ensure logic exists (even if commented out initially) to securely retrieve the relevant API key from `process.env` (e.g., `process.env.OPENAI_API_KEY`). *Crucially, never hardcode keys.*
-    6.  **Gradio Client Setup (for 3D):** Install `@gradio/client` (`npm install @gradio/client`). In the `/api/generate/model` stub, include commented-out boilerplate for initializing the Gradio client using the HF Space URL from `.env`: `const client = await Client.connect(process.env.GRADIO_HF_SPACE_URL, { hf_token: process.env.HUGGINGFACE_TOKEN });`. Add placeholder logic for calling `client.predict('/endpoint_name', { prompt: req.body.prompt });`. (Referencing `game-asset-mcp` repo for specific endpoint names and parameters for Hunyuan3D will be key later).
-    7.  **OpenAI SDK Setup:** Install OpenAI SDK (`npm install openai`). In relevant stubs (`/ideate`, `/mvp-chat`, `/pitch-deck`), include commented-out boilerplate for initializing the client (`const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });`) and making a chat completion call (`await openai.chat.completions.create(...)`).
-    8.  **Placeholder Responses:** Ensure each stub returns a meaningful JSON response, e.g., `{ success: true, message: "Endpoint reached, processing not implemented yet." }` or `{ success: true, data: { imageUrl: "placeholder.jpg" } }`.
-*   **Dependencies:** Express Router, Auth Middleware (Passport), `zod`, `dotenv`, `@gradio/client`, `openai`. Specific Image/Video API SDKs (TBD later).
-*   **Verification:** API routes are defined and mounted correctly under `/api`. Authentication protects the routes. Basic input validation rejects invalid requests. Placeholder responses are returned successfully when hitting the endpoints via Postman or `curl` (with appropriate authentication/session cookie). Environment variables for keys are referenced (even if not used yet).
-*   **Potential Challenges:** Correctly implementing async handlers, handling Gradio client connections/predictions (especially long-running ones), managing diverse AI SDKs, robust input validation, securing endpoints.
+    1.  **API Router Setup:** Ensure `apiRouter` from Step 0.1 exists and has auth middleware applied.
+    2.  **Define Route Groups:** Organize routes logically using Express Routers.
+        ```javascript
+        // backend/routes/api.js (example)
+        const projectRoutes = require('./projectRoutes');
+        const aiRoutes = require('./aiRoutes');
+        const validationRoutes = require('./validationRoutes');
+
+        apiRouter.use('/projects', projectRoutes); // For project CRUD, asset uploads
+        apiRouter.use('/ai', aiRoutes); // For AI generation tasks
+        apiRouter.use('/validation', validationRoutes); // For validation steps
+        // Mount other routers as needed...
+        ```
+    3.  **Define Route Stubs:** Create handlers in respective route files (e.g., `backend/routes/projectRoutes.js`). Apply input validation (Zod) and return placeholders.
+        *   **(Project Routes - `projectRoutes.js`)**
+            *   `POST /`: Create new project. Expects name, description, type. Returns `{ projectId }`.
+            *   `GET /:projectId`: Get project details.
+            *   `PUT /:projectId`: Update project details (e.g., save target market).
+            *   `POST /:projectId/upload-asset`: (Logic defined in Step 0.2).
+        *   **(AI Routes - `aiRoutes.js`)**
+            *   `POST /ideate`: GPT-4o ideation. Expects `problemStatement`, `solutionIdea`.
+            *   `POST /scrape-trends`: **Simulated** web scraping. Expects `ideaContext`. Returns mock trend data.
+            *   `POST /generate/image`: Image generation. Expects `prompt`. Returns mock URL for MVP.
+            *   `POST /generate/video`: Video generation. Expects `context`. Returns mock script for MVP.
+            *   `POST /mvp-chat`: Guided MVP spec chat. Expects `message`, `history`, `context`. Needs `getInternalDoc`.
+            *   `POST /pitch-deck`: Pitch deck content. Expects `section`, `context`.
+            *   `POST /generate/ad-copy`: Ad copy generation. Expects `copyType`, `platform`, `context`.
+        *   **(Validation Routes - `validationRoutes.js`)**
+            *   `POST /simulate-survey`: Simulate survey run. Expects survey params. Returns mock results.
+            *   `POST /forecast`: Simulate market forecast. Expects market signals, context. Returns mock forecast.
+    4.  **Authentication:** Ensure auth middleware is applied consistently (e.g., `apiRouter.use(ensureAuthenticated);`).
+    5.  **Input Validation:** Implement Zod schemas for all expected request bodies/params in each route handler.
+    6.  **API Key Handling:** Reference keys via `process.env` within actual implementation later.
+    7.  **SDK Setup Boilerplate:** Add commented-out SDK init/call examples later.
+    8.  **Placeholder Responses:** Return meaningful JSON placeholders, e.g., `{ success: true, message: 'Endpoint stub hit' }`.
+*   **Dependencies:** Express Router, Auth Middleware, `zod`, `dotenv`.
+*   **Verification:** All API routes defined, mounted, protected. Input validation rejects invalid requests. Placeholder responses returned.
+*   **Potential Challenges:** Organizing routes effectively, consistent auth application, comprehensive input validation later.
 
 ---
 
-## Phase 1: Sidebar & Theme Refinement (MVP UI Scope)
+## Phase 1: UI Refinements (Final Verification)
 
-**Objective:** Finalize the core UI layout elements including the sidebar's dual-state functionality (expanded/miniaturized), theme switching, and ensure related components like the TopBar adapt correctly.
+**Objective:** Finalize the core UI layout elements including the sidebar's dual-state functionality, theme switching, and **implement large page headers.**
 
-**Rationale:** Provides the polished navigation and visual foundation requested for the MVP demo, incorporating key elements inspired by the CodeGuide reference.
+**Rationale:** Provides the polished navigation, visual foundation, and consistent page structure needed for the MVP demo.
 
-**Key Technologies:** React, TypeScript, Tailwind CSS, `lucide-react`, ShadCN UI (`Tooltip`, `Button`, `DropdownMenu`), `next-themes`.
+**Key Technologies:** React, TypeScript, Tailwind CSS, `lucide-react`, ShadCN UI (`Tooltip`, `Button`, `DropdownMenu`, **`Breadcrumb`**), `next-themes`.
 
 ---
 
 ### Step 1.1: Finalize Miniaturized Sidebar State
 
-*   **Status:** In Progress (Issues reported with hover/functionality in previous attempts) -> Needs Re-verification after Single Component Refactor.
-*   **Action:** Verify and refine the single `Sidebar` component implementation (`src/components/Sidebar.tsx`) and its integration with `DashboardLayout.tsx`.
-*   **Detailed Steps:**
-    1.  **Verify Width Transition:** Ensure the `width` property transition (`w-64` <-> `w-20`) applied via `cn()` and `transition-all` in `Sidebar.tsx` is smooth when `isOpen` changes. Check transition duration/easing (`duration-300 ease-in-out`).
-    2.  **Verify Conditional Rendering (`Sidebar.tsx`):**
-        *   Double-check the logic within `CombinedNavLink` and `CombinedCategoryToggle`. When `isOpen` is false, ensure *only* the icon is rendered within a centered container (`justify-center`) and the label is hidden (`<span className="sr-only">`).
-        *   When `isOpen` is true, ensure the icon, label, number/badge are rendered correctly with appropriate spacing (`gap-3`, `px-4`).
-        *   Ensure category children are only rendered if `isExpanded && isOpen`.
-    3.  **Verify Tooltips (`Sidebar.tsx`):**
-        *   Confirm `TooltipProvider`, `Tooltip`, `TooltipTrigger`, `TooltipContent` wrap the icon-only links/categories correctly when `isOpen` is false.
-        *   Check `TooltipContent` `side="right"` positioning and styling.
-        *   Ensure tooltips are *disabled* (`disableHoverableContent={isOpen}`) when the sidebar is open to prevent interference.
-    4.  **Verify Hover Effects (`Sidebar.tsx`):**
-        *   Check the CSS classes applied for hover states (`hover:text-white/80`, `hover:bg-navy-dark`) on both the expanded links/buttons and the icon-only links. Ensure they provide clear visual feedback.
-        *   Check active states (`bg-navy-dark`, `text-electric-blue`) are applied correctly based on `useLocation()`.
-    5.  **Verify Layout Adjustments (`DashboardLayout.tsx`):**
-        *   Confirm the main content `div` correctly applies `ml-64` or `ml-20` using `cn()` based on `isSidebarOpen`. Check the `transition-all` on this div for smooth margin changes.
-        *   Confirm the `TopBar` component correctly applies `left-64` or `left-20` using `cn()` based on the `isSidebarOpen` prop it receives. Check its `transition-all`.
-    6.  **Verify Toggle Button (`DashboardLayout.tsx`):**
-        *   Confirm the `onClick={toggleSidebar}` handler is working reliably.
-        *   Verify the dynamic `style={{ left: ... }}` calculation correctly positions the button just outside the sidebar edge in both open (`calc(16rem - 1.25rem)`) and closed (`calc(5rem - 1.25rem)`) states.
-        *   Ensure the button has a sufficient `z-index` (e.g., `z-[60]`) to be clickable above other elements.
-        *   Confirm the tooltip for the toggle button works correctly.
-    7.  **Cross-Browser Check (Basic):** Briefly check in Chrome and Firefox/Safari if possible to catch major rendering inconsistencies.
-*   **Dependencies:** `Sidebar.tsx`, `DashboardLayout.tsx`, `TopBar.tsx`, `sidebarNavItems` config, ShadCN Tooltip.
-*   **Verification:** Sidebar smoothly transitions width between open/closed. Content/TopBar margins/positions adjust smoothly. Icon-only state shows icons+tooltips correctly. Hover/active states work as expected. Toggle button works reliably. No visual glitches or overlaps.
-*   **Potential Challenges:** CSS specificity issues, transition conflicts, tooltip positioning/rendering bugs, precise alignment calculations for the toggle button, state synchronization issues between components.
+*   **Status:** In Progress -> Needs Re-verification.
+*   **Action:** Verify and refine the single `Sidebar` component and its integration.
+*   **Detailed Steps:** (Content unchanged)
+*   **Dependencies:** (Content unchanged)
+*   **Verification:** (Content unchanged)
+*   **Potential Challenges:** (Content unchanged)
 
 ---
 
 ### Step 1.5: Finalize Light/Dark Mode Toggle
 
-*   **Status:** Done (Needs final verification, especially light theme styles).
-*   **Action:** Verify the theme toggle functionality and ensure basic light theme styles are defined.
-*   **Detailed Steps:**
-    1.  **Verify Toggle Component (`ThemeToggle.tsx` & `Sidebar.tsx`):**
-        *   Confirm the toggle button appears correctly at the bottom of the sidebar in both open and closed states.
-        *   Confirm clicking the button opens the dropdown with "Light", "Dark", "System" options.
-        *   Confirm the dropdown styling (including glass morphism added earlier) looks acceptable.
-    2.  **Verify Theme Switching:**
-        *   Click "Light". Does the `<html>` element get the `class="light"` attribute? Does the UI *attempt* to change (even if styles aren't perfect)?
-        *   Click "Dark". Does the `<html>` element get `class="dark"`? Does the UI switch back to the dark theme?
-        *   Click "System". Does the theme match the OS setting?
-    3.  **Define Basic Light Theme Styles (Tailwind):**
-        *   **Review `tailwind.config.ts`:** While the current config is dark-first, check if any `light:` variants or light-theme-specific color definitions exist. If not, we need to add some basic overrides.
-        *   **Add Light Theme Colors (Example in `tailwind.config.ts` -> `theme.extend.colors`):**
-            ```javascript
-            // Inside theme.extend.colors:
-            light: { // Define a scope for light theme overrides
-              background: 'hsl(0 0% 100%)', // White background
-              foreground: 'hsl(222.2 84% 4.9%)', // Dark text
-              card: 'hsl(0 0% 100%)', // White cards
-              'card-foreground': 'hsl(222.2 84% 4.9%)',
-              popover: 'hsl(0 0% 100%)',
-              'popover-foreground': 'hsl(222.2 84% 4.9%)',
-              primary: 'hsl(222.2 47.4% 11.2%)',
-              'primary-foreground': 'hsl(210 40% 98%)',
-              secondary: 'hsl(210 40% 96.1%)',
-              'secondary-foreground': 'hsl(222.2 47.4% 11.2%)',
-              muted: 'hsl(210 40% 96.1%)',
-              'muted-foreground': 'hsl(215.4 16.3% 46.9%)',
-              accent: 'hsl(210 40% 96.1%)',
-              'accent-foreground': 'hsl(222.2 47.4% 11.2%)',
-              destructive: 'hsl(0 84.2% 60.2%)',
-              'destructive-foreground': 'hsl(210 40% 98%)',
-              border: 'hsl(214.3 31.8% 91.4%)',
-              input: 'hsl(214.3 31.8% 91.4%)',
-              ring: 'hsl(222.2 84% 4.9%)',
-              // Custom overrides if needed
-              'navy-light': 'hsl(210 40% 96.1%)', // Example: Light gray instead of navy
-              'slate-dark': 'hsl(222.2 84% 4.9%)', // Dark text for slate
-            }
-            ```
-        *   **Add Light Theme Variables (If using CSS Variables in `index.css`):** Define `--color-light-background`, `--color-light-text`, etc., and use them within a `:root.light { ... }` block or apply via Tailwind `light:` prefixes. *Tailwind class-based approach is generally simpler with `next-themes`.*
-        *   **Apply `light:` Prefixes:** Review key components (`Sidebar`, `TopBar`, `DashboardLayout`, `AiAgent`, common UI elements like `Button`, `Input`, `Card`) and add `light:` prefixed classes where needed to override dark defaults (e.g., `bg-navy-darkest light:bg-light-background`, `text-slate-light light:text-light-foreground`).
-    4.  **Test Light Theme:** Activate light mode again and check if the core background, text, sidebar, and topbar colors adapt reasonably. Fine-tuning can happen later, but it should be usable.
-*   **Dependencies:** `next-themes`, `ThemeProvider` setup, `ThemeToggle.tsx`, Tailwind config (`darkMode: 'class'`), CSS/Tailwind styles.
-*   **Verification:** Theme toggle dropdown works. Selecting Light/Dark/System applies the correct class to `<html>`. Basic light theme styles are applied, making the UI readable in light mode. Dark mode remains the default and fully functional.
-*   **Potential Challenges:** Defining a comprehensive set of light theme styles, ensuring overrides work correctly with Tailwind specificity, handling system preference changes gracefully.
+*   **Status:** Done -> Needs final verification.
+*   **Action:** Verify theme toggle and ensure basic light theme styles are usable.
+*   **Detailed Steps:** (Content unchanged)
+*   **Dependencies:** (Content unchanged)
+*   **Verification:** (Content unchanged)
+*   **Potential Challenges:** (Content unchanged)
 
 ---
 
-*(End of Phase 0 & 1 Detailed Plan)* 
+### Step 1.6: Implement Large Page Headers (Moved from old Phase 2)
+
+*   **Status:** Not Started
+*   **Action:** Create a reusable `PageHeader` component and integrate it into main pages.
+*   **Detailed Steps:** (Content unchanged)
+*   **Dependencies:** (Content unchanged)
+*   **Verification:** (Content unchanged)
+*   **Potential Challenges:** (Content unchanged)
+
+---
+
+## Phase 2: Project Setup (New)
+
+**Objective:** Allow users to define essential project details immediately after initial onboarding/ideation selection, including name, description, business type, and preliminary assets.
+
+**Rationale:** Captures core project context early, informing subsequent AI interactions and validation steps. Provides a place for initial user artifacts.
+
+**Key Technologies:** React, TypeScript, Tailwind CSS, ShadCN UI (`Input`, `Textarea`, `Button`, `Card`, `Label`, `Select` or `RadioGroup`), File Input/Dropzone library (e.g., `react-dropzone`), Axios, Backend API.
+
+---
+
+### Step 2.1: Project Setup Form UI
+
+*   **Status:** Not Started
+*   **Action:** Create a form for users to input core project details.
+*   **Detailed Steps:**
+    1.  **Component Creation (`src/pages/ProjectSetup.tsx` or `src/components/setup/ProjectDetailsForm.tsx`):**
+        *   Likely presented after user selects an initial idea or starts a new project.
+        *   Use ShadCN `Card` for structure.
+        *   **Input Fields:**
+            *   `Project Name`: ShadCN `Input`, required.
+            *   `Project Description`: ShadCN `Textarea`, required.
+            *   `Business Type`: ShadCN `Select` or `RadioGroup` (Physical, Software, Service). **Assumption:** Type confirmed/selected here. Required.
+            *   (Optional) `Primary Objective`: ShadCN `Textarea`.
+    2.  **State Management:** Use `useState` for form field values. Implement `onChange` / `onValueChange` handlers.
+    3.  **Styling:** Use Tailwind utilities for layout, spacing, labels. Ensure responsiveness.
+*   **Dependencies:** React (`useState`), ShadCN UI (`Card`, `Input`, `Textarea`, `Select` or `RadioGroup`, `Label`, `Button`).
+*   **Verification:** Form renders correctly with required fields. User input updates state. Business type selection works.
+*   **Potential Challenges:** Handling business type selection logic (global vs. local), form validation.
+
+---
+
+### Step 2.2: Asset Upload Component
+
+*   **Status:** Not Started
+*   **Action:** Implement a file drag-and-drop component for uploading initial assets (sketches, diagrams).
+*   **Detailed Steps:**
+    1.  **Library Integration:** Choose and install `react-dropzone`.
+    2.  **Component Creation (`src/components/setup/AssetUploader.tsx`):**
+        *   Integrate `react-dropzone`. Provide visual feedback (border change on drag hover).
+        *   Display list of selected/uploaded files (name, size, status).
+        *   Include traditional file input fallback.
+        *   Handle file selection/drop (`onDrop` callback).
+    3.  **State Management:** Use `useState` to track selected files and their upload progress/status.
+    4.  **Styling:** Style dropzone, file list, progress indicators.
+*   **Dependencies:** React (`useState`), `react-dropzone`, ShadCN UI.
+*   **Verification:** User can drag/select files. Files are listed. UI provides clear feedback.
+*   **Potential Challenges:** Library integration, multiple files, progress display, styling.
+
+---
+
+### Step 2.3: Backend Integration for Project Creation & Upload
+
+*   **Status:** Not Started
+*   **Action:** Implement frontend logic to submit project details and uploaded files to the backend.
+*   **Detailed Steps:**
+    1.  **Combine Form & Uploader:** Integrate `ProjectDetailsForm` and `AssetUploader` into the main `ProjectSetup` page/component.
+    2.  **Submission Logic:**
+        *   Add main "Create Project" / "Save Setup" button.
+        *   Implement `onSubmit` handler.
+        *   **Step 1: Create Project:** Call `POST /api/projects` with form data. Handle loading/error. Retrieve `projectId`.
+        *   **Step 2: Upload Assets:** If project created and files exist, iterate through files. For each file, call `POST /api/projects/:projectId/upload-asset` with `FormData`. Update UI status. Handle individual errors.
+        *   **Navigation:** On success, navigate to the next step (e.g., Ideation page for this project).
+    3.  **Error Handling:** Implement robust error handling for both API calls. Provide user feedback.
+*   **Dependencies:** React (`useState`), Axios, Backend Endpoints (`/api/projects`, `/api/projects/:projectId/upload-asset`).
+*   **Verification:** Submit button calls create endpoint, then upload endpoint for each file using correct `projectId`. UI shows progress/status. Errors handled. Navigation occurs on success.
+*   **Potential Challenges:** Coordinating multiple API calls, state management for progress/errors, large file handling, correct `projectId` usage.
+
+---
+
+## Phase 3: Ideation (Enhanced)
+
+**Objective:** Implement the initial steps of the core user workflow: capturing the user's problem statement/idea, **using AI for brainstorming & simulated trend analysis**, and provoking counter-intuitive thinking.
+
+**Rationale:** Forms the foundation of the AI-driven innovation process, adding simulated market context and creative prompts early on.
+
+**Key Technologies:** React, TypeScript, Tailwind CSS, ShadCN UI (`Input`, `Textarea`, `Button`, `Card`, **`Dialog` / `Sheet`**), Axios, OpenAI SDK (backend), Zod (backend).
+
+---
+
+### Step 3.1: Structured Initial Input
+
+*   **Status:** Not Started
+*   **Action:** Create UI for users to input problem statement and initial solution idea. (Entry point to Ideation phase for a *specific project*).
+*   **Detailed Steps:**
+    1.  **Create Page/Component (`src/pages/Ideation.tsx` or `src/components/ideation/InitialInputForm.tsx`):** **Note:** This might be integrated directly into the Ideation page for the current project, potentially pre-filling from Phase 2. Fields: Problem Statement, Initial Solution Idea.
+    2.  State Management (`useState`).
+    3.  Submission Logic (`onSubmit`): Validate, prepare payload, trigger Step 3.2.
+    4.  Styling and Layout.
+*   **Dependencies:** React (`useState`), ShadCN UI (`Card`, `Input`, `Textarea`, `Button`, `Label`). Requires Project Context (`projectId`).
+*   **Verification:** Form renders (potentially pre-filled), input updates state, validation works, submit triggers next step.
+*   **Potential Challenges:** Integrating with project context, deciding on pre-filling logic.
+
+---
+
+### Step 3.2: AI-Powered Ideation (GPT-4o)
+
+*   **Status:** Not Started
+*   **Action:** Implement backend/frontend to call OpenAI for generating alternative ideas. (Content mostly unchanged)
+*   **Detailed Steps:**
+    1.  **Backend Endpoint (`POST /api/ai/ideate`):** Auth, Validate Input (Zod), Get Key, Init OpenAI Client, Construct Prompt (System: Expert assistant, User: Problem/Idea -> 5 alternatives), API Call (`gpt-4o`), Parse Response (optional), Send Response (`{ success: true, ideas: resultText_or_parsedArray }`). Needs `projectId` for context/saving later.
+    2.  **Frontend API Call:** Async function, `axios`/`fetch` to `/api/ai/ideate`, pass `projectId` and form data, `withCredentials`, loading state, error handling.
+    3.  **Display Results (`src/components/ideation/IdeationResults.tsx`):** `useState` for ideas, render as list/cards, loading/error indicators. Add "Save Idea" buttons (links to Post-MVP refinement).
+    4.  **Integrate Components:** Trigger API from form, pass results to display.
+*   **Dependencies:** Backend API Framework (0.1), OpenAI SDK, `axios`, React (`useState`, `useEffect`), ShadCN UI (`Card`, `Button`, Spinner). Requires Project Context.
+*   **Verification:** Input -> Backend -> OpenAI -> Backend -> Frontend display. Auth works. Loading/error states handled.
+*   **Potential Challenges:** Prompt engineering, API latency, response parsing, API costs, error handling.
+
+---
+
+### Step 3.3: Simulated AI Agent Scraper (New)
+
+*   **Status:** Not Started
+*   **Action:** Create a UI element (e.g., chat pop-up) to trigger simulated web trend analysis based on the user's idea.
+*   **Detailed Steps:**
+    1.  **Backend Endpoint (`POST /api/ai/scrape-trends` - Mock):**
+        *   Apply auth. Validate input (Zod, expecting `ideaContext: string`, `projectId`).
+        *   **Simulation Logic:** Return hardcoded mock data or use GPT-4o for mock generation.
+            *   *(Option A - GPT-4o Mock):* Call OpenAI: "Simulate insights from Reddit, Quora, Google Trends for product idea: {ideaContext}. Provide 3-5 bullet points on interest, questions, trends. Preface with 'Simulated Trend Analysis:'."
+            *   *(Option B - Hardcoded Mock):* Return plausible JSON: `{ success: true, analysis: "Simulated Trend Analysis:\n- High interest...\n- Reddit communities discuss...\n- Quora questions indicate..." }`.
+        *   Send response: `{ success: true, analysis: simulated_analysis_text }`. Handle errors.
+    2.  **Frontend UI (`src/components/ideation/AgentScraper.tsx`?):**
+        *   Button "Analyze Trends (Simulated)" near ideation results.
+        *   On click, open ShadCN `Dialog` or `Sheet`.
+        *   Display area within dialog/sheet.
+    3.  **Frontend Logic:**
+        *   Button click -> Call `POST /api/ai/scrape-trends` with `ideaContext` and `projectId`.
+        *   Show loading in dialog/sheet.
+        *   On success, display `analysis` text. Handle errors.
+*   **Dependencies:** Backend Endpoint (Mock), OpenAI SDK (Option A), Axios, React (`useState`), ShadCN UI (`Button`, `Dialog` or `Sheet`). Requires Project Context.
+*   **Verification:** Button appears. Clicking opens dialog/sheet. Backend called. Simulated trend text displayed. Loading/errors handled. Indicates simulation.
+*   **Potential Challenges:** Believable pop-up UI. Good GPT prompts (Option A). Relevant mock data (Option B). Communicating simulation.
+
+---
+
+### Step 3.4: Counter-Intuition Prompts (New)
+
+*   **Status:** Not Started
+*   **Action:** Display provocative prompts to encourage non-traditional thinking after initial ideation.
+*   **Detailed Steps:**
+    1.  **Define Prompts:** Static list (e.g., "Reverse assumptions?", "Opposite audience?", "Zero budget?").
+    2.  **UI Component (`src/components/ideation/CounterIntuitionCard.tsx`?):**
+        *   ShadCN `Card`. Title: "Challenge Your Assumptions".
+        *   `useState`/`useEffect` to display a random prompt from the list on load/refresh.
+        *   (Optional) "Show another prompt" button.
+    3.  **Integration:** Place on Ideation page (below results?).
+*   **Dependencies:** React (`useState`, `useEffect`), ShadCN UI (`Card`).
+*   **Verification:** Card with random prompt appears. Refresh shows different prompt.
+*   **Potential Challenges:** Writing good prompts. Placement/trigger logic.
+
+---
+
+## Phase 4: Validation (MVP Simulation) (New)
+
+**Objective:** Allow users to define their target market and simulate idea validation using mock survey data and trend analysis, providing a basis for refinement before detailed planning.
+
+**Rationale:** Addresses the critical validation step described in Document 2, using simulation to provide a functional demo experience without requiring complex real-world integrations for MVP.
+
+**Key Technologies:** React, TypeScript, Tailwind CSS, ShadCN UI (`Input`, `Textarea`, `Button`, `Card`, Stepper?, Charting library e.g., `recharts`), Axios, Backend API (Mock Endpoints), Zod.
+
+---
+
+### Step 4.1: Target Market Definition
+
+*   **Status:** Not Started
+*   **Action:** Create a UI form for users to define their target market segments for the current project.
+*   **Detailed Steps:**
+    1.  **UI Component (`src/components/validation/TargetMarketForm.tsx`):**
+        *   Place at start of Validation page/section for the current project.
+        *   ShadCN `Card`. Fields: `Demographics` (Textarea), `Psychographics` (Textarea), `Needs/Pain Points` (Textarea).
+    2.  **State Management:** `useState` for fields. Fetch existing data if available for the project.
+    3.  **Submission Logic:**
+        *   "Save Target Market" button.
+        *   On submit, call `PUT /api/projects/:projectId` with form data.
+        *   Provide success/error feedback.
+*   **Dependencies:** React (`useState`), ShadCN UI (`Card`, `Textarea`, `Button`, `Label`), Backend Endpoint (`PUT /api/projects/:projectId`). Requires Project Context.
+*   **Verification:** Form renders (pre-fills if data exists). User can input/save details. Backend called correctly. Feedback provided.
+*   **Potential Challenges:** Appropriate fields. Integrating save/load with project data.
+
+---
+
+### Step 4.2: Simulated Survey Setup & Results
+
+*   **Status:** Not Started
+*   **Action:** Implement a wizard-like UI for setting up a survey and displaying **simulated** results.
+*   **Detailed Steps:**
+    1.  **Survey Setup UI (`src/components/validation/SurveyWizard.tsx`):**
+        *   Multi-step form (tabs/accordion/stepper).
+        *   Step 1: Title, Audience (prefill from 4.1).
+        *   Step 2: Questions (predefine 3-5 standard questions for MVP).
+        *   Step 3: Mock Config (Budget, Respondents).
+        *   "Run Simulated Survey" button.
+    2.  **Backend Endpoint (`POST /api/validation/simulate-survey` - Mock):**
+        *   Auth. Validate input (survey params, `projectId`).
+        *   **Simulation Logic:** Generate plausible mock structured JSON results. Can be random or use GPT-4o for summary text. Example: `{ success: true, results: { q1: { ... }, q2_scale: { avg: 3.8, dist: [...] }, q3_summary: "Simulated themes..." } }`.
+        *   Handle errors.
+    3.  **Results Display UI (`src/components/validation/SurveyResultsDisplay.tsx`):**
+        *   Receives simulated results JSON.
+        *   Use `recharts` for charts (Bar/Pie).
+        *   Display text summaries.
+        *   Label clearly: "Simulated Results".
+    4.  **Frontend Logic:**
+        *   Manage wizard state.
+        *   "Run" button -> Loading -> Call `/api/validation/simulate-survey` with params & `projectId`.
+        *   On success: Hide wizard, show Results Display with mock data. Handle errors.
+*   **Dependencies:** React (`useState`), ShadCN UI (Wizard components), `recharts`, Axios, Backend Endpoint (Mock). Requires Project Context.
+*   **Verification:** Wizard works. Run button calls backend. Backend returns mock structured data. Results displayed with charts/text. Simulation indicated. Loading/errors handled.
+*   **Potential Challenges:** Wizard UI. Generating plausible mock data. Chart integration. Communicating simulation.
+
+---
+
+### Step 4.3: Simulated Qualitative Feedback Placeholder
+
+*   **Status:** Not Started
+*   **Action:** Provide a placeholder area representing synthesized qualitative feedback.
+*   **Detailed Steps:**
+    1.  **UI Component (`src/components/validation/QualitativeSummary.tsx`):**
+        *   ShadCN `Card`. Title: "Qualitative Feedback Summary (Simulated)".
+        *   Static placeholder text: "Simulated Summary: Interviews suggest... concerns about pricing... Feature [X] requested..."
+*   **Dependencies:** React, ShadCN UI (`Card`).
+*   **Verification:** Placeholder card with static text displayed.
+*   **Potential Challenges:** Writing plausible text.
+
+---
+
+### Step 4.4: Aggregated Score (Simulated)
+
+*   **Status:** Not Started
+*   **Action:** Display a simulated "Product-Market Fit Score" based on the mock validation data.
+*   **Detailed Steps:**
+    1.  **UI Component (`src/components/validation/ValidationScore.tsx`):**
+        *   `Card`. Title: "Product-Market Fit Score (Simulated)".
+        *   **Score Calculation (Frontend Mock):** Calculate score based on *received simulated survey results* (state from Step 4.2). Simple logic (e.g., average scale scores).
+        *   Display score visually (large number, gauge?).
+        *   Note: "Score based on simulated survey data."
+*   **Dependencies:** React (`useState`), ShadCN UI (`Card`). Needs access to simulated survey results state.
+*   **Verification:** Score displays after simulated results available. Calculation logic simple. Simulation indicated.
+*   **Potential Challenges:** Devising simple scoring logic. Visualization.
+
+---
+
+### Step 4.5: Simulated Market Forecasting ("Future Triplet")
+
+*   **Status:** Not Started
+*   **Action:** Implement UI for inputting market signals and displaying **simulated** forecasts.
+*   **Detailed Steps:**
+    1.  **Backend Endpoint (`POST /api/validation/forecast` - Mock):**
+        *   Auth. Validate input (Zod: `marketSignals: string[]`, `projectId`, `ideaContext`).
+        *   **Simulation Logic:** Use GPT-4o for mock forecast. Prompt: "Based on idea {ideaContext} and signals {marketSignals}, generate brief, simulated 3-point market forecast. Preface with 'Simulated Market Forecast:'."
+        *   Return: `{ success: true, forecast: generated_mock_text }`. Handle errors.
+    2.  **UI Component (`src/components/validation/MarketForecast.tsx`):**
+        *   `Card`. Title: "Market Forecast (Simulated)".
+        *   Input fields for "Key Market Signals".
+        *   "Generate Forecast" button.
+        *   Display area for result text.
+    3.  **Frontend Logic:**
+        *   Manage state for signals/result.
+        *   Button click -> Loading -> Call `/api/validation/forecast` with signals, `projectId`, context.
+        *   On success: Display `forecast` text. Handle errors.
+*   **Dependencies:** React (`useState`), ShadCN UI (`Card`, `Input`, `Textarea`, `Button`), Axios, Backend Endpoint (Mock), OpenAI SDK. Requires Project Context.
+*   **Verification:** User inputs signals, triggers generation. Backend returns mock forecast text. Result displayed. Loading/errors handled. Simulation indicated.
+*   **Potential Challenges:** Effective GPT prompts for mock forecasts. UI design.
+
+---
+
+## Phase 5: Visualization & MVP Specification (Renamed/Repositioned)
+
+**Objective:** Allow users to visualize their validated idea with AI-generated concept imagery (**using mocks**) and then use AI assistance, guided by templates, to draft a simplified MVP specification.
+
+**Rationale:** Makes the validated idea more tangible and provides a structured roadmap (MVP spec) for subsequent phases.
+
+**Key Technologies:** React, TypeScript, Tailwind CSS, ShadCN UI (`Button`, `Card`, `Image`?, `Textarea`, **`ScrollArea`**), Axios, Backend API, OpenAI SDK, File Storage Solution (Step 0.2).
+
+---
+
+### Step 5.1: AI Concept Imagery (Mock) (Old Step 4.1)
+
+*   **Status:** Not Started
+*   **Action:** Implement UI/backend for generating **mock** concept images based on the validated idea.
+*   **Detailed Steps:**
+    1.  **Backend Endpoint (`POST /api/generate/image` - Mock Impl):** Auth, Validate (prompt, `projectId`). **Return hardcoded placeholder URL:** `{ success: true, imageUrl: '/placeholders/concept-image.png' }`. (No real API call or storage needed for mock).
+    2.  **Frontend UI (`src/pages/Visualize.tsx` or integrated):** Section for image gen, display idea context, `Textarea` for prompt, "Generate Concept Image" button.
+    3.  **Frontend API Call & Display:** Async function, loading state, call `/api/generate/image` (with prompt, `projectId`), receive `imageUrl`, display using `<img>`, handle errors. Label "Concept Image (Placeholder)".
+*   **Dependencies:** Backend Endpoint (Mock), Axios, React (`useState`), ShadCN UI (`Textarea`, `Button`, `Card`). Requires Project Context.
+*   **Verification:** User triggers generation. Backend returns mock URL. Frontend displays placeholder image. Loading/errors handled. Placeholder clearly indicated.
+*   **Potential Challenges:** Ensuring placeholder image exists and is served correctly. Clear communication.
+
+---
+
+### Step 5.2: Simplified MVP Specification (AI Chat) (Old Step 4.2)
+
+*   **Status:** Not Started
+*   **Action:** Implement AI chat interface for collaboratively drafting an MVP specification, guided by internal documents. (Content mostly unchanged)
+*   **Detailed Steps:**
+    1.  **Backend Endpoint (`POST /api/mvp-chat`):** Auth, Validate (Zod: `message`, `history`, `projectId`, `ideaContext`), Get Key, Init OpenAI Client, **Fetch Guiding Docs (`getInternalDoc`)**, Construct Prompt (System: Assistant using template/guide, User: History + Message), API Call (`gpt-4o`), Send Response (`{ success: true, reply: ... }`).
+    2.  **Frontend Chat UI (`src/components/planning/MvpChatInterface.tsx`?):** `useState` for history/input, render history, input field, send button. Use `ScrollArea`.
+    3.  **Frontend Logic:** Send message -> Add user msg -> Clear input -> Loading -> Call `/api/mvp-chat` (with history, msg, `projectId`, context) -> Add assistant reply -> Hide loading -> Handle errors. Scroll to bottom.
+    4.  **Integration:** Place component on "Plan" page, pass validated idea context and `projectId`.
+*   **Dependencies:** Backend Endpoint, File Storage (Internal Docs), OpenAI SDK, Axios, React (`useState`, `useEffect`), ShadCN UI (`Input`, `Button`, `Card`, `ScrollArea`). Requires Project Context.
+*   **Verification:** Chat UI works. Backend fetches docs, calls OpenAI correctly. AI guides user based on template. History maintained. Auth/errors handled.
+*   **Potential Challenges:** Effective system prompts with docs, long histories (token limits), reliable doc fetching, chat UI complexity.
+
+---
+
+## Phase 6: Launch Prep (Renumbered - Old Phase 6)
+
+**Objective:** Assist the user in preparing key materials for launching their product idea (pitch deck content, launch plan checklist).
+
+**Rationale:** Translates the MVP spec into actionable launch assets.
+
+**Key Technologies:** React, TypeScript, Tailwind CSS, ShadCN UI (`Button`, `Card`, `Textarea`, `Accordion`?, **`Checkbox`**), Axios, OpenAI SDK.
+
+---
+
+### Step 6.1: AI Pitch Deck Content
+
+*   **Status:** Not Started
+*   **Action:** Implement UI/backend to generate AI content for pitch deck sections based on project context. (Content mostly unchanged)
+*   **Detailed Steps:**
+    1.  **Backend Endpoint (`POST /api/pitch-deck`):** Auth, Validate (Zod: `section`, `context` [problem, solution, mvpSummary...], `projectId`), Get Key, Init OpenAI, Construct Prompt, API Call (`gpt-4o`), Send Response (`{ success: true, content: ... }`).
+    2.  **Frontend UI (`src/pages/LaunchPrep.tsx`?):** `Accordion`/Tabs for sections. Title, "Generate" button, `Textarea`.
+    3.  **Frontend Logic:** State per section. Button click -> Loading -> Gather context (from project state/props) -> Call `/api/pitch-deck` (with context, `projectId`) -> Update state/textarea -> Hide loading -> Handle errors.
+    4.  **Context Management:** Ensure context (problem, solution, MVP summary from Phase 5) is available, linked to `projectId`.
+*   **Dependencies:** Backend Endpoint, OpenAI SDK, Axios, React (`useState`), ShadCN UI (`Accordion`, `Button`, `Textarea`), Project Context/State.
+*   **Verification:** Select section, Generate works, Backend called, Content displayed. Loading/errors handled.
+*   **Potential Challenges:** Context gathering, prompt engineering, state management, consistency.
+
+---
+
+### Step 6.2: Interactive Launch Plan
+
+*   **Status:** Not Started
+*   **Action:** Create a UI checklist for a basic launch plan. (Content mostly unchanged)
+*   **Detailed Steps:**
+    1.  **Data Structure:** `{ id, task, category, completed, notes }[]`.
+    2.  **Default Plan:** Define array.
+    3.  **Component (`src/components/launch/LaunchChecklist.tsx`):** `useState` with default plan. Render grouped tasks. Each task: `Checkbox` bound to `completed`, description.
+    4.  **Interactivity:** `onCheckedChange` updates state.
+    5.  **Persistence:** Local state only for MVP.
+    6.  **Styling:** Tailwind, `line-through` for completed.
+*   **Dependencies:** React (`useState`), ShadCN UI (`Checkbox`, `Card`, `Label`).
+*   **Verification:** Checklist displays defaults. Checkboxes work. Grouped logically.
+*   **Potential Challenges:** Default plan design, persistence (Post-MVP).
+
+---
+
+## Phase 7: Marketing Assets (Renumbered - Old Phase 7)
+
+**Objective:** Enable users to generate basic marketing assets (ad copy, **mock** visual concepts/scripts).
+
+**Rationale:** Provides initial materials for marketing planning.
+
+**Key Technologies:** React, TypeScript, Tailwind CSS, ShadCN UI, Axios, OpenAI SDK, Backend API (Mock Endpoints).
+
+---
+
+### Step 7.1: Generative Ad Copy
+
+*   **Status:** Not Started
+*   **Action:** Implement UI/backend to generate ad copy variations using AI. (Content mostly unchanged)
+*   **Detailed Steps:**
+    1.  **Backend Endpoint (`POST /api/generate/ad-copy`):** Auth, Validate (Zod: `copyType`, `platform`, `context`, `projectId`), Get Key, Init OpenAI, Construct Prompt, API Call (`gpt-4o`, `n: 3`?), Parse variations, Send Response (`{ success: true, variations: [...] }`).
+    2.  **Frontend UI (`src/pages/Marketing.tsx`?):** Sections for types/platforms. Selectors, "Generate" button, Display variations.
+    3.  **Frontend Logic:** State for variations. Button click -> Loading -> Gather context -> Call `/api/generate/ad-copy` (with context, `projectId`) -> Update state/UI -> Hide loading -> Handle errors.
+*   **Dependencies:** Backend Endpoint, OpenAI SDK, Axios, React (`useState`), ShadCN UI, Project Context.
+*   **Verification:** Select type/platform, Generate works, Backend called, Variations displayed. Auth/errors handled.
+*   **Potential Challenges:** Prompt engineering, handling variations, UI display.
+
+---
+
+### Step 7.2: Placeholder Visual Asset Generation (Mock)
+
+*   **Status:** Not Started
+*   **Action:** Implement mock generation for visual assets (placeholder image, concept script). (Content mostly unchanged)
+*   **Detailed Steps:**
+    1.  **Backend Endpoints (`/api/generate/image`, `/api/generate/video` - Mock Impl):** Auth, Validate. **Image:** Return hardcoded URL (`{ success: true, imageUrl: '/placeholders/social-post.png' }`). **Video:** Call GPT-4o for script (`{ success: true, videoScript: '...' }`).
+    2.  **Frontend UI (`src/pages/Marketing.tsx`):** Sections for "Visual Concept", "Video Script". "Generate" buttons. Display areas (`<img>`, `Textarea`/`Card`).
+    3.  **Frontend Logic:** Button click -> Loading -> Call mock endpoints (with `projectId`, context) -> Display placeholder URL / script -> Hide loading -> Handle errors.
+*   **Dependencies:** Backend Endpoints (Mock), OpenAI SDK (for script), Axios, React (`useState`), ShadCN UI. Requires Project Context.
+*   **Verification:** Buttons trigger mocks. Backend returns placeholder/script. Frontend displays results. Simulation clear.
+*   **Potential Challenges:** Clear communication, placeholder availability, script prompt.
+
+---
+
+## Phase 8: Settings & Profile (Renumbered - Old Phase 10)
+
+**Objective:** Provide a basic interface for users to view profile information.
+
+**Rationale:** Essential for user account context.
+
+**Key Technologies:** React, TypeScript, Tailwind CSS, ShadCN UI (`Card`, `Avatar`), Axios, Backend API.
+
+---
+
+### Step 8.1: Basic Profile Page UI (Old Step 10.1)
+
+*   **Status:** Not Started
+*   **Action:** Create page displaying user info from backend auth status. (Content mostly unchanged)
+*   **Detailed Steps:**
+    1.  **Backend Auth Status (`GET /auth/status`):** Ensure returns `id`, `displayName`, `email`, `avatarUrl`. Update Passport if needed.
+    2.  **Frontend Page Creation (`src/pages/Settings.tsx`):** Create component, add routing, add Sidebar link.
+    3.  **Fetch User Data:** Fetch `/auth/status` (global state recommended). Store result.
+    4.  **Display User Info:** If auth, display Avatar, Name, Email (read-only). Show loading/unauth message otherwise.
+    5.  **Logout Button:** Include logout.
+*   **Dependencies:** Backend `/auth/status`, React (`useState`, `useEffect`), Axios, ShadCN UI (`Card`, `Avatar`), Global State/Context.
+*   **Verification:** Page renders. Profile info displayed. Fallbacks work. Logout functions.
+*   **Potential Challenges:** Auth status data, global state, loading/error handling.
+
+---
+
+## Phase 9: Deployment & Testing (Renumbered - Old Phase 11)
+
+**Objective:** Prepare the application for demo deployment and conduct thorough testing.
+
+**Rationale:** Ensures the MVP demo is stable, functional, and presentable.
+
+**Key Technologies:** Deployment Platform (e.g., Vercel, Netlify), CI/CD tools (GitHub Actions?), Testing frameworks (Vitest?), Browser testing tools.
+
+---
+
+### Step 9.1: Setup Deployment Pipeline
+
+*   **Status:** Not Started
+*   **Action:** Configure automated deployment for the demo branch.
+*   **Detailed Steps:**
+    1.  Choose Platform (Vercel/Netlify recommended for frontend + serverless backend, or separate platforms).
+    2.  Configure Frontend Deployment (Git repo, build cmd, output dir, env vars).
+    3.  Configure Backend Deployment (Git repo, start cmd, env vars - **securely**).
+    4.  Setup CI/CD (GitHub Actions recommended).
+*   **Dependencies:** Hosting Platform account, Git repo.
+*   **Verification:** Push deploys frontend/backend. App accessible. Env vars correct.
+*   **Potential Challenges:** Platform config, secure env var management, backend deployment (DB, etc.), CORS.
+
+---
+
+### Step 9.2: MVP Feature Testing
+
+*   **Status:** Not Started
+*   **Action:** Manually test all implemented MVP features across the defined user flow.
+*   **Detailed Steps:**
+    1.  Follow User Flow: Login -> **Project Setup -> Ideation -> Validation (Simulated) -> Visualization -> MVP Spec -> Launch Prep -> Marketing -> Settings.**
+    2.  Test Core Functionality: Forms, AI calls (mocks), UI updates, navigation, state.
+    3.  Test UI Refinements: Sidebar, theme, headers, responsiveness.
+    4.  Test Edge Cases: Invalid input, API errors (simulated), auth.
+    5.  Cross-Browser Check (Manual: Chrome, Firefox, Safari).
+*   **Dependencies:** Deployed application or local setup.
+*   **Verification:** MVP features function per plan. Flow is smooth. UI consistent/responsive. No major bugs.
+*   **Potential Challenges:** Thoroughness, simulating errors, time commitment.
+
+---
+
+### Step 9.3: Prepare Demo Script/Data
+
+*   **Status:** Not Started
+*   **Action:** Outline a demo script and prepare example data.
+*   **Detailed Steps:**
+    1.  Outline Demo Flow (Key steps/features to showcase).
+    2.  Prepare Example Project Data (Compelling problem, idea, market).
+    3.  Pre-run/Prepare Simulated Data (Optional: Have good-looking mock survey results, etc., ready).
+    4.  Identify Key Talking Points.
+*   **Dependencies:** Completed MVP features.
+*   **Verification:** Clear script exists. Example data ready. Talking points noted.
+*   **Potential Challenges:** Concise script. Balancing live vs. pre-populated demo.
+
+---
+
+*(Post-MVP Phases - Refer to `implementation_plan_post_mvp.md`)*
+*   Phase X: Prototyping (Full Implementation) (Old Phase 5)
+*   Phase Y: Dashboard Layout Refactor (Old Phase 8)
+*   Phase Z: Community Page Integration (Old Phase 9)
+
+
+
+</rewritten_file> 
