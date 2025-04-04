@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Lightbulb, RefreshCw } from 'lucide-react';
@@ -20,20 +20,22 @@ const prompts = [
 const CounterIntuitionCard: React.FC = () => {
   const [currentPrompt, setCurrentPrompt] = useState<string>("");
 
-  const getRandomPrompt = () => {
+  const getRandomPrompt = useCallback(() => {
     const randomIndex = Math.floor(Math.random() * prompts.length);
-    // Ensure the new prompt is different from the current one, if possible
-    let newPrompt = prompts[randomIndex];
+    const newPrompt = prompts[randomIndex];
     if (prompts.length > 1 && newPrompt === currentPrompt) {
-      return getRandomPrompt(); // Try again
+      let differentIndex = randomIndex;
+      while(differentIndex === randomIndex && prompts.length > 1) {
+         differentIndex = Math.floor(Math.random() * prompts.length);
+      }
+      return prompts[differentIndex];
     }
     return newPrompt;
-  };
+  }, [currentPrompt]);
 
-  // Set initial prompt on mount
   useEffect(() => {
     setCurrentPrompt(getRandomPrompt());
-  }, []);
+  }, [getRandomPrompt]);
 
   const handleRefreshPrompt = () => {
     setCurrentPrompt(getRandomPrompt());

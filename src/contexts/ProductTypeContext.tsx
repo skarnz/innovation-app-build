@@ -1,58 +1,43 @@
+import React, { createContext, useState, useContext, ReactNode, useMemo } from 'react';
 
-import { createContext, useState, useContext, useEffect, ReactNode } from 'react';
+// Keep type internal if only used here
+type ProductType = 'Physical' | 'Software' | 'Service' | null;
 
-export type ProductType = 'physical' | 'software' | 'service' | undefined;
-
+// Keep context internal
 interface ProductTypeContextType {
   productType: ProductType;
   setProductType: (type: ProductType) => void;
-  shouldShowFeature: (feature: 'software' | 'physical' | 'service') => boolean;
 }
 
 const ProductTypeContext = createContext<ProductTypeContextType | undefined>(undefined);
 
-export const ProductTypeProvider = ({ children }: { children: ReactNode }) => {
-  const [productType, setProductType] = useState<ProductType>(undefined);
+// Export only the Provider component
+interface ProductTypeProviderProps {
+  children: ReactNode;
+}
 
-  useEffect(() => {
-    // Load product type from localStorage on mount
-    const savedType = localStorage.getItem('productType') as ProductType | null;
-    if (savedType) {
-      setProductType(savedType);
-    }
-  }, []);
+export const ProductTypeProvider: React.FC<ProductTypeProviderProps> = ({ children }) => {
+  const [productType, setProductTypeState] = useState<ProductType>(null);
 
-  // Save to localStorage whenever productType changes
-  useEffect(() => {
-    if (productType) {
-      localStorage.setItem('productType', productType);
-    }
-  }, [productType]);
-
-  const shouldShowFeature = (feature: 'software' | 'physical' | 'service'): boolean => {
-    if (!productType) return true; // If no product type is set, show everything
-    
-    // Show features that match the product type, plus universal features
-    switch (feature) {
-      case 'software':
-        return productType === 'software' || productType === 'physical'; // Many physical products need software
-      case 'physical':
-        return productType === 'physical';
-      case 'service':
-        return productType === 'service';
-      default:
-        return true;
-    }
+  const setProductType = (type: ProductType) => {
+    setProductTypeState(type);
   };
 
+  // Memoize the context value
+  const contextValue = useMemo(() => ({
+    productType,
+    setProductType,
+  }), [productType]);
+
   return (
-    <ProductTypeContext.Provider value={{ productType, setProductType, shouldShowFeature }}>
+    <ProductTypeContext.Provider value={contextValue}>
       {children}
     </ProductTypeContext.Provider>
   );
 };
 
-export const useProductType = () => {
+// Export only the hook to use the context
+export const useProductType = (): ProductTypeContextType => {
   const context = useContext(ProductTypeContext);
   if (context === undefined) {
     throw new Error('useProductType must be used within a ProductTypeProvider');

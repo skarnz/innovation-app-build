@@ -1,5 +1,4 @@
-
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -37,9 +36,10 @@ const IdeaDiscovery = () => {
     if (initialIdea && !generatedIdeas.length) {
       handleGenerateIdeas();
     }
-  }, [initialIdea]);
+  }, [initialIdea, generatedIdeas.length, handleGenerateIdeas]);
   
-  const handleGenerateIdeas = () => {
+  // Wrap handleGenerateIdeas in useCallback
+  const handleGenerateIdeas = useCallback(() => {
     if (!initialIdea.trim()) return;
     
     setIsGenerating(true);
@@ -74,7 +74,7 @@ const IdeaDiscovery = () => {
       setGeneratedIdeas(ideas);
       setIsGenerating(false);
     }, 2000);
-  };
+  }, [initialIdea, ideaType]);
   
   const handleSaveIdea = (idea: string) => {
     if (!savedIdeas.includes(idea)) {

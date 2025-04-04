@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom'; // Import hooks
 import { PhaseStepper } from '@/components/layout/PhaseStepper';
+import { format } from 'date-fns'; // Import format
 // ... other imports ...
 import { CheckSquare, Check } from 'lucide-react';
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui/accordion';
@@ -10,7 +11,13 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/com
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
-// ... types and steps definition ...
+// Define steps for the PhaseStepper
+const launchSteps = [
+  { title: 'Production Setup' },
+  { title: 'Financials' },
+  { title: 'Launch Plan' },
+  { title: 'Review' }
+];
 
 type LaunchPlan = {
   launchType: 'soft' | 'beta' | 'full';
@@ -32,7 +39,10 @@ export default function LaunchPrepPage() {
   const navigate = useNavigate(); // Initialize navigate
   const { projectId } = useParams<{ projectId: string }>(); // Get projectId
   const [activeStep, setActiveStep] = useState(0);
-  // ... rest of the state ...
+
+  // Placeholder state for variables used in renderReview
+  const [productType, setProductType] = useState<string>('SaaS'); // Example value
+  const [financials, setFinancials] = useState({ initialCosts: 5000, monthlyRecurring: 1000, monthlyNonRecurring: 200 }); // Example values
 
   // Initialize milestones state based on structure
   const [launchPlan, setLaunchPlan] = useState<LaunchPlan>(() => {
@@ -59,7 +69,12 @@ export default function LaunchPrepPage() {
     }
   };
 
-  // ... financial handlers ...
+  // Placeholder calculation functions for renderReview
+  const calculateTotalMonthlyCosts = () => financials.monthlyRecurring + financials.monthlyNonRecurring;
+  const calculateRunwayMonths = () => {
+    const totalMonthly = calculateTotalMonthlyCosts();
+    return totalMonthly > 0 ? financials.initialCosts / totalMonthly : Infinity;
+  };
 
   // Milestone handler
   const handleMilestoneChange = (key: string, checked: boolean) => {
@@ -69,12 +84,34 @@ export default function LaunchPrepPage() {
     }));
   };
 
-  // ... renderProductionSetup ...
-  // ... renderFinancials ...
+  // --- Step 1: Production Setup Placeholder ---
+  const renderProductionSetup = () => (
+    <div className="space-y-6">
+        <h2 className="text-2xl font-semibold font-orbitron mb-4 text-white">1. Production Setup</h2>
+        <Card className="glass-card p-6">
+            <CardContent>
+                <p>Production setup details will go here...</p>
+            </CardContent>
+        </Card>
+    </div>
+  );
+
+  // --- Step 2: Financials Placeholder ---
+  const renderFinancials = () => (
+    <div className="space-y-6">
+        <h2 className="text-2xl font-semibold font-orbitron mb-4 text-white">2. Financials</h2>
+        <Card className="glass-card p-6">
+            <CardContent>
+                <p>Financial planning details will go here...</p>
+            </CardContent>
+        </Card>
+    </div>
+  );
 
   // --- Step 3: Launch Plan Content ---
   const renderLaunchPlan = () => (
     <div className="space-y-6">
+       <h2 className="text-2xl font-semibold font-orbitron mb-4 text-white">3. Launch Plan</h2>
       {/* ... Title, Launch Type, Launch Date ... */} 
       <div>
         <h3 className="font-medium mb-2 text-white/90">Key Milestones</h3>
@@ -106,8 +143,15 @@ export default function LaunchPrepPage() {
 
   // --- Step 4: Review Content ---
   const renderReview = () => {
-    // Calculate completed milestones
-    const completedMilestones = Object.entries(launchPlan.milestones)
+    // Calculate completed milestones and map keys to text
+    const milestoneKeyToTextMap: Record<string, string> = {};
+    milestoneStructure.forEach(phase => {
+        phase.items.forEach(item => {
+            milestoneKeyToTextMap[getMilestoneKey(phase.key, item)] = item;
+        });
+    });
+
+    const completedMilestoneKeys = Object.entries(launchPlan.milestones)
                                      .filter(([_, completed]) => completed)
                                      .map(([key]) => key);
     const totalMilestones = Object.keys(launchPlan.milestones).length;
@@ -133,21 +177,15 @@ export default function LaunchPrepPage() {
             <div className="bg-navy-light/50 p-3 rounded space-y-1 border border-white/10">
                <h4 className="font-medium text-white/90 mb-1">Milestone Progress:</h4>
                <p className="text-white/80">
-                 Completed: <span className="font-semibold text-electric-blue">{completedMilestones.length}</span> / {totalMilestones}
+                 Completed: <span className="font-semibold text-electric-blue">{completedMilestoneKeys.length}</span> / {totalMilestones}
                </p>
-               {/* Optionally list completed items */}
-               {completedMilestones.length > 0 && (
-                 <ul className="list-disc list-inside pl-4 pt-1 text-xs text-white/70">
-                   {completedMilestones.map(key => {
-                     // Find the item text from the structure (can be optimized)
-                     let itemText = '';
-                     milestoneStructure.forEach(phase => phase.items.forEach(item => {
-                       if (getMilestoneKey(phase.key, item) === key) itemText = item;
-                     }));
-                     return <li key={key}>{itemText || key}</li>;
-                   })}
-                 </ul>
-               )}
+               {completedMilestoneKeys.length > 0 ? (
+                   <ul className="list-disc list-inside pl-4 pt-1 text-xs text-white/70">
+                     {completedMilestoneKeys.map(key => (
+                       <li key={key}>{milestoneKeyToTextMap[key] || key}</li>
+                     ))}
+                   </ul>
+                ) : null}
             </div>
             <div className="border-t border-white/10 pt-4 mt-4">
               <h3 className="font-medium text-white/90 mb-2">Next Steps</h3>
@@ -159,10 +197,25 @@ export default function LaunchPrepPage() {
     );
   };
 
-  // ... renderStepContent ...
+  // --- Function to render content based on active step ---
+  const renderStepContent = () => {
+    switch (activeStep) {
+      case 0:
+        return renderProductionSetup();
+      case 1:
+        return renderFinancials();
+      case 2:
+        return renderLaunchPlan();
+      case 3:
+        return renderReview();
+      default:
+        return <div>Unknown Step</div>;
+    }
+  };
 
   return (
-    // ... container and header ...
+    <div className="flex flex-col min-h-screen bg-gradient-to-b from-navy-dark to-navy-base text-white p-6">
+      <h1 className="text-3xl font-bold mb-6 text-center">Launch Preparation</h1>
 
       {/* Render the Stepper */}
       <PhaseStepper steps={launchSteps} currentStepIndex={activeStep} />
@@ -189,6 +242,6 @@ export default function LaunchPrepPage() {
           </Button>
         )}
       </div>
-    // ... closing div
+    </div>
   );
 } 

@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss";
+import animatePlugin from "tailwindcss-animate";
 
 export default {
 	darkMode: ["class"],
@@ -76,6 +77,24 @@ export default {
 					blue: '#00FFFF',
 					purple: '#BB6BD9',
 				},
+				'electric-blue': '#00FFFF',
+				'electric-purple': '#BF00FF',
+				'deep-space-blue': '#000020',
+				'galaxy-purple': '#4B0082',
+				'star-yellow': '#FFD700',
+				'nebula-pink': '#FF69B4',
+				'comet-grey': '#A9A9A9',
+				'orbitron-orange': '#FFA500',
+				'plasma-green': '#00FF00',
+				'quantum-grey': '#808080',
+				'dark-matter': '#1a1a1a',
+				'light-grey': '#D3D3D3',
+				'light-accent': '#E0E0E0',
+				'navy-dark': '#0a192f',
+				'navy-light': '#112240',
+				'slate-grey': '#708090',
+				'teal-accent': '#008080',
+				'sky-blue-light': '#87CEEB'
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
@@ -169,8 +188,12 @@ export default {
 			},
 			transitionDuration: {
 				'2000': '2000ms',
-			}
+			},
+			fontFamily: {
+				sans: ['Inter', 'sans-serif'],
+				orbitron: ['Orbitron', 'sans-serif'],
+			},
 		}
 	},
-	plugins: [require("tailwindcss-animate")],
+	plugins: [animatePlugin],
 } satisfies Config;

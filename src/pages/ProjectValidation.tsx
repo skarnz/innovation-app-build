@@ -1,5 +1,4 @@
-
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, ArrowRight, BarChart2, Check, ChevronDown, ChevronUp, Plus, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -183,9 +182,9 @@ const ProjectValidation = () => {
     ));
   };
   
-  const getActivePartners = () => {
+  const getActivePartners = useCallback(() => {
     return dataPartners.filter(partner => partner.active);
-  };
+  }, [dataPartners]);
   
   const scrollCarousel = (direction: 'left' | 'right') => {
     if (carouselRef.current) {
@@ -200,10 +199,11 @@ const ProjectValidation = () => {
   
   useEffect(() => {
     // Automatically scroll to selected partners when one is added or removed
-    if (getActivePartners().length > 0 && selectedPartnersRef.current) {
+    const activePartners = getActivePartners();
+    if (activePartners.length > 0 && selectedPartnersRef.current) {
       selectedPartnersRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
-  }, [dataPartners]);
+  }, [dataPartners, getActivePartners]);
   
   return (
     <div className="min-h-screen bg-navy pb-20">

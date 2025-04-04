@@ -1,5 +1,4 @@
-
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { ArrowLeft, MessageSquare, Check, Circle, Sparkles, Star, Search, Plus, RefreshCw, X, ThumbsUp } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
@@ -68,14 +67,8 @@ const ProjectIdeation = () => {
     }
   }, [location.state]);
   
-  // Generate ideas based on the initial input
-  useEffect(() => {
-    if (initialIdea && !generatedIdeas.length && showDiscovery) {
-      handleGenerateIdeas();
-    }
-  }, [initialIdea, showDiscovery]);
-  
-  const handleGenerateIdeas = () => {
+  // Wrap handleGenerateIdeas in useCallback
+  const handleGenerateIdeas = useCallback(() => {
     if (!initialIdea.trim()) return;
     
     setIsGenerating(true);
@@ -110,7 +103,14 @@ const ProjectIdeation = () => {
       setGeneratedIdeas(ideas);
       setIsGenerating(false);
     }, 2000);
-  };
+  }, [initialIdea, ideaType]);
+  
+  // Generate ideas based on the initial input
+  useEffect(() => {
+    if (initialIdea && !generatedIdeas.length && showDiscovery) {
+      handleGenerateIdeas();
+    }
+  }, [initialIdea, generatedIdeas.length, showDiscovery, handleGenerateIdeas]);
   
   const handleSaveIdea = (idea: string) => {
     if (!savedIdeas.includes(idea)) {
