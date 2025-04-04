@@ -1,9 +1,9 @@
-
 import { useState, useRef, useEffect } from 'react';
-import { Bot, ChevronDown, ChevronUp, Maximize2, Minimize2, SendHorizontal, X, FileText, FolderOpen, Save } from 'lucide-react';
+import { Bot, ChevronDown, ChevronUp, Maximize2, Minimize2, SendHorizontal, X, FileText, FolderOpen, Save, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast';
+import { getAiReply } from '@/lib/api';
 
 type Message = {
   id: string;
@@ -24,6 +24,7 @@ const AiAgent = () => {
       timestamp: new Date()
     }
   ]);
+  const [isAgentReplying, setIsAgentReplying] = useState(false);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
@@ -38,41 +39,55 @@ const AiAgent = () => {
     setIsMinimized(!isMinimized);
   };
   
-  const handleSendMessage = () => {
-    if (!input.trim()) return;
+  const handleSendMessage = async () => {
+    if (!input.trim() || isAgentReplying) return;
+
+    const userMessageContent = input;
+    setInput('');
 
     // Add user message
     const userMessage: Message = {
       id: `user-${Date.now()}`,
       type: 'user',
-      content: input,
+      content: userMessageContent,
       timestamp: new Date()
     };
-    
     setMessages(prev => [...prev, userMessage]);
-    setInput('');
-    
-    // Simulate AI response after a short delay
-    setTimeout(() => {
-      const botResponses = [
-        "I'm analyzing that for you now. Let me check our data sources.",
-        "Great question! Here's what I found based on your project context.",
-        "I can help with that. Would you like me to create a survey for this?",
-        "Based on market data, I would recommend focusing on these areas first.",
-        "I've processed your request. Would you like me to show some visualization options?"
-      ];
-      
-      const randomResponse = botResponses[Math.floor(Math.random() * botResponses.length)];
-      
-      const botMessage: Message = {
+
+    setIsAgentReplying(true);
+
+    try {
+      // Call the actual API function
+      // TODO: Decide what context to send (e.g., last few messages, project ID?)
+      const response = await getAiReply(userMessageContent, { history: messages.slice(-5) });
+
+      // Add agent response message
+      const agentMessage: Message = {
         id: `agent-${Date.now()}`,
         type: 'agent',
-        content: randomResponse,
+        content: response.reply || 'Sorry, I could not process that.',
         timestamp: new Date()
       };
-      
-      setMessages(prev => [...prev, botMessage]);
-    }, 1000);
+      setMessages(prev => [...prev, agentMessage]);
+
+    } catch (error) {
+      console.error("Error getting AI reply:", error);
+      // Add an error message to the chat
+      const errorMessage: Message = {
+        id: `error-${Date.now()}`,
+        type: 'agent',
+        content: 'Sorry, I encountered an error. Please try again.',
+        timestamp: new Date()
+      };
+      setMessages(prev => [...prev, errorMessage]);
+       toast({
+          variant: "destructive",
+          title: "AI Error",
+          description: "Could not get a response from the assistant.",
+      })
+    } finally {
+      setIsAgentReplying(false);
+    }
   };
   
   // Auto-scroll to bottom of messages
@@ -149,12 +164,12 @@ const AiAgent = () => {
       {isOpen && (
         <div
           ref={chatContainerRef}
-          className={`fixed right-6 bottom-6 w-[380px] rounded-lg shadow-xl transition-all z-50 glass-card border border-white/20 overflow-hidden ${
+          className={`fixed right-6 bottom-6 w-[380px] rounded-lg shadow-xl transition-all z-50 bg-navy-darkest/80 backdrop-blur-md border border-navy-medium overflow-hidden ${
             isMinimized ? 'h-14' : 'h-[500px]'
           }`}
         >
           {/* Header */}
-          <div className="flex items-center justify-between p-3 border-b border-white/10 bg-navy-light">
+          <div className="flex items-center justify-between p-3 border-b border-navy-medium bg-navy-dark/80">
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-full bg-electric-blue flex items-center justify-center">
                 <Bot size={18} className="text-white" />
@@ -198,14 +213,14 @@ const AiAgent = () => {
                       <div
                         className={`max-w-[80%] p-3 rounded-lg ${
                           message.type === 'user'
-                            ? 'bg-electric-blue/20 text-white'
-                            : 'bg-navy-light/80 text-white/90'
+                            ? 'bg-electric-blue text-white'
+                            : 'bg-navy-light text-white/90'
                         }`}
                       >
                         <p>{message.content}</p>
                         <div
                           className={`text-xs mt-1 ${
-                            message.type === 'user' ? 'text-white/50' : 'text-white/40'
+                            message.type === 'user' ? 'text-white/60' : 'text-white/50'
                           }`}
                         >
                           {message.timestamp.toLocaleTimeString([], {
@@ -216,12 +231,20 @@ const AiAgent = () => {
                       </div>
                     </div>
                   ))}
+                  {isAgentReplying && (
+                    <div className="flex justify-start">
+                      <div className="max-w-[80%] p-3 rounded-lg bg-navy-light text-white/90 flex items-center">
+                         <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                         <span>Thinking...</span>
+                      </div>
+                    </div>
+                  )}
                   <div ref={messagesEndRef} />
                 </div>
               </div>
               
               {/* Document Actions */}
-              <div className="border-t border-white/10 bg-navy-dark/30 p-2">
+              <div className="border-t border-navy-medium bg-navy-dark/80 p-2">
                 <div className="flex justify-between items-center">
                   <div className="text-xs text-white/50 ml-2">Document Actions</div>
                   <div className="flex gap-1">
@@ -266,20 +289,24 @@ const AiAgent = () => {
               </div>
               
               {/* Input Area */}
-              <div className="p-3 border-t border-white/10">
-                <div className="flex">
+              <div className="p-3 border-t border-navy-medium bg-navy-dark/80">
+                <div className="flex items-center gap-2">
                   <Input
+                    type="text"
+                    placeholder="Ask me anything..."
+                    className="flex-1 bg-navy-darkest border border-navy-medium focus:border-electric-blue text-slate-light placeholder:text-slate-dark ring-offset-navy-dark focus-visible:ring-electric-blue rounded-md px-3 py-2 text-sm"
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
-                    placeholder="Ask me anything..."
-                    className="resize-none bg-navy border-white/20 text-white"
                     onKeyDown={handleKeyDown}
+                    disabled={isAgentReplying}
                   />
-                  <Button 
-                    className="ml-2 bg-electric-blue hover:bg-electric-blue/90" 
+                  <Button
+                    size="icon"
+                    className="bg-electric-blue hover:bg-electric-blue/80 text-white disabled:opacity-50"
                     onClick={handleSendMessage}
+                    disabled={isAgentReplying || !input.trim()}
                   >
-                    <SendHorizontal size={16} />
+                    <SendHorizontal size={18} />
                   </Button>
                 </div>
               </div>
