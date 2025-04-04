@@ -17,6 +17,7 @@ const pool = new Pool({
 });
 
 // Test the connection (optional, but good practice)
+/* --- Temporarily commented out for stability testing ---
 pool.query('SELECT NOW()', (err, res) => {
   if (err) {
     console.error('Error connecting to the database:', err.stack);
@@ -25,6 +26,7 @@ pool.query('SELECT NOW()', (err, res) => {
     // console.log('Current time from DB:', res.rows[0].now);
   }
 });
+*/ // --- End of temporarily commented out block ---
 
 // Export the pool for use in other parts of the application
 module.exports = pool; 

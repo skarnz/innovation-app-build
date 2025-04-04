@@ -1,0 +1,53 @@
+# AWS Elastic Beanstalk Configuration File (beanstalk.yaml)
+# This file defines the environment and deployment settings for the backend.
+# Replace placeholders with actual values based on AWS setup.
+
+# Environment Settings
+# Defines environment variables available to the Node.js application
+option_settings:
+  aws:elasticbeanstalk:application:environment:
+    # Example: Set Node environment
+    NODE_ENV: production 
+    # Example: Port Node app should listen on (EB expects 8081 often)
+    PORT: 8081
+    # Example: Database credentials (better to use secrets manager or EB console)
+    # DB_HOST: your_rds_endpoint
+    # DB_USER: your_db_user
+    # DB_PASSWORD: your_db_password
+    # DB_DATABASE: your_db_name
+    # DB_PORT: 5432
+    # SESSION_SECRET: your_production_session_secret
+    # GITHUB_CLIENT_ID: your_production_github_id
+    # GITHUB_CLIENT_SECRET: your_production_github_secret
+    # GOOGLE_CLIENT_ID: your_production_google_id
+    # GOOGLE_CLIENT_SECRET: your_production_google_secret
+    # APP_BASE_URL: your_production_app_url
+
+  # Instance Configuration
+  aws:autoscaling:launchconfiguration:
+    InstanceType: t2.micro # Example: Choose an appropriate instance type
+    # EC2KeyName: your-ec2-keypair # Optional: If SSH access is needed
+
+  # Scaling Configuration
+  aws:autoscaling:asg:
+    MinSize: 1 # Minimum number of instances
+    MaxSize: 2 # Maximum number of instances
+
+  # Load Balancer Configuration (Example for Application Load Balancer)
+  aws:elbv2:listener:default:
+    DefaultActions: '[{"Type":"forward","TargetGroupName":"AWSEBV2LoadBalancerTargetGroup"}]'
+    Port: 80 # Listen on port 80
+    Protocol: HTTP
+
+  # Health Check Configuration
+  aws:elasticbeanstalk:environment:process:default:
+    HealthCheckPath: / # Use the root path for health checks (responds with 'Hello from the Backend!')
+    Port: 8080 # Match the port Node app listens on (if not using default 8081 override)
+
+# Deployment Settings
+# Defines how the application is deployed
+# deployment:
+  # strategy: rolling # Example: Rolling updates
+
+# Region Specification (Often defined during EB environment creation)
+# region: us-east-1 

@@ -1,10 +1,18 @@
 const express = require('express');
 const session = require('express-session');
 const passport = require('passport');
+const cors = require('cors'); // Import cors
 require('dotenv').config(); // Ensure env vars are loaded early
 
 const app = express();
 const PORT = process.env.PORT || 3000; // Use environment variable or default to 3000
+
+// CORS Configuration
+const corsOptions = {
+  origin: 'http://localhost:5174', // Update to allow current frontend port
+  credentials: true, // Allow cookies/session info to be sent
+};
+app.use(cors(corsOptions));
 
 // Middleware
 app.use(express.json());
