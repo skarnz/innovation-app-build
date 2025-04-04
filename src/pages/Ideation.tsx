@@ -62,7 +62,7 @@ const IdeationPage = () => {
   };
 
   // Combine problem and idea for context needed by scraper/counter-intuition
-  const ideaContext = `Problem: ${problemStatement}\nIdea: ${initialIdea}`;
+  const ideaContext = problemStatement && initialIdea ? `Problem: ${problemStatement}\nIdea: ${initialIdea}` : undefined;
 
   return (
     <div className="space-y-8">
@@ -111,20 +111,11 @@ const IdeationPage = () => {
                 </CardContent>
             </Card>
 
-            {/* Placeholder for Agent Scraper Button (Step 3.3) */}
-            <Card className="glass-card">
-                 <CardHeader><CardTitle>2. Analyze Trends (Simulated)</CardTitle></CardHeader>
-                 <CardContent>
-                     <AgentScraper 
-                        projectId={projectId} 
-                        ideaContext={ideaContext} 
-                        disabled={!initialIdea || !problemStatement}
-                     /> 
-                 </CardContent>
-            </Card>
+            {/* Integrate AgentScraper (Card 2) */}
+            <AgentScraper ideaContext={ideaContext} />
 
-             {/* Use the actual CounterIntuitionCard component */}
-             <CounterIntuitionCard />
+            {/* Integrate CounterIntuitionCard (Card 3) */}
+            <CounterIntuitionCard />
         </div>
 
         {/* Right Column: Results */}
@@ -132,20 +123,23 @@ const IdeationPage = () => {
             <Card className="glass-card min-h-[400px]">
                  <CardHeader>
                     <CardTitle>Generated Ideas</CardTitle>
+                    <CardDescription>Alternative concepts based on your input.</CardDescription>
                 </CardHeader>
                  <CardContent>
-                    {isLoadingIdeation && <p className="text-muted-foreground">Generating ideas...</p>}
+                    {isLoadingIdeation && (
+                        <div className="flex justify-center items-center h-40">
+                            <Loader2 className="h-8 w-8 animate-spin text-electric-blue" />
+                        </div>
+                     )}
                     {!isLoadingIdeation && generatedIdeas.length === 0 && (
-                        <p className="text-muted-foreground">Enter a problem and idea, then click 'Generate' to see AI-powered alternatives here.</p>
+                        <p className="text-center text-white/70 py-10">Enter a problem and idea, then click 'Generate' to see AI-powered alternatives here.</p>
                     )}
-                    {/* Placeholder for IdeationResults component (Step 3.2) */}
-                    {/* <IdeationResults ideas={generatedIdeas} /> */}
                      {generatedIdeas.length > 0 && (
                         <div className="space-y-4">
                             {generatedIdeas.map((idea, index) => (
-                                <Card key={index} className="bg-muted/30">
-                                    <CardHeader><CardTitle>{idea.title || `Idea ${index + 1}`}</CardTitle></CardHeader>
-                                    <CardContent><p>{idea.description || 'No description provided.'}</p></CardContent>
+                                <Card key={index} className="bg-navy-light/50 border-white/10">
+                                    <CardHeader><CardTitle className="text-lg text-white/95">{idea.title || `Idea ${index + 1}`}</CardTitle></CardHeader>
+                                    <CardContent><p className="text-sm text-white/80">{idea.description || 'No description provided.'}</p></CardContent>
                                 </Card>
                             ))}
                         </div>

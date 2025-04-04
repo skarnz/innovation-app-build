@@ -3,13 +3,15 @@ const router = express.Router();
 const { z } = require('zod');
 const OpenAI = require("openai");
 require('dotenv').config({ path: require('path').resolve(__dirname, '../.env') });
+const { getOpenAIClient } = require('../utils/openai'); // Assuming OpenAI client setup
+const { getInternalDoc } = require('../utils/storage'); // Assuming storage util
+const { ensureAuthenticated } = require('../middleware/auth');
 
 // Initialize OpenAI Client
 const openai = process.env.OPENAI_API_KEY ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY }) : null;
 
-// TODO: Add authentication middleware
-// const ensureAuthenticated = require('../middleware/auth'); 
-// router.use(ensureAuthenticated);
+// Apply auth middleware to all AI routes
+router.use(ensureAuthenticated);
 
 // Zod Schemas
 const IdeationSchema = z.object({
@@ -360,6 +362,74 @@ router.post('/generate/ad-copy', async (req, res, next) => {
     console.log('Hit /api/generate/ad-copy stub', req.body);
     // TODO: Add Zod validation using AdCopySchema
     res.json({ success: true, message: '/api/generate/ad-copy stub hit', variations: ['Mock ad copy 1', 'Mock ad copy 2'] });
+});
+
+// New Schemas for Validation Page AI
+const GenerateSurveyQuestionsSchema = z.object({
+    surveyName: z.string().min(3, "Survey name is required"),
+    ideaContext: z.string().min(10, "Idea context is required"),
+    projectId: z.string().uuid().optional(),
+});
+
+const DeepResearchSchema = z.object({
+    query: z.string().min(5, "Research query is required"),
+    ideaContext: z.string().min(10, "Idea context is required"),
+    projectId: z.string().uuid().optional(),
+});
+
+// POST /api/ai/generate-survey-questions (New Mock)
+router.post('/generate-survey-questions', async (req, res, next) => {
+    try {
+        GenerateSurveyQuestionsSchema.parse(req.body);
+        const { surveyName, ideaContext } = req.body;
+        console.log('AI Generate Survey Questions Request (Mock):', { surveyName, ideaContext });
+
+        // Mock Response
+        const mockQuestions = [
+            `Regarding '${surveyName}', how likely are you to use a solution for '${ideaContext.substring(0, 50)}...'? (Scale 1-5)`,
+            `What is the biggest challenge you face related to '${ideaContext.substring(0, 50)}...'?`,
+            `How much would you be willing to pay monthly for a solution like this?`,
+            `What features would be most important to you?`
+        ];
+
+        // Simulate delay
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
+        res.json({ success: true, questions: mockQuestions });
+
+    } catch (error) {
+         if (error instanceof z.ZodError) {
+            return res.status(400).json({ success: false, message: 'Invalid input', errors: error.errors });
+        }
+        next(error);
+    }
+});
+
+// POST /api/ai/deep-research (New Mock)
+router.post('/deep-research', async (req, res, next) => {
+    try {
+        DeepResearchSchema.parse(req.body);
+        const { query, ideaContext } = req.body;
+        console.log('AI Deep Research Request (Mock):', { query, ideaContext });
+
+        // Mock Response
+        let mockSummary = `Simulated AI Research Summary for query: "${query}"\n\n`;
+        mockSummary += `- Finding 1: Competitor X recently launched a similar feature with mixed reviews.\n`;
+        mockSummary += `- Finding 2: Market trend Y shows increasing demand for solutions addressing '${ideaContext.substring(0, 30)}...'.\n`;
+        mockSummary += `- Finding 3: Potential challenge: Regulatory landscape Z is evolving.\n`;
+        mockSummary += `\n(Note: This is simulated data based on your query and idea context.)`;
+
+        // Simulate delay
+        await new Promise(resolve => setTimeout(resolve, 2500));
+
+        res.json({ success: true, researchSummary: mockSummary });
+
+    } catch (error) {
+         if (error instanceof z.ZodError) {
+            return res.status(400).json({ success: false, message: 'Invalid input', errors: error.errors });
+        }
+        next(error);
+    }
 });
 
 module.exports = router; 

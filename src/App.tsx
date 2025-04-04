@@ -8,9 +8,7 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import DashboardLayout from "./layouts/DashboardLayout";
 import Dashboard from "./pages/Dashboard";
-import ProjectIdeation from "./pages/ProjectIdeation";
 import CounterIntuition from "./pages/CounterIntuition";
-import ProjectValidation from "./pages/ProjectValidation";
 import ProjectScore from "./pages/ProjectScore";
 import Forecasting from "./pages/Forecasting";
 import Pricing from "./pages/Pricing";
@@ -27,7 +25,6 @@ import UXPrototype from "./pages/prototyping/UXPrototype";
 import SketchPrototype from "./pages/prototyping/SketchPrototype";
 import PhysicalPrototype from "./pages/prototyping/PhysicalPrototype";
 import ProductionDeployment from "./pages/ProductionDeployment";
-import LaunchProduction from "./pages/LaunchProduction";
 import GitHubIntegration from "./pages/launch/GitHubIntegration";
 import SupabaseIntegration from "./pages/launch/SupabaseIntegration";
 import Pilot from "./pages/launch/Pilot";
@@ -50,10 +47,11 @@ import Support from "./pages/Support";
 import ComingSoon from "@/pages/ComingSoon";
 import ProjectSetup from "@/pages/ProjectSetup";
 import Ideation from "@/pages/Ideation";
-import ValidationPage from "@/pages/Validation";
+import ValidationPage from "@/pages/ValidationPage";
 import VisualizePage from "@/pages/Visualize";
 import PlanPage from "@/pages/Plan";
-import LaunchPrepPage from "@/pages/LaunchPrep";
+import LaunchPrepPage from "@/pages/LaunchPrepPage";
+import MarketingPage from "@/pages/MarketingPage";
 
 const queryClient = new QueryClient();
 
@@ -85,53 +83,41 @@ const App = () => (
               <Route path="project/:projectId/visualize" element={<VisualizePage />} />
               <Route path="project/:projectId/plan" element={<PlanPage />} />
               <Route path="project/:projectId/launch-prep" element={<LaunchPrepPage />} />
+              <Route path="project/:projectId/marketing-plan" element={<MarketingPage />} />
+
+              {/* --- Legacy/Placeholder Routes (Review/Remove Later) --- */}
               <Route path="project/ideate/counter-intuition" element={<CounterIntuition />} />
-              
               <Route path="project/score" element={<ProjectScore />} />
               <Route path="project/forecasting" element={<Forecasting />} />
               <Route path="project/target" element={<TargetMarket />} />
               <Route path="project/interview" element={<Interviews />} />
-              
-              {/* Business Model & Value Chain Hub - Now as section 3 */}
               <Route path="project/business-canvas" element={<BusinessCanvas />} />
               <Route path="project/value-chain" element={<ValueChain />} />
               <Route path="project/competition" element={<CompetitionAnalysis />} />
               <Route path="project/market" element={<MarketAnalysis />} />
               <Route path="project/outcomes" element={<MazeOfOutcomes />} />
               <Route path="project/anti-intuition" element={<AntiIntuition />} />
-              
-              {/* MVP Specification - Phase 4 */}
               <Route path="project/mvp" element={<MVPSpecification />} />
               <Route path="project/mvp/core-features" element={<CoreFeatures />} />
               <Route path="project/mvp/timeline" element={<Timeline />} />
               <Route path="project/mvp/resources" element={<Resources />} />
               <Route path="project/mvp/dependencies" element={<Dependencies />} />
-              
-              {/* Prototyping - Phase 5 */}
               <Route path="project/prototype" element={<Prototyping />} />
               <Route path="project/prototype/ux" element={<UXPrototype />} />
               <Route path="project/prototype/sketch" element={<SketchPrototype />} />
               <Route path="project/prototype/physical" element={<PhysicalPrototype />} />
-              
-              {/* Launch - Phase 6 */}
-              <Route path="project/launch" element={<LaunchProduction />} />
               <Route path="project/production" element={<ProductionDeployment />} />
               <Route path="project/launch/github" element={<GitHubIntegration />} />
               <Route path="project/launch/supabase" element={<SupabaseIntegration />} />
               <Route path="project/launch/pilot" element={<Pilot />} />
-              
-              {/* Marketing - Phase 7 */}
               <Route path="project/marketing" element={<MarketingFeedback />} />
               <Route path="project/marketing/timeline" element={<MarketingTimeline />} />
               <Route path="project/marketing/platforms" element={<MarketingPlatforms />} />
               <Route path="project/marketing/automation" element={<AutomationFlow />} />
               <Route path="project/marketing/video" element={<GenerativeVideo />} />
-              
-              {/* Scaling Operations - Phase 8 */}
               <Route path="project/scaling" element={<ScalingOperations />} />
-              
-              {/* Partnerships - Phase 9 */}
               <Route path="project/partnerships" element={<Partnerships />} />
+              {/* --- End Legacy --- */}
               
               {/* Project Management Functionality */}
               <Route path="project/files" element={<FileManagement />} />
@@ -141,12 +127,8 @@ const App = () => (
               {/* Add routes for new sidebar items using ComingSoon */}
               <Route path="deep-research" element={<ComingSoon featureName="Deep Research" />} />
               <Route path="community" element={<ComingSoon featureName="Community" />} />
-              {/* Settings could also be ComingSoon or redirect to profile if exists */}
               <Route path="settings" element={<ComingSoon featureName="Settings" />} /> 
 
-              {/* Catch-all for other /project paths - Needs adjustment potentially */}
-              {/* Might need specific project routes like /project/:projectId/ideation */}
-              {/* <Route path="project/*" element={<ComingSoon featureName="This Project Feature" />} /> */}
             </Route>
             
             {/* 404 Route */}

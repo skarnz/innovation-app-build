@@ -119,14 +119,17 @@
             *   `GET /:projectId`: Get project details.
             *   `PUT /:projectId`: Update project details (e.g., save target market).
             *   `POST /:projectId/upload-asset`: (Logic defined in Step 0.2).
+            *   `POST /:projectId/surveys`: Create a new survey draft. Expects `{ name: string, description?: string }`. Returns `{ surveyId }`.
         *   **(AI Routes - `aiRoutes.js`)**
-            *   `POST /ideate`: GPT-4o ideation. Expects `problemStatement`, `solutionIdea`.
+            *   `POST /ideate`: GPT-4o ideation. Expects `problemStatement`, `solutionIdea`. Returns `{ ideas: [...] }`.
             *   `POST /scrape-trends`: **Simulated** web scraping. Expects `ideaContext`. Returns mock trend data.
             *   `POST /generate/image`: Image generation. Expects `prompt`. Returns mock URL for MVP.
             *   `POST /generate/video`: Video generation. Expects `context`. Returns mock script for MVP.
             *   `POST /mvp-chat`: Guided MVP spec chat. Expects `message`, `history`, `context`. Needs `getInternalDoc`.
             *   `POST /pitch-deck`: Pitch deck content. Expects `section`, `context`.
             *   `POST /generate/ad-copy`: Ad copy generation. Expects `copyType`, `platform`, `context`.
+            *   `POST /generate-survey-questions`: Generate questions for a survey. Expects `{ surveyName: string, ideaContext: string }`. Returns `{ questions: string[] }`.
+            *   `POST /deep-research`: Perform AI research on a query. Expects `{ query: string, ideaContext: string }`. Returns `{ researchSummary: string }`.
         *   **(Validation Routes - `validationRoutes.js`)**
             *   `POST /simulate-survey`: Simulate survey run. Expects survey params. Returns mock results.
             *   `POST /forecast`: Simulate market forecast. Expects market signals, context. Returns mock forecast.
@@ -294,38 +297,42 @@
 ### Step 3.3: Simulated AI Agent Scraper
 
 *   **Status:** Done
-*   **Details:** Created `AgentScraper.tsx` component and integrated into `Ideation.tsx`.
-*   **Action:** Create a UI component (`src/components/ideation/AgentScraper.tsx`) for triggering simulated web trend analysis.
+*   **Details:** Created `src/components/ideation/AgentScraper.tsx`. Component includes a textarea for query input (pre-filled with idea context), a button to trigger analysis, loading state, and displays mock trends on completion. Integrated into the left column of `src/pages/Ideation.tsx`.
+*   **Action:** Create UI component for simulated trend analysis.
 *   **Detailed Steps:**
-    1.  **UI Component:**
-        *   Button "Analyze Trends (Simulated)" near ideation results.
-        *   On click, open ShadCN `Dialog` or `Sheet`.
-        *   Display area within dialog/sheet.
-    2.  **Frontend Logic:**
-        *   Button click -> Call `POST /api/ai/scrape-trends` with `ideaContext` and `projectId`.
-        *   Show loading in dialog/sheet.
-        *   On success, display `analysis` text. Handle errors.
-*   **Dependencies:** Backend Endpoint (Mock), OpenAI SDK (Option A), Axios, React (`useState`), ShadCN UI (`Button`, `Dialog` or `Sheet`). Requires Project Context.
-*   **Verification:** Button appears. Clicking opens dialog/sheet. Backend called. Simulated trend text displayed. Loading/errors handled. Indicates simulation.
-*   **Potential Challenges:** UI design for sheet. Backend simulation logic. Error handling.
+    1.  **Define Prompts:** (Handled via mock data in component). Use cases like competitor analysis, market sentiment, relevant news.
+    2.  **UI Component (`src/components/ideation/AgentScraper.tsx`):**
+        *   `Card` structure. Title: "Simulated Trend Analysis".
+        *   `Textarea` for user query/keywords (optional, can default to idea context).
+        *   "Run Simulated Analysis" button (`Button`).
+        *   Loading indicator (`Loader2`).
+        *   Display area for mock results (list).
+    3.  **Integration (`src/pages/Ideation.tsx`):**
+        *   Import and render `AgentScraper`.
+        *   Pass `ideaContext` (problem + initial idea) as a prop.
+*   **Dependencies:** React (`useState`), ShadCN UI (`Card`, `Textarea`, `Button`, `Label`), `lucide-react`.
+*   **Verification:** Component renders, button triggers simulation, mock results appear.
+*   **Potential Challenges:** Making simulation feel realistic enough.
 
 ---
 
 ### Step 3.4: Counter-Intuition Prompts
 
 *   **Status:** Done
-*   **Details:** Created `CounterIntuitionCard.tsx` component and integrated into `Ideation.tsx`.
+*   **Details:** Created `src/components/ideation/CounterIntuitionCard.tsx`. Component displays a random prompt from a predefined list and includes a button to refresh the prompt. Integrated into the left column of `src/pages/Ideation.tsx`.
 *   **Action:** Display provocative prompts to encourage non-traditional thinking after initial ideation.
 *   **Detailed Steps:**
-    1.  **Define Prompts:** Static list (e.g., "Reverse assumptions?", "Opposite audience?", "Zero budget?").
-    2.  **UI Component (`src/components/ideation/CounterIntuitionCard.tsx`?):**
-        *   ShadCN `Card`. Title: "Challenge Your Assumptions".
-        *   `useState`/`useEffect` to display a random prompt from the list on load/refresh.
-        *   (Optional) "Show another prompt" button.
-    3.  **Integration:** Place on Ideation page (below results?).
-*   **Dependencies:** React (`useState`, `useEffect`), ShadCN UI (`Card`).
-*   **Verification:** Card with random prompt appears. Refresh shows different prompt.
-*   **Potential Challenges:** Writing good prompts. Placement/trigger logic.
+    1.  **Define Prompts:** Create array of ~10-15 diverse prompts (e.g., "What if budget was zero?", "Opposite of your idea?", "Target audience is wrong?").
+    2.  **UI Component (`src/components/ideation/CounterIntuitionCard.tsx`):**
+        *   `Card` structure. Title: "Counter-Intuition Prompt".
+        *   Display area for the current prompt text.
+        *   "New Prompt" button (`Button` with `RefreshCw` icon).
+    3.  **Logic:** `useState` for current prompt. `useEffect` to load initial prompt. Button handler selects random prompt from array (ensuring it differs from current if possible).
+    4.  **Integration (`src/pages/Ideation.tsx`):**
+        *   Import and render `CounterIntuitionCard`.
+*   **Dependencies:** React (`useState`, `useEffect`), ShadCN UI (`Card`, `Button`), `lucide-react`.
+*   **Verification:** Card displays prompt, refresh button works.
+*   **Potential Challenges:** Writing good, diverse prompts.
 
 ---
 
@@ -444,6 +451,56 @@
 *   **Dependencies:** React (`useState`), ShadCN UI (`Card`, `Input`, `Textarea`, `Button`), Axios, Backend Endpoint (Mock), OpenAI SDK. Requires Project Context.
 *   **Verification:** User inputs signals, triggers generation. Backend returns mock forecast text. Result displayed. Loading/errors handled. Simulation indicated.
 *   **Potential Challenges:** Effective GPT prompts for mock forecasts. UI design.
+
+---
+
+## Phase C: Core Feature Implementation (8uild Integration)
+
+**Objective:** Implement the core multi-step workflows for Validation, Launch Prep, and Marketing, integrating key UI patterns and features inspired by the `8uild` project.
+
+**Rationale:** Builds the primary user journey through the application's main phases, leveraging the `PhaseStepper` for consistent navigation.
+
+**Key Technologies:** React, TypeScript, Tailwind CSS, ShadCN UI (PhaseStepper, Tabs, Card, Input, Button, etc.), Lucide Icons.
+
+---
+
+### Step C.1: Create Reusable `PhaseStepper` Component
+
+*   **Status:** Done
+*   **Details:** Created the `src/components/layout/PhaseStepper.tsx` component. It accepts steps with titles/icons and the current index, displaying progress and step titles dynamically.
+*   **Action:** Create a reusable component to visualize progress through multi-step phases.
+*   **Dependencies:** React, ShadCN UI (`Progress`).
+*   **Verification:** Component renders steps and progress correctly based on props.
+
+---
+
+### Step C.2: Integrate `8uild` Validation Features
+
+*   **Status:** Done
+*   **Details:** Created `src/pages/ValidationPage.tsx`. Implemented a tabbed interface (Data Partners, Surveys, Results, Deep Research) using ShadCN Tabs. Added basic structure and static content for Data Partners and Surveys tabs.
+*   **Action:** Refactor/Create `ValidationPage` to include a tabbed interface for different validation methods.
+*   **Dependencies:** React, ShadCN UI (`Tabs`, `Card`, `Button`, etc.), `lucide-react`.
+*   **Verification:** Page renders with tabs; initial content for Data Partners and Surveys is present.
+
+---
+
+### Step C.3: Integrate `8uild` Launch Features
+
+*   **Status:** Done
+*   **Details:** Created `src/pages/LaunchPrepPage.tsx`. Integrated `PhaseStepper` for a 4-step launch process (Production, Financials, Plan, Review). Implemented state management and UI components (forms, calculators, checklists, date picker) for each step.
+*   **Action:** Refactor/Create `LaunchPrepPage` with `PhaseStepper` and multi-step UI for launch planning.
+*   **Dependencies:** React, `PhaseStepper`, ShadCN UI (various components), `lucide-react`, `date-fns`.
+*   **Verification:** Page renders stepper; each step's content is displayed correctly; navigation works.
+
+---
+
+### Step C.4: Add `8uild` Marketing Features
+
+*   **Status:** Done
+*   **Details:** Created `src/pages/MarketingPage.tsx`. Integrated `PhaseStepper` for a 4-step marketing planning process (Audience, Channels, Budget, Content). Implemented state management and UI components (forms, checklists, sliders, content idea list) for each step.
+*   **Action:** Refactor/Create `MarketingPage` with `PhaseStepper` and multi-step UI for marketing planning.
+*   **Dependencies:** React, `PhaseStepper`, ShadCN UI (various components), `lucide-react`.
+*   **Verification:** Page renders stepper; each step's content is displayed correctly; navigation works.
 
 ---
 

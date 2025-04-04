@@ -1,52 +1,63 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { RefreshCw } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Lightbulb, RefreshCw } from 'lucide-react';
 
-// Provocative prompts to challenge assumptions
-const counterIntuitionPrompts = [
-  "What if your primary target audience is actually the *wrong* one?",
-  "How could this idea become 10x *worse*? What does that tell you?",
-  "If you had to launch this tomorrow with $0 budget, what would it look like?",
-  "What existing successful product could you combine with this idea to make it absurd?",
-  "Imagine your biggest competitor launches this exact idea. How do you pivot?",
-  "What would make users actively *hate* this product?",
-  "How would this idea work if it had to be entirely offline?",
-  "If you could only keep one feature, which one is it and why?",
-  "What's the most unethical way this product could be used? How can you prevent it?",
-  "How could this idea be applied in a completely different industry?",
+// Pool of counter-intuitive prompts
+const prompts = [
+  "What if your target audience is completely wrong?",
+  "How would this idea work with zero budget?",
+  "What's the most boring, unsexy version of this idea?",
+  "If this idea failed spectacularly, what would be the main reason?",
+  "How could you make this product 10x more complicated?",
   "What if the core problem you're solving doesn't actually exist?",
-  "Assume your initial idea is fundamentally flawed. What's plan B?",
-  "What if this needed to serve children under 10? How would it change?",
-  "How can you make this idea *more* complicated instead of less?",
-  "What technology from 20 years ago could surprisingly enhance this idea?"
+  "Imagine the opposite of your solution. What benefits does it have?",
+  "What existing, successful product is this idea trying to kill? Why won't it work?",
+  "How would you design this for people who absolutely hate your product category?",
+  "If you had to launch this tomorrow, what single feature would you build?"
 ];
 
 const CounterIntuitionCard: React.FC = () => {
-  const [currentPrompt, setCurrentPrompt] = useState<string>('');
+  const [currentPrompt, setCurrentPrompt] = useState<string>("");
 
-  const getRandomPrompt = useCallback(() => {
-    const randomIndex = Math.floor(Math.random() * counterIntuitionPrompts.length);
-    setCurrentPrompt(counterIntuitionPrompts[randomIndex]);
-  }, []);
+  const getRandomPrompt = () => {
+    const randomIndex = Math.floor(Math.random() * prompts.length);
+    // Ensure the new prompt is different from the current one, if possible
+    let newPrompt = prompts[randomIndex];
+    if (prompts.length > 1 && newPrompt === currentPrompt) {
+      return getRandomPrompt(); // Try again
+    }
+    return newPrompt;
+  };
 
   // Set initial prompt on mount
   useEffect(() => {
-    getRandomPrompt();
-  }, [getRandomPrompt]);
+    setCurrentPrompt(getRandomPrompt());
+  }, []);
+
+  const handleRefreshPrompt = () => {
+    setCurrentPrompt(getRandomPrompt());
+  };
 
   return (
     <Card className="glass-card">
-      <CardHeader className="flex flex-row items-center justify-between pb-2">
-        <CardTitle className="text-lg font-medium">3. Challenge Assumptions</CardTitle>
-         <Button variant="ghost" size="icon" onClick={getRandomPrompt} aria-label="Refresh Prompt">
-           <RefreshCw className="h-4 w-4" />
-        </Button>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Lightbulb size={18} className="text-yellow-400" />
+          Counter-Intuition Prompt
+        </CardTitle>
+        <CardDescription>
+          Challenge your assumptions with a thought-provoking question.
+        </CardDescription>
       </CardHeader>
-      <CardContent>
-        <p className="text-sm text-muted-foreground italic">
-          "{currentPrompt}"
+      <CardContent className="space-y-4">
+        <p className="text-lg font-medium text-white/90 min-h-[60px] flex items-center justify-center text-center">
+          {currentPrompt}
         </p>
+        <Button variant="outline" onClick={handleRefreshPrompt} className="w-full border-white/20 text-white">
+          <RefreshCw className="mr-2 h-4 w-4" />
+          New Prompt
+        </Button>
       </CardContent>
     </Card>
   );
