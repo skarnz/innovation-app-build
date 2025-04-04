@@ -1,0 +1,48 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
+
+/* Define CSS variables for themes */
+:root {
+  /* Light Mode Defaults */
+  --bg-color: #ffffff;
+  --text-color: #333333;
+  --primary-accent: #4a90e2; /* Example light mode accent */
+  --secondary-accent: #7f8c8d;
+
+  /* Font */
+  --font-family: 'Orbitron', sans-serif;
+}
+
+/* Dark Mode Override */
+/* We can trigger this with a class on the body or html tag later */
+body.dark-mode {
+  --bg-color: #0a192f; /* Navy */
+  --text-color: #e0e0e0;
+  --primary-accent: #64ffda; /* Electric Blue/Cyan-ish */
+  --secondary-accent: #8892b0; /* Light Slate */
+}
+
+/* Apply base styles */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-family);
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-family);
+  color: var(--primary-accent);
+}
+
+/* Basic styling for the layout placeholders */
+.dashboard-layout header,
+.dashboard-layout footer {
+  padding: 1rem;
+  background-color: rgba(0, 0, 0, 0.1); /* Slight contrast for visibility */
+}
+
+.dashboard-layout main {
+  padding: 1rem;
+} 

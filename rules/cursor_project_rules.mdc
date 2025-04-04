@@ -1,0 +1,103 @@
+---
+description: Apply these rules when creating the project
+globs: 
+alwaysApply: true
+---
+## Project Overview
+
+*   **Type:** Innovation Platform for Product/Service Lifecycle
+*   **Description:** A cohesive guided platform that supports the complete product/service creation lifecycle—from concept through planning, execution, and marketing—with integrated contextual AI assistance, centralized asset/document management, and robust external integrations.
+*   **Primary Goal:** Maximize innovation success by streamlining workflows and ensuring adherence to internal standards.
+
+## Project Structure
+
+### Framework-Specific Routing
+
+*   **Directory Rules:**
+
+    *   `Next.js 14 (App Router)`: Enforce an `app/` directory structure with nested route folders (e.g., `app/[route]/page.tsx`), ensuring that server components and Route Handlers are used appropriately.
+    *   Example 1: "Next.js 14 (App Router)" → `app/[route]/page.tsx` conventions
+    *   Example 2: "Next.js (Pages Router)" → `pages/[route].tsx` pattern (not applicable for App Router projects)
+    *   Example 3: "React Router 6" → `src/routes/` with `createBrowserRouter` setup
+
+### Core Directories
+
+*   **Versioned Structure:**
+
+    *   `app/api`: Next.js 14 API routes with Route Handlers for backend integrations like GitHub, Google Docs, and external AI services
+    *   `src/views`: Contains React components and UI modules (e.g., DashboardLayout wrapper, dynamic breadcrumbs, tabs) following the composition API pattern
+
+### Key Files
+
+*   **Stack-Versioned Patterns:**
+
+    *   `app/dashboard/layout.tsx`: Implements the Next.js 14 root layout for central Dashboard and navigation scaffolding
+    *   `pages/_app.js`: (For legacy Pages Router projects, provided here as a reference) Customizes global rendering and initialization logic
+
+## Tech Stack Rules
+
+*   **Version Enforcement:**
+
+    *   `next@14`: Requires use of the App Router (i.e., the `app/` directory) with server components and no `getInitialProps`
+    *   `node@18+`: For server-side logic with Express integrated into Next.js API routes
+    *   `react@18+`: Use modern hooks and functional components, adhering to best practices for state management and performance
+
+## PRD Compliance
+
+*   **Non-Negotiable:**
+
+    *   "Contextual AI assistant referencing internal standards and centralized documentation via the FS must be integrated seamlessly across the platform." This mandates strict adherence to version-specific architectural patterns and secure, compliant external integrations.
+
+## App Flow Integration
+
+*   **Stack-Aligned Flow:**
+
+    *   Example: "Next.js 14 Auth Flow → `app/auth/login/page.tsx` uses server actions for secure login and session management, maintaining state persistence with localStorage and IndexedDB."
+    *   Mapping of project phases to routes is enforced (e.g., `/project/score`, `/project/forecasting`, `/project/target`, `/project/interview`) with corresponding file system interactions to save notes and data.
+
+## Best Practices
+
+*   **React**
+
+    *   Use functional components and hooks for clean, maintainable code
+    *   Leverage Context API or state management libraries (e.g., Redux) for global state, especially for session persistence
+    *   Adhere to component-driven design principles and modular coding practices
+
+*   **Next.js**
+
+    *   Strictly separate server and client components
+    *   Utilize file-based routing in the `app/` directory to enforce consistency
+    *   Optimize performance with server actions and lazy loading where applicable
+
+*   **Node.js/Express**
+
+    *   Implement modular route handlers and middleware for error handling and logging
+    *   Secure API endpoints with OAuth 2.0 and HTTPS communications
+    *   Ensure robust error logging and fallback mechanisms for external integrations
+
+*   **CSS & UI Libraries**
+
+    *   Enforce consistent theming: dark mode with bg-navy and electric-blue/purple accents, with a fallback Light Mode
+    *   Follow design best practices for a responsive and accessible UI
+    *   Utilize component libraries alongside custom CSS (e.g., font-orbitron) to maintain branding
+
+*   **AI & External Integrations**
+
+    *   Maintain clear API integration points for Claude 3.7 Sonnet, GPT o3-mini, Gemini 2.5, and meshy.ai
+    *   Implement periodic checks and error logging for integration points
+    *   Ensure transactional consistency when syncing with GitHub and Google Docs
+
+## Rules
+
+*   Derive folder/file patterns **directly** from the defined tech stack versions:
+
+    *   If using Next.js 14 App Router: Enforce the `app/` directory with nested route folders exclusively
+    *   Do not mix legacy patterns (e.g., no `pages/` directory if using App Router)
+
+*   Adhere to version-specific conventions outlined in `techStackDoc` for all components and integrations
+
+*   Ensure that all external integrations (GitHub, Google Docs, video generation, etc.) are compliant with OAuth 2.0 and security best practices
+
+*   Maintain a centralized FS for all documentation and assets, with version control and linked integration to GitHub
+
+*   Implement detailed error logging for every integration point and enforce robust fallback mechanisms
