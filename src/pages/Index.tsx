@@ -1,37 +1,126 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { LandingNavbar } from '@/components/layout/LandingNavbar';
 import BuildLogo from '@/components/BuildLogo';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, BarChart2, Check, Layers, RefreshCcw, Zap } from 'lucide-react';
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { useNavigate } from 'react-router-dom';
 // Linter error on next/link, using standard <a> tag for now
 // import Link from 'next/link';
 // Import ThreeScene if/when implemented
 // import { ThreeScene } from '@/components/ThreeScene';
 
 // --- Hero Section ---
-const HeroSection = () => (
-  <section id="hero" className="container mx-auto px-4 pt-24 pb-16 md:pt-32 md:pb-24 text-center relative">
-    {/* Content adapted from 8uild/components/Hero.tsx (not read, but typical hero structure) */}
-    <h1 className="font-orbitron text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-gradient animate-text-shimmer mb-6">
-      Unleash Your Entrepreneurial Vision
-    </h1>
-    <p className="text-lg md:text-xl lg:text-2xl text-muted-foreground max-w-3xl mx-auto mb-8">
-      Build your startup with AI-powered tools and a guided, step-by-step process from concept to launch.
-    </p>
-    <div className="flex justify-center gap-4">
-      {/* Changed Link to a tag */}
-      <a href="/signup">
-        {/* Use standard Button component with default variant */}
-        <Button variant="default" size="lg" className="hover-glow">
-          Start Building Now
-          <ArrowRight size={18} className="ml-2" />
-        </Button>
-      </a>
-      {/* Optional: Secondary button example */}
-      {/* <Link href="#features"><Button variant="outline">Learn More</Button></Link> */}
-    </div>
-  </section>
-);
+const HeroSection = () => {
+  const navigate = useNavigate();
+  const [ideaText, setIdeaText] = useState("");
+  const [interestText, setInterestText] = useState("");
+  const [ideaFocused, setIdeaFocused] = useState(false);
+  const [interestFocused, setInterestFocused] = useState(false);
+
+  // Specific minimum lengths
+  const minIdeaLength = 125;
+  const minInterestLength = 85;
+  const maxLength = 1000; // Max length remains the same
+
+  const handleIdeaSubmit = (e: React.MouseEvent) => {
+    // Prevent navigation if invalid length (using minIdeaLength)
+    if (ideaText.length > maxLength || ideaText.length < minIdeaLength) {
+      e.preventDefault();
+    }
+  };
+
+  const handleInterestSubmit = (e: React.MouseEvent) => {
+    // Prevent navigation if invalid length (using minInterestLength)
+    if (interestText.length > maxLength || interestText.length < minInterestLength) {
+      e.preventDefault();
+    }
+  };
+
+  return (
+    <section id="hero" className="container mx-auto px-4 pt-24 pb-16 md:pt-32 md:pb-24 text-center relative">
+      {/* Content adapted from 8uild/components/Hero.tsx (not read, but typical hero structure) */}
+      <h1 className="font-orbitron text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-gradient animate-text-shimmer mb-6">
+        Unleash Your Entrepreneurial Vision
+      </h1>
+      <p className="text-lg md:text-xl lg:text-2xl text-muted-foreground max-w-3xl mx-auto mb-12">
+        The ultimate platform for entrepreneurs to brainstorm, validate, and launch groundbreaking ideas using AI-powered tools and a guided, step-by-step process.
+      </p>
+      
+      {/* NEW: Interactive Idea Boxes */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+        {/* Card 1: I have an idea */}
+        <div className="bg-card border border-border rounded-xl p-6 text-left space-y-3 transition-all hover:shadow-xl hover:border-primary/50 flex flex-col">
+          <Label className="flex items-center gap-2 font-medium text-foreground">
+            <Check size={16} className="text-primary"/> I have an idea
+          </Label>
+          <Textarea 
+            placeholder="Tell us about your idea..." 
+            rows={4}
+            className="bg-muted/50 border-border/50 resize-none flex-grow min-h-[6.5rem] max-h-[12rem] overflow-y-auto" 
+            value={ideaText}
+            onChange={(e) => setIdeaText(e.target.value)}
+            onFocus={() => !ideaFocused && setIdeaFocused(true)}
+            maxLength={maxLength}
+          />
+          {ideaFocused && (
+            <div className="text-xs flex justify-between items-center">
+              <span className={ideaText.length > maxLength ? 'text-destructive' : 'text-muted-foreground'}>
+                {ideaText.length} / {maxLength} characters (min {minIdeaLength})
+              </span>
+            </div>
+          )}
+          <a href="/app/project/setup" onClick={handleIdeaSubmit} className="block mt-auto pt-3">
+            <button
+              disabled={ideaText.length < minIdeaLength}
+              className="relative w-full inline-flex items-center justify-center group overflow-hidden disabled:opacity-50 disabled:cursor-not-allowed transition-opacity"
+            >
+              <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-primary to-secondary opacity-90 group-hover:opacity-100 transition-opacity duration-300 group-disabled:opacity-50"></span>
+              <span className="relative px-8 py-3 text-primary-foreground font-medium skew-x-0 flex items-center gap-2 transform transition-transform group-hover:scale-105">
+                Get Started <ArrowRight size={18} />
+              </span>
+            </button>
+          </a>
+        </div>
+
+        {/* Card 2: I need an idea */}
+        <div className="bg-card border border-border rounded-xl p-6 text-left space-y-3 transition-all hover:shadow-xl hover:border-primary/50 flex flex-col">
+          <Label className="flex items-center gap-2 font-medium text-foreground">
+            <Zap size={16} className="text-secondary"/> I need an idea
+          </Label>
+          <Textarea 
+            placeholder="What are you interested in?" 
+            rows={4}
+            className="bg-muted/50 border-border/50 resize-none flex-grow min-h-[6.5rem] max-h-[12rem] overflow-y-auto"
+            value={interestText}
+            onChange={(e) => setInterestText(e.target.value)}
+            onFocus={() => !interestFocused && setInterestFocused(true)}
+            maxLength={maxLength}
+          />
+          {interestFocused && (
+            <div className="text-xs flex justify-between items-center">
+              <span className={interestText.length > maxLength ? 'text-destructive' : 'text-muted-foreground'}>
+                {interestText.length} / {maxLength} characters (min {minInterestLength})
+              </span>
+            </div>
+          )}
+          <a href="/app/project/setup" onClick={handleInterestSubmit} className="block mt-auto pt-3">
+            <button
+              disabled={interestText.length < minInterestLength}
+              className="relative w-full inline-flex items-center justify-center group overflow-hidden disabled:opacity-50 disabled:cursor-not-allowed transition-opacity"
+            >
+              <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-primary to-secondary opacity-90 group-hover:opacity-100 transition-opacity duration-300 group-disabled:opacity-50"></span>
+              <span className="relative px-8 py-3 text-primary-foreground font-medium skew-x-0 flex items-center gap-2 transform transition-transform group-hover:scale-105">
+                Generate Ideas <ArrowRight size={18} />
+              </span>
+            </button>
+          </a>
+        </div>
+      </div>
+    </section>
+  );
+};
 
 // --- Features Section ---
 const featuresData = [
@@ -75,8 +164,7 @@ const FeaturesSection = () => (
           Accelerate Your Next Big Idea
         </h2>
         <p className="text-lg text-muted-foreground">
-          BUILD provides all the tools needed to take your concept from ideation to launch
-          with a streamlined, data-driven approach.
+          BUILD provides the AI-powered tools and streamlined, data-driven approach needed to take your concept from ideation to launch.
         </p>
       </div>
 

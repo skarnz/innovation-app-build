@@ -9,48 +9,48 @@
 /* =============================================== */
 @layer base {
   :root {
-    /* Light Mode Theme - Soft Cream/Grey Inspired */
-    --background: 40 33% 97%; /* Very light cream/beige */
-    --foreground: 240 6% 10%; /* Near black for high contrast */
+    /* Light Mode Theme - Soft Pastel Blue/Grey Inspired */
+    --background: 220 30% 96%; /* Very light cool grey/blue */
+    --foreground: 240 6% 10%; /* Near black */
     
-    --card: 40 33% 92%; /* Slightly darker cream/beige for cards */
-    --card-foreground: 240 6% 10%; /* Near black text on cards */
+    --card: 0 0% 100%; /* White cards for contrast */
+    --card-foreground: 240 6% 10%; 
     
-    --popover: 40 33% 90%; /* Similar to card, slightly darker for popovers */
+    --popover: 0 0% 100%; /* White popovers */
     --popover-foreground: 240 6% 10%;
 
-    --primary: 213 90% 45%; /* Electric Blue - Keep for primary actions */
-    --primary-foreground: 0 0% 100%; /* White text on primary */
+    --primary: 213 90% 45%; /* Electric Blue */
+    --primary-foreground: 0 0% 100%; 
     
-    --secondary: 271 67% 63%; /* Electric Purple - Keep for secondary actions */
-    --secondary-foreground: 0 0% 100%; /* White text on secondary */
+    --secondary: 271 67% 63%; /* Electric Purple */
+    --secondary-foreground: 0 0% 100%; 
 
-    --muted: 220 10% 85%; /* Soft grey for muted elements */
-    --muted-foreground: 240 5% 35%; /* Darker grey for muted text */
+    --muted: 220 20% 90%; /* Slightly darker grey for muted elements */
+    --muted-foreground: 240 5% 35%; 
 
-    --accent: 220 10% 90%; /* Very light grey for accents like hover */
-    --accent-foreground: 240 6% 10%; /* Near black text on accents */
+    --accent: 220 25% 93%; /* Lighter grey for accents like hover */
+    --accent-foreground: 240 6% 10%; 
 
-    --destructive: 0 72% 51%; /* Softer Red */
+    --destructive: 0 72% 51%; 
     --destructive-foreground: 0 0% 100%;
     
-    --border: 220 10% 80%; /* Soft grey border */
-    --input: 220 10% 88%; /* Light grey input background */
-    --ring: 213 90% 55%; /* Slightly lighter blue for focus rings */
+    --border: 220 20% 88%; /* Soft grey border */
+    --input: 0 0% 100%; /* White input background */
+    --ring: 213 90% 55%; 
 
     /* General */
     --radius: 0.5rem;
     
-    /* Glass Effect */
-    --glass-background: 40 33% 92% / 0.6; /* Card color with alpha */
+    /* Glass Effect - Use card (white) with alpha */
+    --glass-background: 0 0% 100% / 0.6; 
     
     /* Sidebar - Light */
-    --sidebar-background: 220 12% 95%; /* Slightly different light grey for sidebar */
+    --sidebar-background: 220 25% 94%; /* Slightly different light grey */
     --sidebar-foreground: 240 6% 10%;
-    --sidebar-border: 220 10% 85%; 
-    --sidebar-accent: 220 10% 90%; /* Hover/Active background */
+    --sidebar-border: 220 20% 88%; 
+    --sidebar-accent: 220 30% 96%; /* Hover/Active background (closer to main bg) */
     --sidebar-accent-foreground: 240 6% 10%;
-    --sidebar-primary: var(--primary); /* Use main primary */
+    --sidebar-primary: var(--primary); 
     --sidebar-primary-foreground: var(--primary-foreground);
     --sidebar-ring: var(--ring);
   }
@@ -109,8 +109,9 @@
     overflow-x: hidden;
   }
 
+  /* Comment out canvas style for troubleshooting */
+  /*
   canvas {
-    /* Assuming this is for a background effect */
     position: fixed;
     top: 0;
     left: 0;
@@ -118,6 +119,7 @@
     height: 100%;
     z-index: -1;
   }
+  */
 }
 
 /* =============================================== */

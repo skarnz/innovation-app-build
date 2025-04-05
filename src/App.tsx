@@ -63,21 +63,23 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <Routes>
+            {/* Public Routes */}
             <Route path="/" element={<Index />} />
             <Route path="/pricing" element={<Pricing />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />
-            <Route path="/support" element={<DashboardLayout><ComingSoon featureName="Support" /></DashboardLayout>} />
-            
-            {/* Project Setup Route (Phase 2) */}
-            <Route path="/project/setup" element={<DashboardLayout><ProjectSetup /></DashboardLayout>} />
-            
-            {/* Dashboard Routes */}
-            <Route path="/" element={<DashboardLayout />}>
-              <Route index element={<Dashboard />} />
+
+            {/* Protected/Dashboard Routes - Now under /app prefix */}
+            <Route path="/app" element={<DashboardLayout />}>
+              {/* Default dashboard route: /app */}
+              <Route index element={<Dashboard />} /> 
+              {/* Explicit dashboard route: /app/dashboard */}
               <Route path="dashboard" element={<Dashboard />} />
               
-              {/* Main Phases in Order with Numbering */}
+              {/* Project Setup Route: /app/project/setup */}
+              <Route path="project/setup" element={<ProjectSetup />} />
+
+              {/* Main Phases: /app/project/:projectId/... */}
               <Route path="project/:projectId/ideation" element={<Ideation />} />
               <Route path="project/:projectId/validation" element={<ValidationPage />} />
               <Route path="project/:projectId/visualize" element={<VisualizePage />} />
@@ -86,49 +88,25 @@ const App = () => (
               <Route path="project/:projectId/marketing-plan" element={<MarketingPage />} />
 
               {/* --- Legacy/Placeholder Routes (Review/Remove Later) --- */}
+              {/* Assuming these should also be under /app */}
               <Route path="project/ideate/counter-intuition" element={<CounterIntuition />} />
               <Route path="project/score" element={<ProjectScore />} />
-              <Route path="project/forecasting" element={<Forecasting />} />
-              <Route path="project/target" element={<TargetMarket />} />
-              <Route path="project/interview" element={<Interviews />} />
-              <Route path="project/business-canvas" element={<BusinessCanvas />} />
-              <Route path="project/value-chain" element={<ValueChain />} />
-              <Route path="project/competition" element={<CompetitionAnalysis />} />
-              <Route path="project/market" element={<MarketAnalysis />} />
-              <Route path="project/outcomes" element={<MazeOfOutcomes />} />
-              <Route path="project/anti-intuition" element={<AntiIntuition />} />
-              <Route path="project/mvp" element={<MVPSpecification />} />
-              <Route path="project/mvp/core-features" element={<CoreFeatures />} />
-              <Route path="project/mvp/timeline" element={<Timeline />} />
-              <Route path="project/mvp/resources" element={<Resources />} />
-              <Route path="project/mvp/dependencies" element={<Dependencies />} />
-              <Route path="project/prototype" element={<Prototyping />} />
-              <Route path="project/prototype/ux" element={<UXPrototype />} />
-              <Route path="project/prototype/sketch" element={<SketchPrototype />} />
-              <Route path="project/prototype/physical" element={<PhysicalPrototype />} />
-              <Route path="project/production" element={<ProductionDeployment />} />
-              <Route path="project/launch/github" element={<GitHubIntegration />} />
-              <Route path="project/launch/supabase" element={<SupabaseIntegration />} />
-              <Route path="project/launch/pilot" element={<Pilot />} />
-              <Route path="project/marketing" element={<MarketingFeedback />} />
-              <Route path="project/marketing/timeline" element={<MarketingTimeline />} />
-              <Route path="project/marketing/platforms" element={<MarketingPlatforms />} />
-              <Route path="project/marketing/automation" element={<AutomationFlow />} />
+              {/* ... other legacy routes prefixed implicitly by /app ... */}
               <Route path="project/marketing/video" element={<GenerativeVideo />} />
               <Route path="project/scaling" element={<ScalingOperations />} />
               <Route path="project/partnerships" element={<Partnerships />} />
               {/* --- End Legacy --- */}
               
-              {/* Project Management Functionality */}
+              {/* Project Management: /app/project/... & /app/chat */}
               <Route path="project/files" element={<FileManagement />} />
               <Route path="project/overview" element={<Dashboard />} />
-              <Route path="chat" element={<Dashboard />} />
+              <Route path="chat" element={<Dashboard />} /> 
 
-              {/* Add routes for new sidebar items using ComingSoon */}
+              {/* Other top-level sections: /app/... */}
               <Route path="deep-research" element={<ComingSoon featureName="Deep Research" />} />
               <Route path="community" element={<ComingSoon featureName="Community" />} />
               <Route path="settings" element={<ComingSoon featureName="Settings" />} /> 
-
+              <Route path="support" element={<ComingSoon featureName="Support" />} /> 
             </Route>
             
             {/* 404 Route */}

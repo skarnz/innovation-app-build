@@ -74,7 +74,7 @@ const IdeationPage = () => {
       <div className="px-8 grid grid-cols-1 md:grid-cols-3 gap-8">
         {/* Left Column: Input & Controls */}
         <div className="md:col-span-1 space-y-6">
-            <Card className="glass-card">
+            <Card>
                 <CardHeader>
                     <CardTitle>1. Define Your Concept</CardTitle>
                 </CardHeader>
@@ -100,9 +100,10 @@ const IdeationPage = () => {
                         />
                     </div>
                      <Button 
+                        variant="default"
                         onClick={handleGenerateIdeas} 
                         disabled={isLoadingIdeation || !problemStatement || !initialIdea}
-                        className="w-full bg-electric-blue hover:bg-electric-blue/90"
+                        className="w-full"
                      >
                         {isLoadingIdeation ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                         {isLoadingIdeation ? 'Generating Alternatives...' : 'Generate Alternative Ideas'}
@@ -114,13 +115,26 @@ const IdeationPage = () => {
             {/* Integrate AgentScraper (Card 2) */}
             <AgentScraper ideaContext={ideaContext} />
 
-            {/* Integrate CounterIntuitionCard (Card 3) */}
-            <CounterIntuitionCard />
+            {/* Integrate CounterIntuitionCard (Card 3) - Placeholder below */}
+            {/* <CounterIntuitionCard /> */}
+
+            {/* Placeholder for AI Counter-Intuition Prompt */}
+            <Card className="bg-card text-card-foreground">
+              <CardHeader>
+                <CardTitle>AI Counter-Intuition</CardTitle>
+                <CardDescription>Generate thought-provoking questions.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {/* TODO: Add Input/Button for AI prompt generation here */}
+                <p className="text-sm text-muted-foreground text-center italic">(AI Prompt feature to be added here)</p>
+              </CardContent>
+            </Card>
+
         </div>
 
         {/* Right Column: Results */}
         <div className="md:col-span-2">
-            <Card className="glass-card min-h-[400px]">
+            <Card className="min-h-[400px]">
                  <CardHeader>
                     <CardTitle>Generated Ideas</CardTitle>
                     <CardDescription>Alternative concepts based on your input.</CardDescription>
@@ -128,18 +142,18 @@ const IdeationPage = () => {
                  <CardContent>
                     {isLoadingIdeation && (
                         <div className="flex justify-center items-center h-40">
-                            <Loader2 className="h-8 w-8 animate-spin text-electric-blue" />
+                            <Loader2 className="h-8 w-8 animate-spin text-primary" />
                         </div>
                      )}
                     {!isLoadingIdeation && generatedIdeas.length === 0 && (
-                        <p className="text-center text-white/70 py-10">Enter a problem and idea, then click 'Generate' to see AI-powered alternatives here.</p>
+                        <p className="text-center text-muted-foreground py-10">Enter a problem and idea, then click 'Generate' to see AI-powered alternatives here.</p>
                     )}
                      {generatedIdeas.length > 0 && (
                         <div className="space-y-4">
                             {generatedIdeas.map((idea, index) => (
-                                <Card key={index} className="bg-navy-light/50 border-white/10">
-                                    <CardHeader><CardTitle className="text-lg text-white/95">{idea.title || `Idea ${index + 1}`}</CardTitle></CardHeader>
-                                    <CardContent><p className="text-sm text-white/80">{idea.description || 'No description provided.'}</p></CardContent>
+                                <Card key={index} className="bg-muted/50 border-border">
+                                    <CardHeader><CardTitle className="text-lg text-foreground">{idea.title || `Idea ${index + 1}`}</CardTitle></CardHeader>
+                                    <CardContent><p className="text-sm text-muted-foreground">{idea.description || 'No description provided.'}</p></CardContent>
                                 </Card>
                             ))}
                         </div>

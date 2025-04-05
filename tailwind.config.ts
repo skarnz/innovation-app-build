@@ -182,7 +182,7 @@ export default {
 			},
 			backgroundImage: {
 				'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-				'text-gradient': 'linear-gradient(90deg, #2F80ED, #BB6BD9, #2F80ED)',
+				'text-gradient': 'linear-gradient(90deg, hsl(var(--primary)), hsl(var(--secondary)), hsl(var(--primary)))',
 			},
 			backdropFilter: {
 				'none': 'none',

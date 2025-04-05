@@ -87,8 +87,8 @@ export default function LaunchPrepPage() {
   // --- Step 1: Production Setup Placeholder ---
   const renderProductionSetup = () => (
     <div className="space-y-6">
-        <h2 className="text-2xl font-semibold font-orbitron mb-4 text-white">1. Production Setup</h2>
-        <Card className="glass-card p-6">
+        <h2 className="text-2xl font-semibold font-orbitron mb-4 text-foreground">1. Production Setup</h2>
+        <Card className="p-6">
             <CardContent>
                 <p>Production setup details will go here...</p>
             </CardContent>
@@ -99,8 +99,8 @@ export default function LaunchPrepPage() {
   // --- Step 2: Financials Placeholder ---
   const renderFinancials = () => (
     <div className="space-y-6">
-        <h2 className="text-2xl font-semibold font-orbitron mb-4 text-white">2. Financials</h2>
-        <Card className="glass-card p-6">
+        <h2 className="text-2xl font-semibold font-orbitron mb-4 text-foreground">2. Financials</h2>
+        <Card className="p-6">
             <CardContent>
                 <p>Financial planning details will go here...</p>
             </CardContent>
@@ -111,14 +111,14 @@ export default function LaunchPrepPage() {
   // --- Step 3: Launch Plan Content ---
   const renderLaunchPlan = () => (
     <div className="space-y-6">
-       <h2 className="text-2xl font-semibold font-orbitron mb-4 text-white">3. Launch Plan</h2>
+       <h2 className="text-2xl font-semibold font-orbitron mb-4 text-foreground">3. Launch Plan</h2>
       {/* ... Title, Launch Type, Launch Date ... */} 
       <div>
-        <h3 className="font-medium mb-2 text-white/90">Key Milestones</h3>
+        <h3 className="font-medium mb-2 text-foreground">Key Milestones</h3>
         <Accordion type="multiple" className="w-full space-y-2">
           {milestoneStructure.map(phase => (
-            <AccordionItem key={phase.key} value={phase.key} className="bg-navy-light/50 rounded-md border border-white/10 px-4">
-              <AccordionTrigger className="text-white/80 hover:text-white py-3">{phase.title}</AccordionTrigger>
+            <AccordionItem key={phase.key} value={phase.key} className="bg-card/50 rounded-md border border-border px-4">
+              <AccordionTrigger className="text-muted-foreground hover:text-foreground py-3">{phase.title}</AccordionTrigger>
               <AccordionContent className="space-y-2 pb-4">
                 {phase.items.map(item => {
                   const milestoneKey = getMilestoneKey(phase.key, item);
@@ -129,7 +129,7 @@ export default function LaunchPrepPage() {
                         checked={!!launchPlan.milestones[milestoneKey]}
                         onCheckedChange={(checked) => handleMilestoneChange(milestoneKey, !!checked)}
                       />
-                      <Label htmlFor={milestoneKey} className="text-sm font-normal text-white/80">{item}</Label>
+                      <Label htmlFor={milestoneKey} className="text-sm font-normal text-muted-foreground">{item}</Label>
                     </div>
                   );
                 })}
@@ -158,38 +158,38 @@ export default function LaunchPrepPage() {
 
     return (
       <div className="space-y-6">
-        <h2 className="text-2xl font-semibold font-orbitron mb-4 text-white">4. Review & Next Steps</h2>
-        <Card className="glass-card p-6">
+        <h2 className="text-2xl font-semibold font-orbitron mb-4 text-foreground">4. Review & Next Steps</h2>
+        <Card className="p-6">
           <CardHeader>
             <CardTitle>Launch Production Summary</CardTitle>
             <CardDescription>Review your production and launch plan before proceeding.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4 text-sm">
-            <div><strong className="text-white/80">Product Type:</strong> <span className="capitalize text-white/90 ml-2">{productType || 'Not Selected'}</span></div>
-            <div className="bg-navy-light/50 p-3 rounded space-y-1 border border-white/10">
-               <h4 className="font-medium text-white/90 mb-1">Financial Overview:</h4>
-               <p>Initial Costs: ${financials.initialCosts.toLocaleString()}</p>
-               <p>Total Monthly Costs: ${calculateTotalMonthlyCosts().toLocaleString()}</p>
-               <p>Runway: {calculateRunwayMonths() === Infinity ? 'N/A' : `${calculateRunwayMonths()} months`}</p>
+            <div><strong className="text-muted-foreground">Product Type:</strong> <span className="capitalize text-foreground ml-2">{productType || 'Not Selected'}</span></div>
+            <div className="bg-muted/50 p-3 rounded space-y-1 border border-border">
+               <h4 className="font-medium text-foreground mb-1">Financial Overview:</h4>
+               <p className="text-muted-foreground">Initial Costs: ${financials.initialCosts.toLocaleString()}</p>
+               <p className="text-muted-foreground">Total Monthly Costs: ${calculateTotalMonthlyCosts().toLocaleString()}</p>
+               <p className="text-muted-foreground">Runway: {calculateRunwayMonths() === Infinity ? 'N/A' : `${calculateRunwayMonths()} months`}</p>
             </div>
-            <div><strong className="text-white/80">Launch Type:</strong> <span className="capitalize text-white/90 ml-2">{launchPlan.launchType}</span></div>
-            <div><strong className="text-white/80">Launch Date:</strong> <span className="text-white/90 ml-2">{launchPlan.launchDate ? format(launchPlan.launchDate, "PPP") : 'Not Set'}</span></div>
-            <div className="bg-navy-light/50 p-3 rounded space-y-1 border border-white/10">
-               <h4 className="font-medium text-white/90 mb-1">Milestone Progress:</h4>
-               <p className="text-white/80">
-                 Completed: <span className="font-semibold text-electric-blue">{completedMilestoneKeys.length}</span> / {totalMilestones}
+            <div><strong className="text-muted-foreground">Launch Type:</strong> <span className="capitalize text-foreground ml-2">{launchPlan.launchType}</span></div>
+            <div><strong className="text-muted-foreground">Launch Date:</strong> <span className="text-foreground ml-2">{launchPlan.launchDate ? format(launchPlan.launchDate, "PPP") : 'Not Set'}</span></div>
+            <div className="bg-muted/50 p-3 rounded space-y-1 border border-border">
+               <h4 className="font-medium text-foreground mb-1">Milestone Progress:</h4>
+               <p className="text-muted-foreground">
+                 Completed: <span className="font-semibold text-primary">{completedMilestoneKeys.length}</span> / {totalMilestones}
                </p>
                {completedMilestoneKeys.length > 0 ? (
-                   <ul className="list-disc list-inside pl-4 pt-1 text-xs text-white/70">
+                   <ul className="list-disc list-inside pl-4 pt-1 text-xs text-muted-foreground">
                      {completedMilestoneKeys.map(key => (
                        <li key={key}>{milestoneKeyToTextMap[key] || key}</li>
                      ))}
                    </ul>
                 ) : null}
             </div>
-            <div className="border-t border-white/10 pt-4 mt-4">
-              <h3 className="font-medium text-white/90 mb-2">Next Steps</h3>
-              <p className="text-white/70">Proceed to Marketing setup.</p>
+            <div className="border-t border-border pt-4 mt-4">
+              <h3 className="font-medium text-foreground mb-2">Next Steps</h3>
+              <p className="text-muted-foreground">Proceed to Marketing setup.</p>
             </div>
           </CardContent>
         </Card>
@@ -214,8 +214,8 @@ export default function LaunchPrepPage() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-gradient-to-b from-navy-dark to-navy-base text-white p-6">
-      <h1 className="text-3xl font-bold mb-6 text-center">Launch Preparation</h1>
+    <div className="flex flex-col min-h-screen bg-background text-foreground p-6">
+      <h1 className="text-3xl font-bold mb-6 text-center text-foreground">Launch Preparation</h1>
 
       {/* Render the Stepper */}
       <PhaseStepper steps={launchSteps} currentStepIndex={activeStep} />
@@ -227,17 +227,16 @@ export default function LaunchPrepPage() {
 
       {/* Navigation Buttons */}
       <div className="flex justify-between mt-8">
-        <Button variant="outline" onClick={prevStep} disabled={activeStep === 0} className="border-white/20 text-white disabled:opacity-50">
+        <Button variant="outline" onClick={prevStep} disabled={activeStep === 0}>
           <ChevronLeft size={16} className="mr-1" />
           Back
         </Button>
         {activeStep < launchSteps.length - 1 ? (
-          <Button onClick={nextStep} className="bg-electric-blue hover:bg-electric-blue/90">
+          <Button variant="default" onClick={nextStep}>
             Continue <ChevronRight size={16} className="ml-1" />
           </Button>
         ) : (
-          // Updated button to use navigation function
-          <Button onClick={goToMarketingPlan} className="bg-electric-purple hover:bg-electric-purple/90">
+          <Button variant="secondary" onClick={goToMarketingPlan}>
             Next: Marketing <ChevronRight size={16} className="ml-1" />
           </Button>
         )}
