@@ -42,10 +42,8 @@ const HeroSection = () => {
     <section id="hero" className="container mx-auto px-4 pt-32 pb-24 md:pt-40 md:pb-32 text-center relative">
       {/* Add the large BuildLogo here */}
       <div className="mb-16 flex justify-center">
-        {/* Apply new hero-gradient instead of text-gradient? Verify BuildLogo accepts bg */}
-        {/* Assuming text-gradient uses primary/secondary, let's override HSL vars or define new text gradient if needed */}
-        {/* For now, keeping text-gradient, which uses primary/secondary HSL */}
-        <BuildLogo className="font-orbitron text-[10rem] sm:text-[12rem] md:text-[14rem] lg:text-[16rem] font-bold text-gradient animate-text-shimmer" />
+        {/* Replace fixed large sizes with responsive Tailwind classes */}
+        <BuildLogo className="font-orbitron text-7xl md:text-8xl lg:text-9xl xl:text-[10rem] font-bold text-gradient animate-text-shimmer" />
       </div>
 
       {/* Swapped Position: Paragraph first */}
@@ -62,8 +60,8 @@ const HeroSection = () => {
       {/* NEW: Interactive Idea Boxes */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
         {/* Card 1: I have an idea */}
-        {/* Use new card background */}
-        <div className="bg-hero-card-bg border border-border rounded-xl p-6 text-left space-y-3 transition-all hover:shadow-xl hover:border-gradient-blue/50 flex flex-col shadow-inner z-10"> {/* Add z-index */} 
+        {/* Add subtle blue glow shadow on hover */}
+        <div className="bg-hero-card-bg border border-border rounded-xl p-6 text-left space-y-3 transition-all hover:shadow-[0_0_20px_5px_rgba(58,123,253,0.2)] hover:border-gradient-blue/50 flex flex-col shadow-inner z-10">
           <Label className="flex items-center gap-2 font-medium text-foreground text-lg">
              {/* Assuming text-primary uses HSL, use new color */}
             <Check size={18} className="text-gradient-blue"/> I have an idea 
@@ -90,9 +88,10 @@ const HeroSection = () => {
               disabled={ideaText.length < minIdeaLength}
               className="relative w-full inline-flex items-center justify-center group overflow-hidden disabled:cursor-not-allowed transition-opacity -skew-x-12"
             >
-              {/* Use new hero-gradient */}
+              {/* Gradient span */}
               <span className="absolute inset-0 w-full h-full bg-hero-gradient opacity-90 group-hover:opacity-100 transition-opacity duration-300 group-disabled:opacity-60"></span>
-              <span className="relative px-8 py-3 text-primary-foreground font-medium skew-x-12 flex items-center gap-2 transform transition-transform group-hover:scale-105">
+              {/* Text span: Ensure relative positioning and contrasting text color */}
+              <span className="relative z-10 px-8 py-3 text-white font-medium skew-x-12 flex items-center gap-2 transform transition-transform group-hover:scale-105">
                 Get Started <ArrowRight size={18} />
               </span>
             </button>
@@ -100,8 +99,8 @@ const HeroSection = () => {
         </div>
 
         {/* Card 2: I need an idea */}
-        {/* Use new card background */}
-        <div className="bg-hero-card-bg border border-border rounded-xl p-6 text-left space-y-3 transition-all hover:shadow-xl hover:border-gradient-purple/50 flex flex-col shadow-inner z-10"> {/* Add z-index */} 
+        {/* Add subtle purple glow shadow on hover */}
+        <div className="bg-hero-card-bg border border-border rounded-xl p-6 text-left space-y-3 transition-all hover:shadow-[0_0_20px_5px_rgba(196,70,248,0.2)] hover:border-gradient-purple/50 flex flex-col shadow-inner z-10">
           <Label className="flex items-center gap-2 font-medium text-foreground text-lg">
              {/* Assuming text-secondary uses HSL, use new color */}
             <Zap size={18} className="text-gradient-purple"/> I need an idea 
@@ -128,9 +127,10 @@ const HeroSection = () => {
               disabled={interestText.length < minInterestLength}
               className="relative w-full inline-flex items-center justify-center group overflow-hidden disabled:cursor-not-allowed transition-opacity -skew-x-12"
             >
-              {/* Use new hero-gradient */}
+              {/* Gradient span */}
               <span className="absolute inset-0 w-full h-full bg-hero-gradient opacity-90 group-hover:opacity-100 transition-opacity duration-300 group-disabled:opacity-60"></span>
-              <span className="relative px-8 py-3 text-primary-foreground font-medium skew-x-12 flex items-center gap-2 transform transition-transform group-hover:scale-105">
+              {/* Text span: Ensure relative positioning and contrasting text color */}
+              <span className="relative z-10 px-8 py-3 text-white font-medium skew-x-12 flex items-center gap-2 transform transition-transform group-hover:scale-105">
                 Generate Ideas <ArrowRight size={18} />
               </span>
             </button>
@@ -191,8 +191,8 @@ const FeaturesSection = () => (
         {featuresData.map((feature, index) => (
           <div
             key={index}
-            // Apply glass effect using theme variables
-            className="bg-glass backdrop-blur-md border border-border rounded-xl p-8 hover-glow transition-all duration-500 group"
+            // Add hover glow effect to feature cards
+            className="bg-glass backdrop-blur-md border border-border rounded-xl p-8 transition-all duration-500 group hover:shadow-[0_0_20px_5px_rgba(58,123,253,0.15)]"
           >
             {/* Use theme accent color for icon background */}
             <div className="mb-4 p-3 bg-primary/10 rounded-full inline-block">
@@ -240,7 +240,8 @@ const AboutSection = () => (
       <div className="absolute -top-20 -right-20 w-64 h-64 rounded-full bg-primary/10 blur-[80px] pointer-events-none"></div>
       <div className="absolute -bottom-20 -left-20 w-80 h-80 rounded-full bg-secondary/10 blur-[100px] pointer-events-none"></div>
 
-      <div className="bg-glass backdrop-blur-md border border-border rounded-xl p-10 md:p-16 relative">
+      {/* Add hover glow effect to main about card */}
+      <div className="bg-glass backdrop-blur-md border border-border rounded-xl p-10 md:p-16 relative transition-all duration-500 hover:shadow-[0_0_25px_8px_rgba(196,70,248,0.15)]">
         <div className="max-w-3xl mx-auto text-center mb-16 relative z-10">
           <h2 className="text-gradient text-3xl md:text-4xl font-orbitron font-bold mb-6">
             About BUILD
@@ -376,9 +377,9 @@ export default function IndexPage() {
   return (
     // Apply new dark background, add overflow-hidden and relative for circles
     <div className="flex flex-col min-h-screen bg-dark-bg text-foreground font-inter relative overflow-hidden">
-      {/* Background Circles */}
-      <div className="absolute -top-1/4 -left-1/4 w-1/2 h-1/2 rounded-full bg-circle-blue opacity-10 blur-[100px] pointer-events-none"></div>
-      <div className="absolute -bottom-1/4 -right-1/4 w-1/2 h-1/2 rounded-full bg-circle-purple opacity-10 blur-[100px] pointer-events-none"></div>
+      {/* Background Circles - Adjust size, position, opacity, blur */}
+      <div className="absolute -top-1/3 -left-1/4 w-3/4 h-3/4 rounded-full bg-circle-blue opacity-[0.07] blur-[120px] pointer-events-none"></div>
+      <div className="absolute -bottom-1/3 -right-1/4 w-3/4 h-3/4 rounded-full bg-circle-purple opacity-[0.07] blur-[120px] pointer-events-none"></div>
 
       {/* Ensure content is above circles */}
       <div className="relative z-10 flex flex-col flex-grow">
