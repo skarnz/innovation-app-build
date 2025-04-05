@@ -24,11 +24,11 @@ export const LandingNavbar: React.FC = () => {
   };
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 h-16 bg-[hsl(var(--glass-background))] backdrop-blur-md border-b border-border flex items-center">
+    <nav className="fixed top-0 left-0 right-0 z-50 h-20 bg-[hsl(var(--glass-background))] backdrop-blur-md border-b border-border flex items-center">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
         {/* Left: Logo */}
-        <a href="/" aria-label="Homepage">
-          <BuildLogo className="h-6 w-auto" /> {/* BuildLogo needs internal theme handling */}
+        <a href="/" aria-label="Homepage" className="flex items-center">
+          <BuildLogo className="h-8 w-auto" />
         </a>
 
         {/* Center/Right: Links - Hidden on mobile, need menu toggle */}
@@ -44,7 +44,7 @@ export const LandingNavbar: React.FC = () => {
           </a>
           {/* TODO: Add condition based on auth status if needed */}
           {/* {isAuthenticated && ( */}
-          <a href="/dashboard" className="text-sm font-medium text-muted-foreground hover:text-foreground underline-animation">
+          <a href="/app/dashboard" className="text-sm font-medium text-muted-foreground hover:text-foreground underline-animation">
             Dashboard
           </a>
           {/* )} */}
