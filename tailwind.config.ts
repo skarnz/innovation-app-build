@@ -191,8 +191,8 @@ export default {
 			backgroundImage: {
 				'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
 				'text-gradient': 'linear-gradient(90deg, hsl(var(--primary)), hsl(var(--secondary)), hsl(var(--primary)))',
-				// New gradient definition using new colors
-				'hero-gradient': 'linear-gradient(90deg, var(--colors-gradient-blue) 0%, var(--colors-gradient-purple) 100%)',
+				// Use hex codes directly in hero-gradient
+				'hero-gradient': 'linear-gradient(90deg, #3A7BFD 0%, #C446F8 100%)',
 			},
 			backdropFilter: {
 				'none': 'none',
