@@ -55,24 +55,26 @@ import { Badge } from "@/components/ui/badge";
 const CombinedNavLink = ({ item, isOpen, projectId }: { item: NavItem, isOpen: boolean, projectId?: string }) => {
   const location = useLocation();
   
-  // Construct the dynamic path using :projectId placeholder
-  const path = projectId && item.to.includes(':projectId') 
-                ? item.to.replace(':projectId', projectId) 
-                : item.to; 
-  const prefix = projectId && item.pathPrefix?.includes(':projectId')
-                ? item.pathPrefix.replace(':projectId', projectId)
-                : item.pathPrefix; // Prefix might not need ID replacement if it's just /project/
+  // Add /app prefix and handle :projectId
+  const path = item.to.startsWith('/') ? `/app${item.to}` : item.to; // Prepend /app if it's an absolute path
+  const finalPath = projectId && path.includes(':projectId') 
+                ? path.replace(':projectId', projectId) 
+                : path; 
+  const prefix = item.pathPrefix?.startsWith('/') ? `/app${item.pathPrefix}` : item.pathPrefix; // Prepend /app to prefix
+  const finalPrefix = projectId && prefix?.includes(':projectId')
+                ? prefix.replace(':projectId', projectId)
+                : prefix;
 
   // Check activity based on direct path or prefix
-  const isActive = (location.pathname === path || 
-                   (prefix && location.pathname.startsWith(prefix)));
+  const isActive = (location.pathname === finalPath || 
+                   (finalPrefix && location.pathname.startsWith(finalPrefix)));
   const IconComponent = item.icon;
 
   // Render link with full content if open
   if (isOpen) {
     return (
       <Link
-        to={path}
+        to={finalPath}
         className={cn(
           "flex items-center gap-3 py-2 px-4 w-full text-sm font-medium transition-colors rounded-md",
           isActive ? "text-white bg-navy-dark" : "text-white/60 hover:text-white/80"
@@ -102,7 +104,7 @@ const CombinedNavLink = ({ item, isOpen, projectId }: { item: NavItem, isOpen: b
       <Tooltip>
         <TooltipTrigger asChild>
           <Link
-            to={path}
+            to={finalPath}
             className={cn(
               "flex items-center justify-center h-10 w-10 rounded-md transition-colors", // Centered icon
               isActive ? "bg-navy-dark text-electric-blue" : "text-white/60 hover:text-white hover:bg-navy-dark"
@@ -124,28 +126,27 @@ const CombinedNavLink = ({ item, isOpen, projectId }: { item: NavItem, isOpen: b
 const CombinedCategoryToggle = ({ item, isOpen, projectId }: { item: NavItem, isOpen: boolean, projectId?: string }) => {
     const location = useLocation();
 
-    // Construct dynamic paths/prefixes using :projectId placeholder
-    const path = projectId && item.to.includes(':projectId') 
-                 ? item.to.replace(':projectId', projectId) 
-                 : item.to;
-    const prefix = projectId && item.pathPrefix?.includes(':projectId')
-                 ? item.pathPrefix.replace(':projectId', projectId)
-                 : item.pathPrefix;
+    // Add /app prefix and handle :projectId
+    const path = item.to.startsWith('/') ? `/app${item.to}` : item.to; 
+    const finalPath = projectId && path.includes(':projectId') 
+                 ? path.replace(':projectId', projectId) 
+                 : path;
+    const prefix = item.pathPrefix?.startsWith('/') ? `/app${item.pathPrefix}` : item.pathPrefix;
+    const finalPrefix = projectId && prefix?.includes(':projectId')
+                 ? prefix.replace(':projectId', projectId)
+                 : prefix;
 
-    const isActive = location.pathname.startsWith(prefix || path);
-    // Keep expanded state based on activity, manage based on isOpen changes
+    const isActive = location.pathname.startsWith(finalPrefix || finalPath);
     const [isExpanded, setIsExpanded] = useState(isActive);
     const IconComponent = item.icon;
 
     useEffect(() => {
         // Ensure it reflects current path on navigation
-        const currentlyActive = location.pathname.startsWith(prefix || path);
+        const currentlyActive = location.pathname.startsWith(finalPrefix || finalPath);
         if (currentlyActive) {
             setIsExpanded(true);
         }
-        // Optionally collapse inactive categories when sidebar closes?
-        // else if (!isOpen) { setIsExpanded(false); }
-    }, [location.pathname, prefix, path, isOpen]);
+    }, [location.pathname, finalPrefix, finalPath, isOpen]); // Updated dependencies
 
     // Render icon-only if closed
     if (!isOpen) {
@@ -154,7 +155,7 @@ const CombinedCategoryToggle = ({ item, isOpen, projectId }: { item: NavItem, is
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Link 
-                     to={path}
+                     to={finalPath}
                      className={cn(
                         "flex items-center justify-center h-10 w-10 rounded-md transition-colors",
                         isActive ? "bg-navy-dark text-electric-blue" : "text-white/60 hover:text-white hover:bg-navy-dark"
@@ -201,7 +202,6 @@ const CombinedCategoryToggle = ({ item, isOpen, projectId }: { item: NavItem, is
             {isExpanded && (
                 <div className="ml-4 mt-1 space-y-1 border-l border-navy-medium pl-4">
                     {item.children?.map((child, index) => (
-                        // Use CombinedNavLink for children, passing isOpen
                         <CombinedNavLink key={child.to || `sub-${index}`} item={child} isOpen={isOpen} projectId={projectId} />
                     ))}
                 </div>

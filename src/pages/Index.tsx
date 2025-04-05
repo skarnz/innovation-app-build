@@ -51,14 +51,14 @@ const HeroSection = () => {
       {/* NEW: Interactive Idea Boxes */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
         {/* Card 1: I have an idea */}
-        <div className="bg-card border border-border rounded-xl p-6 text-left space-y-3 transition-all hover:shadow-xl hover:border-primary/50 flex flex-col">
-          <Label className="flex items-center gap-2 font-medium text-foreground">
-            <Check size={16} className="text-primary"/> I have an idea
+        <div className="bg-card border border-border rounded-xl p-6 text-left space-y-3 transition-all hover:shadow-xl hover:border-primary/50 flex flex-col shadow-inner">
+          <Label className="flex items-center gap-2 font-medium text-foreground text-lg">
+            <Check size={18} className="text-primary"/> I have an idea
           </Label>
           <Textarea 
             placeholder="Tell us about your idea..." 
             rows={4}
-            className="bg-muted/50 border-border/50 resize-none flex-grow min-h-[6.5rem] max-h-[12rem] overflow-y-auto" 
+            className="bg-muted/30 placeholder:text-muted-foreground/80 border-border/50 resize-none flex-grow min-h-[6.5rem] max-h-[12rem] overflow-y-auto text-base" 
             value={ideaText}
             onChange={(e) => setIdeaText(e.target.value)}
             onFocus={() => !ideaFocused && setIdeaFocused(true)}
@@ -74,9 +74,9 @@ const HeroSection = () => {
           <a href="/app/project/setup" onClick={handleIdeaSubmit} className="block mt-auto pt-3">
             <button
               disabled={ideaText.length < minIdeaLength}
-              className="relative w-full inline-flex items-center justify-center group overflow-hidden disabled:opacity-50 disabled:cursor-not-allowed transition-opacity"
+              className="relative w-full inline-flex items-center justify-center group overflow-hidden disabled:cursor-not-allowed transition-opacity"
             >
-              <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-primary to-secondary opacity-90 group-hover:opacity-100 transition-opacity duration-300 group-disabled:opacity-50"></span>
+              <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-primary to-secondary opacity-90 group-hover:opacity-100 transition-opacity duration-300 group-disabled:opacity-60"></span>
               <span className="relative px-8 py-3 text-primary-foreground font-medium skew-x-0 flex items-center gap-2 transform transition-transform group-hover:scale-105">
                 Get Started <ArrowRight size={18} />
               </span>
@@ -85,14 +85,14 @@ const HeroSection = () => {
         </div>
 
         {/* Card 2: I need an idea */}
-        <div className="bg-card border border-border rounded-xl p-6 text-left space-y-3 transition-all hover:shadow-xl hover:border-primary/50 flex flex-col">
-          <Label className="flex items-center gap-2 font-medium text-foreground">
-            <Zap size={16} className="text-secondary"/> I need an idea
+        <div className="bg-card border border-border rounded-xl p-6 text-left space-y-3 transition-all hover:shadow-xl hover:border-primary/50 flex flex-col shadow-inner">
+          <Label className="flex items-center gap-2 font-medium text-foreground text-lg">
+            <Zap size={18} className="text-secondary"/> I need an idea
           </Label>
           <Textarea 
             placeholder="What are you interested in?" 
             rows={4}
-            className="bg-muted/50 border-border/50 resize-none flex-grow min-h-[6.5rem] max-h-[12rem] overflow-y-auto"
+            className="bg-muted/30 placeholder:text-muted-foreground/80 border-border/50 resize-none flex-grow min-h-[6.5rem] max-h-[12rem] overflow-y-auto text-base"
             value={interestText}
             onChange={(e) => setInterestText(e.target.value)}
             onFocus={() => !interestFocused && setInterestFocused(true)}
@@ -108,9 +108,9 @@ const HeroSection = () => {
           <a href="/app/project/setup" onClick={handleInterestSubmit} className="block mt-auto pt-3">
             <button
               disabled={interestText.length < minInterestLength}
-              className="relative w-full inline-flex items-center justify-center group overflow-hidden disabled:opacity-50 disabled:cursor-not-allowed transition-opacity"
+              className="relative w-full inline-flex items-center justify-center group overflow-hidden disabled:cursor-not-allowed transition-opacity"
             >
-              <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-primary to-secondary opacity-90 group-hover:opacity-100 transition-opacity duration-300 group-disabled:opacity-50"></span>
+              <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-primary to-secondary opacity-90 group-hover:opacity-100 transition-opacity duration-300 group-disabled:opacity-60"></span>
               <span className="relative px-8 py-3 text-primary-foreground font-medium skew-x-0 flex items-center gap-2 transform transition-transform group-hover:scale-105">
                 Generate Ideas <ArrowRight size={18} />
               </span>

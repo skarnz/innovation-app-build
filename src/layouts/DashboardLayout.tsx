@@ -1,14 +1,13 @@
 import { useState, useEffect } from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useParams } from 'react-router-dom';
 import Sidebar from '@/components/Sidebar';
-import TopBar from '@/components/TopBar';
+import { DashboardNavbar } from '@/components/layout/DashboardNavbar';
 import { Button } from "@/components/ui/button";
 import { PanelLeft, PanelRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { getAuthStatus } from '@/lib/api';
 import AiAgent from '@/components/AiAgent';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import { useParams } from 'react-router-dom';
 
 // Define a type for the user object if available, otherwise use any/unknown
 interface User {
@@ -56,7 +55,7 @@ const DashboardLayout = () => {
   const contentMarginClosedClass = "ml-20";
 
   return (
-    <div className="flex min-h-screen bg-navy-darkest"> {/* Ensure main background */} 
+    <div className="flex min-h-screen bg-background"> {/* Use theme background */} 
       {/* Render the single Sidebar */}
       <Sidebar isOpen={isSidebarOpen} projectId={projectId} />
       
@@ -73,32 +72,30 @@ const DashboardLayout = () => {
         >
            <TooltipProvider delayDuration={100}>
              <Tooltip>
-               <TooltipTrigger> 
+               <TooltipTrigger asChild>
                   <Button
                     variant="ghost"
                     size="icon"
                     onClick={toggleSidebar}
-                    className="bg-navy-light/50 backdrop-blur-sm text-white hover:bg-navy-light hover:text-white rounded-full h-8 w-8"
+                    // Use theme colors
+                    className="bg-card/50 backdrop-blur-sm text-muted-foreground hover:bg-accent hover:text-accent-foreground rounded-full h-8 w-8 border border-border"
                   >
                     {isSidebarOpen ? <PanelLeft size={16} /> : <PanelRight size={16} />}
                   </Button>
                </TooltipTrigger>
-               <TooltipContent side="right" className="bg-navy-darkest text-white border-navy-medium">
+               {/* Use theme colors */}
+               <TooltipContent side="right" className="bg-popover text-popover-foreground border-border">
                  {isSidebarOpen ? "Collapse Sidebar" : "Expand Sidebar"}
                </TooltipContent>
              </Tooltip>
            </TooltipProvider>
         </div>
 
-        {/* TopBar position also depends on isSidebarOpen */}
-        <TopBar
-            isAuthenticated={isAuthenticated}
-            user={user}
-            isLoadingAuth={isLoadingAuth}
-            isSidebarOpen={isSidebarOpen} 
-        />
+        {/* Render the new DashboardNavbar */}
+        <DashboardNavbar />
 
-        <main className="flex-grow overflow-y-auto p-4 md:p-6 lg:p-8 mt-[70px]">
+        {/* Adjust top margin based on navbar height (h-16 -> mt-16) */}
+        <main className="flex-grow overflow-y-auto p-4 md:p-6 lg:p-8 mt-16">
            <Outlet />
         </main>
 

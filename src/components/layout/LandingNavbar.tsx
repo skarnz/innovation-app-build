@@ -1,5 +1,7 @@
 // import Link from 'next/link';
 import React from 'react';
+// Need Link from react-router-dom
+import { Link } from 'react-router-dom';
 // Assuming BuildLogo component exists or will be created at this path
 import BuildLogo from '@/components/BuildLogo';
 import { Button } from '@/components/ui/button';
@@ -24,11 +26,11 @@ export const LandingNavbar: React.FC = () => {
   };
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 h-16 bg-[hsl(var(--glass-background))] backdrop-blur-md border-b border-border flex items-center">
+    <nav className="fixed top-0 left-0 right-0 z-50 h-20 bg-[hsl(var(--glass-background))] backdrop-blur-md border-b border-border flex items-center">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
         {/* Left: Logo */}
-        <a href="/" aria-label="Homepage">
-          <BuildLogo className="h-6 w-auto" /> {/* BuildLogo needs internal theme handling */}
+        <a href="/" aria-label="Homepage" className="flex items-center">
+          <BuildLogo className="h-8 w-auto" />
         </a>
 
         {/* Center/Right: Links - Hidden on mobile, need menu toggle */}
@@ -39,15 +41,12 @@ export const LandingNavbar: React.FC = () => {
           <a href="#about" onClick={(e) => handleScroll(e, 'about')} className="text-sm font-medium text-muted-foreground hover:text-foreground underline-animation">
             About
           </a>
-          <a href="#pricing" onClick={(e) => handleScroll(e, 'pricing')} className="text-sm font-medium text-muted-foreground hover:text-foreground underline-animation">
+          <Link to="/pricing" className="text-sm font-medium text-muted-foreground hover:text-foreground underline-animation">
             Pricing
-          </a>
-          {/* TODO: Add condition based on auth status if needed */}
-          {/* {isAuthenticated && ( */}
-          <a href="/dashboard" className="text-sm font-medium text-muted-foreground hover:text-foreground underline-animation">
+          </Link>
+          <Link to="/app/dashboard" className="text-sm font-medium text-muted-foreground hover:text-foreground underline-animation">
             Dashboard
-          </a>
-          {/* )} */}
+          </Link>
         </div>
 
         {/* Right: Button & Mobile Menu Placeholder */}
