@@ -9,104 +9,58 @@
 /* =============================================== */
 @layer base {
   :root {
-    /* Light Mode Theme - Soft Pastel Blue/Grey Inspired */
-    --background: 220 30% 96%; /* Very light cool grey/blue */
-    --foreground: 240 6% 10%; /* Near black */
-    
-    --card: 0 0% 100%; /* White cards for contrast */
-    --card-foreground: 240 6% 10%; 
-    
-    --popover: 0 0% 100%; /* White popovers */
-    --popover-foreground: 240 6% 10%;
-
-    --primary: 213 90% 45%; /* Electric Blue */
-    --primary-foreground: 0 0% 100%; 
-    
-    --secondary: 271 67% 63%; /* Electric Purple */
-    --secondary-foreground: 0 0% 100%; 
-
-    --muted: 220 20% 90%; /* Slightly darker grey for muted elements */
-    --muted-foreground: 240 5% 35%; 
-
-    --accent: 220 25% 93%; /* Lighter grey for accents like hover */
-    --accent-foreground: 240 6% 10%; 
-
-    --destructive: 0 72% 51%; 
-    --destructive-foreground: 0 0% 100%;
-    
-    --border: 220 20% 88%; /* Soft grey border */
-    --input: 0 0% 100%; /* White input background */
-    --ring: 213 90% 55%; 
-
-    /* General */
+    /* Light Mode Theme Placeholder - Define if needed later */
+    /* Using dark mode variables as the base for now */
+    --background: 228 66% 8%; /* #0b0e1e */
+    --foreground: 225 100% 98%; /* #f4f7ff */
+    --muted: 228 18% 18%; /* #242735 */
+    --muted-foreground: 244 33% 75%; /* #aba8d3 */
+    --card: 230 33% 13%; /* #171a2c */
+    --card-foreground: 225 100% 98%; /* #f4f7ff */
+    --popover: 230 33% 13%; /* #171a2c */
+    --popover-foreground: 225 100% 98%; /* #f4f7ff */
+    --primary: 246 86% 66%; /* #6051f0 */
+    --primary-foreground: 225 100% 98%; /* #f4f7ff */
+    --secondary: 255 26% 60%; /* #796abb */
+    --secondary-foreground: 225 100% 98%; /* #f4f7ff */
+    --accent: 279 70% 68%; /* #bb71ea */
+    --accent-foreground: 225 100% 98%; /* #f4f7ff */
+    --destructive: 0 84% 60%; /* #EF4444 */
+    --destructive-foreground: 0 0% 100%; /* #FFFFFF */
+    --border: 227 13% 25%; /* #393c4a */
+    --input: 228 30% 9%; /* #0F1120 - Using darker input bg */
+    --ring: 246 86% 66%; /* #6051f0 */
     --radius: 0.5rem;
-    
-    /* Glass Effect - Use card (white) with alpha */
-    --glass-background: 0 0% 100% / 0.6; 
-    
-    /* Sidebar - Light */
-    --sidebar-background: 220 25% 94%; /* Slightly different light grey */
-    --sidebar-foreground: 240 6% 10%;
-    --sidebar-border: 220 20% 88%; 
-    --sidebar-accent: 220 30% 96%; /* Hover/Active background (closer to main bg) */
-    --sidebar-accent-foreground: 240 6% 10%;
-    --sidebar-primary: var(--primary); 
-    --sidebar-primary-foreground: var(--primary-foreground);
-    --sidebar-ring: var(--ring);
   }
 
-  html.dark {
-    /* Dark Mode Theme - Based on existing styles */
-    --background: 224 71% 4%; /* Navy */
-    --foreground: 213 31% 91%; /* Light Gray/White Text */
-    
-    --card: 224 34% 16%; /* Navy Light */
-    --card-foreground: 213 31% 91%;
-    
-    --popover: 224 71% 4%; /* Navy */
-    --popover-foreground: 213 31% 91%;
-
-    --primary: 213 90% 45%; /* Electric Blue */
-    --primary-foreground: 0 0% 100%; 
-    
-    --secondary: 271 67% 63%; /* Electric Purple */
-    --secondary-foreground: 0 0% 100%;
-
-    --muted: 224 34% 16%; /* Navy Light */
-    --muted-foreground: 215 16% 57%; /* Lighter Gray/White Text */
-
-    --accent: 224 34% 20%; /* Slightly lighter navy for accents/hovers */
-    --accent-foreground: 213 31% 91%;
-
-    --destructive: 0 63% 51%; /* Slightly less intense red */
-    --destructive-foreground: 0 0% 100%;
-    
-    --border: 215 28% 17%; /* Slightly lighter navy border */
-    --input: 215 28% 17%; 
-    --ring: 213 90% 45%; /* Electric Blue */
-
-    /* Glass Effect */
-    --glass-background: 224 34% 16% / 0.6; /* Card color with alpha */
-    
-    /* Sidebar - Dark */
-    --sidebar-background: 224 71% 4%; /* Dark Navy for sidebar */
-    --sidebar-foreground: 213 31% 91%;
-    --sidebar-border: 215 28% 17%;
-    --sidebar-accent: 224 34% 16%; /* Hover/Active background (Navy Light) */
-    --sidebar-accent-foreground: 0 0% 100%; /* White text on hover/active */
-    --sidebar-primary: var(--primary);
-    --sidebar-primary-foreground: var(--primary-foreground);
-    --sidebar-ring: var(--ring);
+  .dark {
+    /* Apply the same variables for dark mode */
+    --background: 228 66% 8%; /* #0b0e1e */
+    --foreground: 225 100% 98%; /* #f4f7ff */
+    --muted: 228 18% 18%; /* #242735 */
+    --muted-foreground: 244 33% 75%; /* #aba8d3 */
+    --card: 230 33% 13%; /* #171a2c */
+    --card-foreground: 225 100% 98%; /* #f4f7ff */
+    --popover: 230 33% 13%; /* #171a2c */
+    --popover-foreground: 225 100% 98%; /* #f4f7ff */
+    --primary: 246 86% 66%; /* #6051f0 */
+    --primary-foreground: 225 100% 98%; /* #f4f7ff */
+    --secondary: 255 26% 60%; /* #796abb */
+    --secondary-foreground: 225 100% 98%; /* #f4f7ff */
+    --accent: 279 70% 68%; /* #bb71ea */
+    --accent-foreground: 225 100% 98%; /* #f4f7ff */
+    --destructive: 0 84% 60%; /* #EF4444 */
+    --destructive-foreground: 0 0% 100%; /* #FFFFFF */
+    --border: 227 13% 25%; /* #393c4a */
+    --input: 228 30% 9%; /* #0F1120 - Using darker input bg */
+    --ring: 246 86% 66%; /* #6051f0 */
+    --radius: 0.5rem;
   }
-}
 
-/* =============================================== */
-/* BASE STYLES                                     */
-/* =============================================== */
-@layer base {
   body {
-    @apply bg-background text-foreground font-inter antialiased;
-    overflow-x: hidden;
+    /* Apply base styles using CSS variables */
+    @apply bg-background text-foreground font-sans antialiased;
+    overflow-x: hidden; /* Keep this */
   }
 
   /* Comment out canvas style for troubleshooting */
@@ -133,8 +87,8 @@
 
   /* REMOVE/REFACTOR THIS: Apply bg-[hsl(var(--glass-background))] backdrop-blur-md border border-border rounded-xl directly */
   .glass-card {
-    /* Example old styles: @apply bg-white/10 backdrop-blur-md border border-white/20 rounded-xl; */
-    /* Will be replaced by utilities */
+    /* Use CSS vars for colors */
+    @apply bg-card/70 backdrop-blur-md border border-border;
   }
 
   /* Keep this utility if needed, or integrate into specific hover states */
@@ -179,5 +133,17 @@
 
   .font-inter {
     font-family: 'Inter', sans-serif;
+  }
+
+  /* Glass Card Utility */
+  .glass-card {
+    /* Use CSS vars for colors */
+    @apply bg-card/70 backdrop-blur-md border border-border;
+  }
+
+  /* Hero Text Gradient Utility */
+  .text-gradient-hero {
+    /* Use specific hex codes defined in tailwind.config.ts */
+    @apply text-transparent bg-clip-text bg-gradient-to-r from-medium-blue to-lavender;
   }
 }

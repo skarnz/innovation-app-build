@@ -65,8 +65,19 @@ export default {
 					ring: 'hsl(var(--sidebar-ring))'
 				},
 				glass: 'hsl(var(--glass-background))',
-				// Custom colors for BUILD
-				electric: {
+				'deep-navy': '#0b0e1e',
+				'charcoal-blue': '#171a2c',
+				'slate-gray': '#242735',
+				'cool-gray': '#393c4a',
+				'neutral-gray': '#525362',
+				'periwinkle': '#6051f0',
+				'violet-gray': '#796abb',
+				'medium-blue': '#6373f0',
+				'lavender': '#bb71ea',
+				'cerulean': '#4170cb',
+				'lavender-gray': '#aba8d3',
+				'pale-blue': '#f4f7ff',
+				'electric': {
 					blue: '#2F80ED',
 					purple: '#BB6BD9',
 					pink: '#FF0080',
@@ -97,14 +108,13 @@ export default {
 				'slate-grey': '#708090',
 				'teal-accent': '#008080',
 				'sky-blue-light': '#87CEEB',
-				// New colors based on screenshot analysis
-				'dark-bg': '#0D0F1C', // Very dark blue/purple background
-				'gradient-blue': '#3A7BFD', // Bright blue for gradients
-				'gradient-purple': '#C446F8', // Vibrant purple/magenta for gradients
-				'hero-card-bg': '#1A1D33', // Dark blue/grey for cards
-				'hero-textarea-bg': '#0F1120', // Darker text area background for contrast
-				'circle-blue': '#2F80ED', // Existing electric blue for circle
-				'circle-purple': '#BB6BD9', // Existing electric purple for circle
+				'dark-bg': '#0D0F1C',
+				'gradient-blue': '#3A7BFD',
+				'gradient-purple': '#C446F8',
+				'hero-card-bg': '#1A1D33',
+				'hero-textarea-bg': '#0F1120',
+				'circle-blue': '#2F80ED',
+				'circle-purple': '#BB6BD9',
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
@@ -190,9 +200,8 @@ export default {
 			},
 			backgroundImage: {
 				'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-				'text-gradient': 'linear-gradient(90deg, hsl(var(--primary)), hsl(var(--secondary)), hsl(var(--primary)))',
-				// Use hex codes directly in hero-gradient
-				'hero-gradient': 'linear-gradient(90deg, #3A7BFD 0%, #C446F8 100%)',
+				'text-gradient': 'linear-gradient(90deg, hsl(var(--primary)), hsl(var(--secondary)))',
+				'hero-gradient': 'linear-gradient(90deg, #6373f0 0%, #bb71ea 100%)',
 			},
 			backdropFilter: {
 				'none': 'none',
