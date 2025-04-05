@@ -39,26 +39,40 @@ const HeroSection = () => {
   };
 
   return (
-    <section id="hero" className="container mx-auto px-4 pt-24 pb-16 md:pt-32 md:pb-24 text-center relative">
-      {/* Content adapted from 8uild/components/Hero.tsx (not read, but typical hero structure) */}
-      <h1 className="font-orbitron text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-gradient animate-text-shimmer mb-6">
-        Unleash Your Entrepreneurial Vision
-      </h1>
-      <p className="text-lg md:text-xl lg:text-2xl text-muted-foreground max-w-3xl mx-auto mb-12">
+    <section id="hero" className="container mx-auto px-4 pt-32 pb-24 md:pt-40 md:pb-32 text-center relative">
+      {/* Add the large BuildLogo here */}
+      <div className="mb-16 flex justify-center">
+        {/* Apply new hero-gradient instead of text-gradient? Verify BuildLogo accepts bg */}
+        {/* Assuming text-gradient uses primary/secondary, let's override HSL vars or define new text gradient if needed */}
+        {/* For now, keeping text-gradient, which uses primary/secondary HSL */}
+        <BuildLogo className="font-orbitron text-[10rem] sm:text-[12rem] md:text-[14rem] lg:text-[16rem] font-bold text-gradient animate-text-shimmer" />
+      </div>
+
+      {/* Swapped Position: Paragraph first */}
+      <p className="text-lg md:text-xl lg:text-2xl text-muted-foreground max-w-5xl mx-auto mb-8">
         The ultimate platform for entrepreneurs to brainstorm, validate, and launch groundbreaking ideas using AI-powered tools and a guided, step-by-step process.
       </p>
+
+      {/* Swapped Position: H1 second, size reduced */}
+      {/* Apply text-gradient */}
+      <h1 className="font-orbitron text-3xl sm:text-4xl md:text-5xl font-bold text-gradient animate-text-shimmer max-w-5xl mx-auto mb-16">
+        Unleash Your Entrepreneurial Vision
+      </h1>
       
       {/* NEW: Interactive Idea Boxes */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
         {/* Card 1: I have an idea */}
-        <div className="bg-card border border-border rounded-xl p-6 text-left space-y-3 transition-all hover:shadow-xl hover:border-primary/50 flex flex-col shadow-inner">
+        {/* Use new card background */}
+        <div className="bg-hero-card-bg border border-border rounded-xl p-6 text-left space-y-3 transition-all hover:shadow-xl hover:border-gradient-blue/50 flex flex-col shadow-inner z-10"> {/* Add z-index */} 
           <Label className="flex items-center gap-2 font-medium text-foreground text-lg">
-            <Check size={18} className="text-primary"/> I have an idea
+             {/* Assuming text-primary uses HSL, use new color */}
+            <Check size={18} className="text-gradient-blue"/> I have an idea 
           </Label>
           <Textarea 
             placeholder="Tell us about your idea..." 
             rows={4}
-            className="bg-muted/50 placeholder:text-muted-foreground/80 border-border/50 resize-none flex-grow min-h-[6.5rem] max-h-[12rem] overflow-y-auto text-lg" 
+            // Use new textarea background 
+            className="bg-hero-textarea-bg placeholder:text-muted-foreground/80 border-border/50 resize-none flex-grow min-h-[6.5rem] max-h-[12rem] overflow-y-auto text-lg" 
             value={ideaText}
             onChange={(e) => setIdeaText(e.target.value)}
             onFocus={() => !ideaFocused && setIdeaFocused(true)}
@@ -76,7 +90,8 @@ const HeroSection = () => {
               disabled={ideaText.length < minIdeaLength}
               className="relative w-full inline-flex items-center justify-center group overflow-hidden disabled:cursor-not-allowed transition-opacity -skew-x-12"
             >
-              <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-primary to-secondary opacity-90 group-hover:opacity-100 transition-opacity duration-300 group-disabled:opacity-60"></span>
+              {/* Use new hero-gradient */}
+              <span className="absolute inset-0 w-full h-full bg-hero-gradient opacity-90 group-hover:opacity-100 transition-opacity duration-300 group-disabled:opacity-60"></span>
               <span className="relative px-8 py-3 text-primary-foreground font-medium skew-x-12 flex items-center gap-2 transform transition-transform group-hover:scale-105">
                 Get Started <ArrowRight size={18} />
               </span>
@@ -85,14 +100,17 @@ const HeroSection = () => {
         </div>
 
         {/* Card 2: I need an idea */}
-        <div className="bg-card border border-border rounded-xl p-6 text-left space-y-3 transition-all hover:shadow-xl hover:border-primary/50 flex flex-col shadow-inner">
+        {/* Use new card background */}
+        <div className="bg-hero-card-bg border border-border rounded-xl p-6 text-left space-y-3 transition-all hover:shadow-xl hover:border-gradient-purple/50 flex flex-col shadow-inner z-10"> {/* Add z-index */} 
           <Label className="flex items-center gap-2 font-medium text-foreground text-lg">
-            <Zap size={18} className="text-secondary"/> I need an idea
+             {/* Assuming text-secondary uses HSL, use new color */}
+            <Zap size={18} className="text-gradient-purple"/> I need an idea 
           </Label>
           <Textarea 
             placeholder="What are you interested in?" 
             rows={4}
-            className="bg-muted/50 placeholder:text-muted-foreground/80 border-border/50 resize-none flex-grow min-h-[6.5rem] max-h-[12rem] overflow-y-auto text-lg"
+             // Use new textarea background 
+            className="bg-hero-textarea-bg placeholder:text-muted-foreground/80 border-border/50 resize-none flex-grow min-h-[6.5rem] max-h-[12rem] overflow-y-auto text-lg"
             value={interestText}
             onChange={(e) => setInterestText(e.target.value)}
             onFocus={() => !interestFocused && setInterestFocused(true)}
@@ -110,7 +128,8 @@ const HeroSection = () => {
               disabled={interestText.length < minInterestLength}
               className="relative w-full inline-flex items-center justify-center group overflow-hidden disabled:cursor-not-allowed transition-opacity -skew-x-12"
             >
-              <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-primary to-secondary opacity-90 group-hover:opacity-100 transition-opacity duration-300 group-disabled:opacity-60"></span>
+              {/* Use new hero-gradient */}
+              <span className="absolute inset-0 w-full h-full bg-hero-gradient opacity-90 group-hover:opacity-100 transition-opacity duration-300 group-disabled:opacity-60"></span>
               <span className="relative px-8 py-3 text-primary-foreground font-medium skew-x-12 flex items-center gap-2 transform transition-transform group-hover:scale-105">
                 Generate Ideas <ArrowRight size={18} />
               </span>
@@ -355,20 +374,28 @@ const FooterSection = () => (
 // --- Main Page Component ---
 export default function IndexPage() {
   return (
-    <div className="flex flex-col min-h-screen bg-background text-foreground font-inter">
-      <LandingNavbar />
+    // Apply new dark background, add overflow-hidden and relative for circles
+    <div className="flex flex-col min-h-screen bg-dark-bg text-foreground font-inter relative overflow-hidden">
+      {/* Background Circles */}
+      <div className="absolute -top-1/4 -left-1/4 w-1/2 h-1/2 rounded-full bg-circle-blue opacity-10 blur-[100px] pointer-events-none"></div>
+      <div className="absolute -bottom-1/4 -right-1/4 w-1/2 h-1/2 rounded-full bg-circle-purple opacity-10 blur-[100px] pointer-events-none"></div>
 
-      {/* Uncomment if/when ThreeScene is implemented and imported */}
-      {/* <ThreeScene /> */}
+      {/* Ensure content is above circles */}
+      <div className="relative z-10 flex flex-col flex-grow">
+        <LandingNavbar />
 
-      <main className="flex-grow pt-16">
-        <HeroSection />
-        <FeaturesSection />
-        <AboutSection />
-        <CTASection />
-      </main>
+        {/* Uncomment if/when ThreeScene is implemented and imported */}
+        {/* <ThreeScene /> */}
 
-      <FooterSection />
+        <main className="flex-grow pt-16">
+          <HeroSection />
+          <FeaturesSection />
+          <AboutSection />
+          <CTASection />
+        </main>
+
+        <FooterSection />
+      </div>
     </div>
   );
 }

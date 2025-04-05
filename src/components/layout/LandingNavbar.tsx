@@ -27,7 +27,7 @@ export const LandingNavbar: React.FC = () => {
     <nav className="fixed top-0 left-0 right-0 z-50 h-20 bg-[hsl(var(--glass-background))] backdrop-blur-md border-b border-border flex items-center">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
         {/* Left: Logo */}
-        <a href="/" aria-label="Homepage" className="flex items-center">
+        <a href="/" aria-label="Homepage" className="flex items-center focus:outline-none">
           <BuildLogo className="h-8 w-auto" />
         </a>
 

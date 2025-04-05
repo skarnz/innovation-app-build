@@ -96,7 +96,15 @@ export default {
 				'navy-light': '#112240',
 				'slate-grey': '#708090',
 				'teal-accent': '#008080',
-				'sky-blue-light': '#87CEEB'
+				'sky-blue-light': '#87CEEB',
+				// New colors based on screenshot analysis
+				'dark-bg': '#0D0F1C', // Very dark blue/purple background
+				'gradient-blue': '#3A7BFD', // Bright blue for gradients
+				'gradient-purple': '#C446F8', // Vibrant purple/magenta for gradients
+				'hero-card-bg': '#1A1D33', // Dark blue/grey for cards
+				'hero-textarea-bg': '#0F1120', // Darker text area background for contrast
+				'circle-blue': '#2F80ED', // Existing electric blue for circle
+				'circle-purple': '#BB6BD9', // Existing electric purple for circle
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
@@ -183,6 +191,8 @@ export default {
 			backgroundImage: {
 				'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
 				'text-gradient': 'linear-gradient(90deg, hsl(var(--primary)), hsl(var(--secondary)), hsl(var(--primary)))',
+				// New gradient definition using new colors
+				'hero-gradient': 'linear-gradient(90deg, var(--colors-gradient-blue) 0%, var(--colors-gradient-purple) 100%)',
 			},
 			backdropFilter: {
 				'none': 'none',
